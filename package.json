@@ -17,11 +17,11 @@
     "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs"
   },
   "devDependencies": {
-    "@types/node": "^22.13.7",
+    "@types/node": "^22.15.19",
     "esbuild-plugin-version-injector": "^1.2.1",
-    "lerna": "^8.2.0",
+    "lerna": "^8.2.2",
     "rimraf": "^6.0.1",
-    "tsup": "^8.4.0",
-    "typescript": "^5.8.2"
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
   }
 }
