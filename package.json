@@ -1,11 +1,10 @@
 {
   "name": "@reciple/monorepo",
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*",
-    "example"
+    "packages/*"
   ],
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
@@ -15,21 +14,14 @@
     "test": "npm run dev -w example",
     "publish-dev": "lerna run build && lerna publish prerelease",
     "publish-latest": "lerna run build && lerna publish",
-    "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
-    "postinstall": "patch-package"
+    "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs"
   },
   "devDependencies": {
-    "@swc/core": "^1.11.5",
     "@types/node": "^22.13.7",
     "esbuild-plugin-version-injector": "^1.2.1",
     "lerna": "^8.2.0",
-    "patch-package": "^8.0.0",
     "rimraf": "^6.0.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2"
-  },
-  "dependencies": {
-    "@actions/core": "^1.11.1",
-    "@reciple/utils": "^9.6.0"
   }
 }
