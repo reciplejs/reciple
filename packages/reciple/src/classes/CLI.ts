@@ -2,10 +2,11 @@ import { Command } from 'commander';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { coerce } from 'semver';
-import { isDebugging, recursiveDefaults, type Awaitable } from '@reciple/utils';
+import { isDebugging, recursiveDefaults } from '@reciple/utils';
 import { Logger, type LoggerOptions } from 'prtyprnt';
 import { config as loadEnv } from 'dotenv';
 import { readdir, stat } from 'node:fs/promises';
+import { CLISubcommand } from './CLISubcommand.js';
 
 export class CLI {
     public build: string;
@@ -68,10 +69,11 @@ export class CLI {
             .filter(f => f.endsWith('.js'));
 
         for (const file of files) {
-            const command = recursiveDefaults<(command: Command, cli: CLI) => Awaitable<void>>(await import(path.isAbsolute(file) ? `file://${file}` : file));
-            if (!command || typeof command !== 'function') continue;
+            const Subommand = recursiveDefaults<CLISubcommand.Constructor>(await import(path.isAbsolute(file) ? `file://${file}` : file));
+            if (!Subommand || typeof Subommand !== 'function') continue;
 
-            await Promise.resolve(command(this.command, this)).catch(() => null);
+            const instance = new Subommand({ cli: this, command: this.command });
+            CLISubcommand.registerSubcommand(instance);
         }
     }
 
