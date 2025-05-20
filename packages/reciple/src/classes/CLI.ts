@@ -31,7 +31,7 @@ export class CLI {
             .description(options.description)
             .version(options.build, '-v, --version', 'Output the CLI version number')
             .option('-D, --debug', 'Enable debug mode', isDebugging())
-            .option('--env', 'Load environment variables from .env file', '.env')
+            .option('--env', 'Load environment variables from .env file',  (v, p) => p.concat(v), ['.env'])
             .enablePositionalOptions(true)
             .hook('preAction', this.handlePreAction.bind(this))
             .showHelpAfterError();
@@ -88,7 +88,7 @@ export class CLI {
         process.env.NODE_ENV = this.flags.debug ? 'development' : process.env.NODE_ENV;
 
         loadEnv({ path: this.flags.env });
-        this.logger.debug(`Loaded environment variables from ${this.flags.env}`);
+        this.logger.debug(`Loaded environment variables from ${this.flags.env.join(', ')}`);
     }
 
     public getFlags<Flags extends Record<string, any> = Record<string, any>>(command: Command|string, mergeDefault?: false): Flags|undefined;
@@ -123,7 +123,7 @@ export namespace CLI {
 
     export interface Flags {
         debug: boolean;
-        env: string;
+        env: string[];
     }
 
     export const root: string = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../');
