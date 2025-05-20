@@ -32,6 +32,7 @@ export class CLI {
             .version(options.build, '-v, --version', 'Output the CLI version number')
             .option('-D, --debug', 'Enable debug mode', isDebugging())
             .option('--env', 'Load environment variables from .env file', '.env')
+            .enablePositionalOptions(true)
             .hook('preAction', this.handlePreAction.bind(this))
             .showHelpAfterError();
 
@@ -60,11 +61,23 @@ export class CLI {
             .map(f => path.join(this.options.subcommandsDir, f))
             .filter(f => f.endsWith('.js'));
 
+        const hasParent: CLISubcommand[] = [];
+
         for (const file of files) {
             const Subommand = recursiveDefaults<CLISubcommand.Constructor>(await import(path.isAbsolute(file) ? `file://${file}` : file));
             if (!Subommand || typeof Subommand !== 'function') continue;
 
             const instance = new Subommand({ cli: this, command: this.command });
+
+            if (instance.parent) {
+                hasParent.push(instance);
+                continue;
+            }
+
+            CLISubcommand.registerSubcommand(instance);
+        }
+
+        for (const instance of hasParent) {
             CLISubcommand.registerSubcommand(instance);
         }
     }

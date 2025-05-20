@@ -4,6 +4,7 @@ import type { CLI } from './CLI.js';
 export abstract class CLISubcommand<Flags extends Record<string, any> = Record<string, any>> {
     public cli: CLI;
     public command: Command;
+    public parent?: string;
     public abstract subcommand: Command;
 
     get flags(): Flags {
@@ -19,7 +20,12 @@ export abstract class CLISubcommand<Flags extends Record<string, any> = Record<s
 
     public static registerSubcommand(instance: CLISubcommand): void {
         instance.subcommand.action(instance.execute.bind(instance));
-        instance.command.addCommand(instance.subcommand);
+
+        if (instance.parent) {
+            instance.command.commands.find(c => c.name() === instance.parent)?.addCommand(instance.subcommand);
+        } else {
+            instance.command.addCommand(instance.subcommand);
+        }
     }
 }
 
