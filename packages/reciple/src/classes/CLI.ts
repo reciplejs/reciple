@@ -47,14 +47,6 @@ export class CLI {
     public async parse(argv?: string[]): Promise<this> {
         await this.loadCommands();
         await this.command.parseAsync(argv);
-
-        this.logger.debug(`Debug mode is ${this.flags.debug ? 'enabled' : 'disabled'}`);
-
-        loadEnv({ path: this.flags.env });
-        this.logger.debug(`Loaded environment variables from ${this.flags.env}`);
-
-
-
         return this;
     }
 
@@ -78,7 +70,12 @@ export class CLI {
     }
 
     public async handlePreAction(cmd: Command, action: Command): Promise<void> {
+        this.logger.debug(`Executing ${action.name()}`);
+        this.logger.debug(`Debug mode is ${this.flags.debug ? 'enabled' : 'disabled'}`);
         process.env.NODE_ENV = this.flags.debug ? 'development' : process.env.NODE_ENV;
+
+        loadEnv({ path: this.flags.env });
+        this.logger.debug(`Loaded environment variables from ${this.flags.env}`);
     }
 
     public getFlags<Flags extends Record<string, any> = Record<string, any>>(command: Command|string, mergeDefault?: false): Flags|undefined;
