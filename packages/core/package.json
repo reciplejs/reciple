@@ -31,7 +31,9 @@
   "dependencies": {
     "@reciple/utils": "^10.0.0"
   },
-  "devDependencies": {},
+  "peerDependencies": {
+    "discord.js": "^14.19.3"
+  },
   "publishConfig": {
     "access": "public"
   }
