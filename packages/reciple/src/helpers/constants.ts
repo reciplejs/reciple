@@ -11,4 +11,4 @@ export const cli = new CLI({
     build: packageJSON.version,
     subcommandsDir: path.join(path.dirname(CLI.bin), './commands'),
     logger
-})
+});
