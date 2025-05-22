@@ -1,8 +1,12 @@
 import { Client, type ClientOptions } from 'discord.js';
 
-export class RecipleClient extends Client{
+export class RecipleClient<Ready extends boolean = boolean> extends Client<Ready> {
     public constructor(options: RecipleClient.Options) {
-        super(options)
+        super(options);
+    }
+
+    public isReady(): this is RecipleClient<true> {
+        return super.isReady();
     }
 }
 
