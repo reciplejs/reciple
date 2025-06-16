@@ -29,7 +29,9 @@
     "directory": "packages/utils"
   },
   "dependencies": {
-    "@reciple/utils": "^10.0.0"
+    "@reciple/utils": "^10.0.0",
+    "@sapphire/snowflake": "^3.5.3",
+    "ts-mixer": "^6.0.4"
   },
   "peerDependencies": {
     "discord.js": "^14.19.3"
