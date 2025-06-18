@@ -1,4 +1,4 @@
-import { normalizeArray, type RestOrArray } from 'discord.js';
+import { normalizeArray, type Message, type RestOrArray } from 'discord.js';
 import type { Command } from '../structures/Command.js';
 
 export class MessageCommandBuilder implements MessageCommandBuilder.Data {
@@ -42,6 +42,10 @@ export namespace MessageCommandBuilder {
     }
 
     export interface ExecuteData extends Command.BaseExecuteData<Command.Type.Message> {
-        command: Command<Command.Type.Message>;
+        message: Message;
+    }
+
+    export interface ExecuteOptions extends Command.BaseExecuteOptions<Command.Type.Message> {
+        message: Message;
     }
 }

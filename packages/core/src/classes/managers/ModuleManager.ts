@@ -34,7 +34,10 @@ export class ModuleManager {
     public async readyModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<Module[]> {
         const readyModules: Module[] = [];
 
-        if (!this.client.isReady()) throw new Error('Client is not ready');
+        if (!this.client.isReady()) {
+            // TODO: Throw custom error
+            throw new Error('Client is not ready');
+        }
 
         for (const resolvable of modules ?? []) {
             const module = Module.from(resolvable);

@@ -2,6 +2,16 @@ import { Client as DiscordJsClient, type Awaitable, type ClientEvents, type Clie
 import { ModuleManager } from '../managers/ModuleManager.js';
 import { Module } from './Module.js';
 import { CommandManager } from '../managers/CommandManager.js';
+import type { BaseCooldownAdapter } from '../adapters/BaseCooldownAdapter.js';
+import { CooldownManager } from '../managers/CooldownManager.js';
+import { DefaultCooldownAdapter } from '../adapters/DefaultCooldownAdapter.js';
+
+declare module "discord.js" {
+    interface ClientOptions {
+        modules?: Module.Resolvable[];
+        cooldownAdapter?: BaseCooldownAdapter.Constructor;
+    }
+}
 
 export interface Client<Ready extends boolean = boolean> extends DiscordJsClient<Ready> {
     on<E extends keyof Client.Events>(event: E, listener: (...args: Client.Events[E]) => Awaitable<void>): this;
@@ -27,6 +37,7 @@ export interface Client<Ready extends boolean = boolean> extends DiscordJsClient
 export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Ready> {
     private _modules: ModuleManager = new ModuleManager(this);
     private _commands: CommandManager|null = null;
+    private _cooldowns: CooldownManager<BaseCooldownAdapter>|null = null;
 
     get modules() {
         return this._modules;
@@ -36,7 +47,11 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         return this._commands as If<Ready, CommandManager, null>;
     }
 
-    public constructor(options: Client.Options) {
+    get cooldowns() {
+        return this._cooldowns as If<Ready, CooldownManager<BaseCooldownAdapter>, null>;
+    }
+
+    public constructor(options: ClientOptions) {
         super(options);
 
         if (options.modules) for (const module of options.modules) {
@@ -46,10 +61,14 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 
     public async login(token: string): Promise<string> {
         this._commands = new CommandManager(this);
+        this._cooldowns = new CooldownManager(this, this.options.cooldownAdapter ? new this.options.cooldownAdapter(this) : new DefaultCooldownAdapter(this));
 
         await this.modules.enableModules();
 
+        this.setMaxListeners(this.getMaxListeners() + 1);
+
         this.once('ready', async () => {
+            this.setMaxListeners(this.getMaxListeners() - 1);
             await this.modules.readyModules();
         });
 
@@ -66,9 +85,5 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 }
 
 export namespace Client {
-    export interface Options extends ClientOptions {
-        modules?: Module.Resolvable[];
-    }
-
     export interface Events extends ClientEvents {}
 }

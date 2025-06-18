@@ -20,6 +20,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsup",
+    "build:tsc": "npm run clean && tsc",
     "check": "tsc --noEmit",
     "prepack": "npm run build"
   },

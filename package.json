@@ -9,6 +9,7 @@
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
     "build": "lerna run build",
+    "build:tsc": "lerna run build:tsc",
     "check": "lerna run check",
     "watch": "tsc --watch --noEmit",
     "test": "npm run dev -w example",
