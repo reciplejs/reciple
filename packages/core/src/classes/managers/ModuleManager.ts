@@ -1,6 +1,6 @@
 import { mix } from 'ts-mixer';
 import { Module } from '../structures/Module.js';
-import { BaseManager } from './BaseManager.js';
+import { BaseManager } from '../abstract/BaseManager.js';
 import EventEmitter from 'node:events';
 import type { Client } from '../structures/Client.js';
 

@@ -1,5 +1,4 @@
-import { normalizeArray, type Message, type RestOrArray } from 'discord.js';
-import type { Command } from '../structures/Command.js';
+import { normalizeArray, type RestOrArray } from 'discord.js';
 
 export class MessageCommandBuilder implements MessageCommandBuilder.Data {
     public name!: string;
@@ -20,7 +19,7 @@ export class MessageCommandBuilder implements MessageCommandBuilder.Data {
         return this;
     }
 
-    public setAliases(aliases: RestOrArray<string>): MessageCommandBuilder {
+    public setAliases(...aliases: RestOrArray<string>): MessageCommandBuilder {
         this.aliases = normalizeArray(aliases);
         return this;
     }
@@ -39,13 +38,5 @@ export namespace MessageCommandBuilder {
         name: string;
         description: string;
         aliases?: string[];
-    }
-
-    export interface ExecuteData extends Command.BaseExecuteData<Command.Type.Message> {
-        message: Message;
-    }
-
-    export interface ExecuteOptions extends Command.BaseExecuteOptions<Command.Type.Message> {
-        message: Message;
     }
 }

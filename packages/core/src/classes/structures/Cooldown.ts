@@ -1,7 +1,7 @@
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import type { Client } from './Client.js';
 import type { InteractionType, SendableChannels } from 'discord.js';
-import type { Command } from './Command.js';
+import type { CommandType, CooldownTriggerType } from '../../helpers/constants.js';
 
 export class Cooldown implements Cooldown.Data {
     public id: string = DiscordSnowflake.generate().toString();
@@ -51,11 +51,6 @@ export class Cooldown implements Cooldown.Data {
 export namespace Cooldown {
     export type Resolvable = Cooldown;
 
-    export enum TriggerType {
-        Command = 1,
-        Interaction = 2
-    }
-
     export interface Data {
         id: string;
         userId: string;
@@ -68,16 +63,16 @@ export namespace Cooldown {
     export type Trigger = CommandTrigger|InteractionTrigger;
 
     export interface CommandTrigger {
-        type: TriggerType.Command;
+        type: CooldownTriggerType.Command;
         commands: {
-            type?: Command.Type;
+            type?: CommandType;
             id?: string;
             name?: string;
         }[];
     }
 
     export interface InteractionTrigger {
-        type: TriggerType.Interaction;
+        type: CooldownTriggerType.Interaction;
         interactions?: {
             type?: InteractionType;
             customId?: string;
