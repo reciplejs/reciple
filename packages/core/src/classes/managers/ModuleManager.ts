@@ -18,7 +18,7 @@ export class ModuleManager {
         for (const resolvable of modules ?? []) {
             const module = Module.from(resolvable);
 
-            this.emit('preModuleEnable', module);
+            this.emit('modulePreEnable', module);
 
             await module.onEnable({ client: this.client }).catch(e => this.emitOrThrow('moduleEnableError', module, e));
 
@@ -42,7 +42,7 @@ export class ModuleManager {
         for (const resolvable of modules ?? []) {
             const module = Module.from(resolvable);
 
-            this.emit('preModuleReady', module);
+            this.emit('modulePreReady', module);
 
             await module.onReady({ client: this.client }).catch(e => {
                 if (removeFromCacheOnError !== false) this.cache.delete(module.id);
@@ -64,7 +64,7 @@ export class ModuleManager {
         for (const resolvable of modules ?? []) {
             const module = Module.from(resolvable);
 
-            this.emit('preModuleDisable', module);
+            this.emit('modulePreDisable', module);
 
             await module.onDisable({ client: this.client }).catch(e => this.emitOrThrow('moduleDisableError', module, e));
 
@@ -86,20 +86,19 @@ export class ModuleManager {
     }
 }
 
-
 export namespace ModuleManager {
     export interface Events {
-        preModuleEnable: [module: Module];
+        modulePreEnable: [module: Module];
         moduleEnable: [module: Module];
         moduleEnableError: [module: Module, error: Error];
         enabledModules: [modules: Module[]];
 
-        preModuleReady: [module: Module];
+        modulePreReady: [module: Module];
         moduleReady: [module: Module];
         moduleReadyError: [module: Module, error: Error];
         readyModules: [modules: Module[]];
 
-        preModuleDisable: [module: Module];
+        modulePreDisable: [module: Module];
         moduleDisable: [module: Module];
         moduleDisableError: [module: Module, error: Error];
         disabledModules: [modules: Module[]];

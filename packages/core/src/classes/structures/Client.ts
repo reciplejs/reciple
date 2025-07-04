@@ -6,10 +6,15 @@ import { CooldownManager } from '../managers/CooldownManager.js';
 import { PreconditionManager } from '../managers/PreconditionManager.js';
 import { CooldownAdapter } from '../adapters/CooldownAdapter.js';
 import { CommandManager } from '../managers/CommandManager.js';
+import { BasePrecondition } from '../abstract/BasePrecondition.js';
+import type { AnyCommandResolvable } from '../../helpers/types.js';
+import { BaseCommand } from '../abstract/BaseCommand.js';
 
 declare module "discord.js" {
     interface ClientOptions {
         modules?: Module.Resolvable[];
+        preconditions?: BasePrecondition.Resolvable[];
+        commands?: AnyCommandResolvable[];
         cooldownAdapter?: BaseCooldownAdapter.Constructor;
     }
 }
@@ -71,6 +76,18 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this._preconditions = new PreconditionManager(this);
 
         await this.modules.enableModules();
+
+        if (this.options.preconditions) {
+            for (const precondition of this.options.preconditions) {
+                this._preconditions.cache.set(precondition.id, precondition instanceof BasePrecondition ? precondition : BasePrecondition.from(precondition));
+            }
+        }
+
+        if (this.options.commands) {
+            for (const command of this.options.commands) {
+                this._commands.cache.set(command.id, command instanceof BaseCommand ? command : BaseCommand.createInstance(command));
+            }
+        }
 
         this.setMaxListeners(this.getMaxListeners() + 1);
 

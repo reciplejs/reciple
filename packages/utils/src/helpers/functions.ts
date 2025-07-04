@@ -14,3 +14,7 @@ export function recursiveDefaults<T = unknown>(data: RecursiveDefault<T>|T): T|u
 
     return recursiveDefaults(data.default!);
 }
+
+export function escapeRegexp(str: string): string {
+    return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
+}

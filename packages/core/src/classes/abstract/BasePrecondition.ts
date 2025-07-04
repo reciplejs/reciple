@@ -3,7 +3,7 @@ import type { Client } from '../structures/Client.js';
 import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 
-export abstract class BasePrecondition<D> implements BasePrecondition.Options<D> {
+export abstract class BasePrecondition<D> implements BasePrecondition.Data<D> {
     public id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
 
@@ -12,7 +12,7 @@ export abstract class BasePrecondition<D> implements BasePrecondition.Options<D>
         throw new Error('Precondition not implemented');
     }
 
-    public toJSON(): BasePrecondition.Options<D> {
+    public toJSON(): BasePrecondition.Data<D> {
         return {
             id: this.id,
             scope: this.scope,
@@ -20,7 +20,7 @@ export abstract class BasePrecondition<D> implements BasePrecondition.Options<D>
         };
     }
 
-    public static from<D>(options: BasePrecondition.Options<D>): BasePrecondition<D> {
+    public static from<D>(options: BasePrecondition.Data<D>): BasePrecondition<D> {
         const instance = class extends BasePrecondition<D> {};
         Object.assign(instance.prototype, options);
         return new instance();
@@ -28,22 +28,24 @@ export abstract class BasePrecondition<D> implements BasePrecondition.Options<D>
 }
 
 export namespace BasePrecondition {
-    export type Resolvable<D = any> = BasePrecondition<D>|Options<D>;
+    export type Resolvable<D = any> = BasePrecondition<D>|Data<D>;
 
-    export interface Options<D> {
+    export interface Data<D> {
         id: string;
         scope: CommandType[];
         execute: <T extends CommandType>(data: AnyCommandExecuteData<T>) => Promise<ResultDataResolvable<T, D>>;
     }
 
-    export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'message'|'data'>|boolean|string;
+    export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'>|Error|boolean|string;
 
     export interface ResultData<T extends CommandType, D = any> {
+        id: string;
         client: Client;
         command: AnyCommand<T>;
-        precondition: BasePrecondition<D>;
         executeData: AnyCommandExecuteData<T>;
+        precondition: BasePrecondition<D>;
         success: boolean;
+        error: Error|undefined;
         message: string|undefined;
         data: D|undefined;
     }

@@ -9,6 +9,7 @@ import type { Client } from '../structures/Client.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
+import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
     public id: string = DiscordSnowflake.generate().toString();
@@ -54,11 +55,12 @@ export namespace BaseCommand {
     }
 
     export interface ExecuteData<T extends CommandType> {
-        client: Client;
+        client: Client<true>;
         command: BaseCommand<T>;
+        preconditionResults: PreconditionResultManager<T>;
     }
 
-    export interface ExecuteOptions<T extends CommandType> extends ExecuteData<T> {}
+    export interface ExecuteOptions<T extends CommandType> extends Omit<ExecuteData<T>, 'command'> {}
 
     export function createBuilderInstance<T extends CommandType>(type: T): AnyCommandBuilder<T> {
         switch (type) {
@@ -71,8 +73,8 @@ export namespace BaseCommand {
         }
     }
 
-    export function createInstance<T extends CommandType>(type: T, data?: Partial<AnyCommandData<T>>): AnyCommand<T> {
-        switch (type) {
+    export function createInstance<T extends CommandType>(data: Omit<Partial<AnyCommandData<T>>, 'type'> & { type: T }): AnyCommand<T> {
+        switch (data.type) {
             case CommandType.Message:
                 return new MessageCommand(data as MessageCommand.Data) as AnyCommand<T>;
             case CommandType.Slash:

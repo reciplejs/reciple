@@ -1,0 +1,102 @@
+import { escapeRegexp } from '@reciple/utils';
+import { parseArgs } from 'node:util';
+import split from 'split-string';
+import type { MessageCommand } from '../commands/MessageCommand.js';
+
+const splitstring = split.default;
+
+export class MessageCommandParser implements MessageCommandParser.Data {
+    public raw: string;
+    public separator: string;
+    public prefix: string;
+    public args: string[] = [];
+    public flags: MessageCommandParser.FlagData[] = [];
+
+    get separatorRegex(): RegExp {
+        return new RegExp(`${escapeRegexp(this.separator)}+`);
+    }
+
+    get rawWithoutPrefix() {
+        return (this.prefix ? this.raw.slice(this.prefix.length) : this.raw);
+    }
+
+    get name() {
+        return this.rawWithoutPrefix.split(this.separatorRegex)[0].toLowerCase()
+    }
+
+    get rawArgs() {
+        return this.rawWithoutPrefix.slice(this.name.length).trim();
+    }
+
+    public constructor(public readonly options: MessageCommandParser.Options) {
+        this.raw = options.raw;
+        this.separator = options.separator ?? ' ';
+        this.prefix = options.prefix ?? '';
+    }
+
+    public parse(command: MessageCommand): this {
+        this.args = splitstring(this.rawArgs, {
+            brackets: true,
+            quotes: true,
+            separator: this.separator,
+            ...this.options.splitOptions,
+        });
+
+        const { positionals: args, values: flags } = parseArgs({
+            args: this.args,
+            allowPositionals: true,
+            allowNegative: true,
+            strict: false,
+            options: Object.fromEntries(
+                command.flags
+                    .map((o) => [
+                        o.name,
+                        Object.fromEntries(
+                            Object.entries({
+                                type: o.value_type ?? 'string',
+                                multiple: o.multiple,
+                                short: o.shortcut,
+                                default: o.multiple ? o.default_values : o.default_values?.[0],
+                            })
+                            .filter(([key, value]) => value !== undefined)
+                        ) as any
+                    ])
+            ),
+        });
+
+        this.args = args;
+        this.flags = Object
+            .entries(flags)
+            .filter(([_, value]) => value !== undefined)
+            .map(([name, value]) => ({
+                name,
+                value: Array.isArray(value) ? value : [value.toString()],
+            }))
+
+        return this;
+    }
+}
+
+export namespace MessageCommandParser {
+    export interface Data {
+        name: string;
+        flags: FlagData[];
+        args: string[];
+        raw: string;
+        rawArgs: string;
+        separator: string;
+        prefix: string;
+    }
+
+    export interface FlagData {
+        name: string;
+        value: (string|boolean)[];
+    }
+
+    export interface Options {
+        raw: string;
+        separator?: string;
+        prefix?: string;
+        splitOptions?: split.Options;
+    }
+}
