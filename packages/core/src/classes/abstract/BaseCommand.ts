@@ -60,7 +60,7 @@ export namespace BaseCommand {
         preconditionResults: PreconditionResultManager<T>;
     }
 
-    export interface ExecuteOptions<T extends CommandType> extends Omit<ExecuteData<T>, 'command'> {}
+    export interface ExecuteOptions<T extends CommandType> extends Omit<ExecuteData<T>, 'command'|'preconditionResults'> {}
 
     export function createBuilderInstance<T extends CommandType>(type: T): AnyCommandBuilder<T> {
         switch (type) {

@@ -28,10 +28,12 @@ export namespace SlashCommand {
     export interface ExecuteOptions extends BaseCommand.ExecuteOptions<CommandType.Slash> {
         command?: SlashCommand;
         interaction: ChatInputCommandInteraction;
+        acceptRepliedInteraction?: boolean;
     }
 
-    export async function execute({ interaction, client, command }: ExecuteOptions): Promise<ExecuteData|null> {
+    export async function execute({ interaction, client, command, acceptRepliedInteraction }: ExecuteOptions): Promise<ExecuteData|null> {
         if (!interaction.isChatInputCommand()) return null;
+        if ((interaction.replied || interaction.deferred) && !acceptRepliedInteraction) return null;
 
         command ??= client.commands.get(CommandType.Slash,interaction.commandName) as SlashCommand|undefined;
         if (!command) return null;

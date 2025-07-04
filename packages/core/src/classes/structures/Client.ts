@@ -1,4 +1,4 @@
-import { Client as DiscordJsClient, type Awaitable, type ClientEvents, type ClientOptions, type If } from 'discord.js';
+import { Client as DiscordJsClient, Message, type Awaitable, type ClientEvents, type ClientOptions, type If, type Interaction } from 'discord.js';
 import { ModuleManager } from '../managers/ModuleManager.js';
 import { Module } from './Module.js';
 import type { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
@@ -9,6 +9,9 @@ import { CommandManager } from '../managers/CommandManager.js';
 import { BasePrecondition } from '../abstract/BasePrecondition.js';
 import type { AnyCommandResolvable } from '../../helpers/types.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
+import { SlashCommand } from '../commands/SlashCommand.js';
+import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
+import { MessageCommand } from '../commands/MessageCommand.js';
 
 declare module "discord.js" {
     interface ClientOptions {
@@ -68,6 +71,8 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         if (options.modules) for (const module of options.modules) {
             this.modules.cache.set(module.id, Module.from(module));
         }
+
+        this._executeCommand = this._executeCommand.bind(this);
     }
 
     public async login(token: string): Promise<string> {
@@ -91,6 +96,9 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 
         this.setMaxListeners(this.getMaxListeners() + 1);
 
+        this.on('interactionCreate', this._executeCommand);
+        this.on('messageCreate', this._executeCommand);
+
         this.once('ready', async () => {
             this.setMaxListeners(this.getMaxListeners() - 1);
             await this.modules.readyModules();
@@ -106,7 +114,37 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this._cooldowns = null;
         this._preconditions = null;
 
+        this.removeListener('interactionCreate', this._executeCommand);
+        this.removeListener('messageCreate', this._executeCommand);
+
+        this.setMaxListeners(this.getMaxListeners() - 1);
+
         return super.destroy();
+    }
+
+    private async _executeCommand(trigger: Interaction|Message): Promise<void> {
+        if (!this.isReady()) return;
+
+        if (trigger instanceof Message) {
+            await MessageCommand.execute({
+                client: this,
+                message: trigger,
+                prefix: '!'
+            });
+            return;
+        }
+
+        if (trigger.isChatInputCommand()) {
+            await SlashCommand.execute({
+                client: this,
+                interaction: trigger
+            });
+        } else if (trigger.isContextMenuCommand()) {
+            await ContextMenuCommand.execute({
+                client: this,
+                interaction: trigger
+            });
+        }
     }
 }
 

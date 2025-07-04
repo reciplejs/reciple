@@ -28,10 +28,12 @@ export namespace ContextMenuCommand {
     export interface ExecuteOptions extends BaseCommand.ExecuteOptions<CommandType.ContextMenu> {
         command?: ContextMenuCommand;
         interaction: UserContextMenuCommandInteraction|MessageContextMenuCommandInteraction;
+        acceptRepliedInteraction?: boolean;
     }
 
-    export async function execute({ interaction, client, command }: ExecuteOptions): Promise<ExecuteData|null> {
+    export async function execute({ interaction, client, command, acceptRepliedInteraction }: ExecuteOptions): Promise<ExecuteData|null> {
         if (!interaction.isContextMenuCommand()) return null;
+        if ((interaction.replied || interaction.deferred) && !acceptRepliedInteraction) return null;
 
         command ??= client.commands.get(CommandType.ContextMenu, interaction.commandName) as ContextMenuCommand|undefined;
         if (!command) return null;

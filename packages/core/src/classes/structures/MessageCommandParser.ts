@@ -17,7 +17,7 @@ export class MessageCommandParser implements MessageCommandParser.Data {
     }
 
     get rawWithoutPrefix() {
-        return (this.prefix ? this.raw.slice(this.prefix.length) : this.raw);
+        return (this.prefix ? this.raw.slice(this.prefix.length) : this.raw).trim();
     }
 
     get name() {
