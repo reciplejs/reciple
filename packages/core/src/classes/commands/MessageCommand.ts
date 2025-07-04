@@ -1,5 +1,5 @@
 import { type Awaitable, type Guild, type Message } from 'discord.js';
-import { CommandType } from '../../helpers/constants.js';
+import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { MessageCommandOption } from '../structures/MessageCommandOption.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
@@ -8,6 +8,7 @@ import { MessageCommandParser } from '../structures/MessageCommandParser.js';
 import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
 import type { Client } from '../structures/Client.js';
 import { RecipleError } from '../structures/RecipleError.js';
+import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
@@ -77,21 +78,31 @@ export namespace MessageCommand {
             command,
             parser,
             options: new MessageCommandOptionValueManager(client, command.options, parser),
-            preconditionResults: new PreconditionResultManager(client, {})
+            preconditionResults: new PreconditionResultManager(client, {
+                disabledPreconditions: command.disabledPreconditions
+            }),
+            postconditionResults: new PostconditionResultManager(client, {
+                disabledPostconditions: command.disabledPostconditions
+            })
         };
 
-        await client.preconditions.execute({ data });
-
-        if (!data.preconditionResults.errors.length) {
-            throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
-        }
-
-        if (!data.preconditionResults.hasFailures) return data;
+        const result = await BaseCommand.executePreconditions(data);
+        if (result) return data;
 
         try {
             await command.execute(data);
         } catch (error) {
-            throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            const results = await client.postconditions.execute({
+                data: {
+                    reason: CommandPostconditionReason.Error,
+                    executeData: data,
+                    error
+                }
+            });
+
+            if (!results.cache.some(result => result.success)) {
+                throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            }
         }
 
         return data;

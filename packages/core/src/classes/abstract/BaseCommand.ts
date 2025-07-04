@@ -1,7 +1,7 @@
 import { DiscordSnowflake } from '@sapphire/snowflake';
-import { CommandType } from '../../helpers/constants.js';
+import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandBuilder, AnyCommandBuilderData, AnyCommandData, AnyCommandExecuteData } from '../../helpers/types.js';
-import { isJSONEncodable, type JSONEncodable } from 'discord.js';
+import { isJSONEncodable, normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js';
 import { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
 import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
 import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
@@ -11,12 +11,19 @@ import { SlashCommand } from '../commands/SlashCommand.js';
 import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { RecipleError } from '../structures/RecipleError.js';
+import { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
+import { BaseCommandPostcondition } from './BaseCommandPostcondition.js';
+import type { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
     public id: string = DiscordSnowflake.generate().toString();
 
     public readonly abstract type: T;
     public data!: AnyCommandBuilderData<T>;
+    public preconditions: BaseCommandPrecondition<any>[] = [];
+    public postconditions: BaseCommandPostcondition<any>[] = [];
+    public disabledPreconditions: string[] = [];
+    public disabledPostconditions: string[] = [];
     public execute: (data: AnyCommandExecuteData<T>) => Promise<void> = async () => {
         throw new RecipleError(RecipleError.Code.NotImplemented());
     };
@@ -28,6 +35,84 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
     public setData(data: AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>|((builder: AnyCommandBuilder<T>) => AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>)): this {
         const resolved = typeof data === 'function' ? data(BaseCommand.createBuilderInstance(this.type)) : data;
         this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        return this;
+    }
+
+    public addPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition.Resolvable>): this {
+        this.preconditions.push(
+            ...normalizeArray(preconditions).map(precondition => precondition instanceof BaseCommandPrecondition
+                ? precondition
+                : BaseCommandPrecondition.from(precondition)
+            )
+        );
+        return this;
+    }
+
+    public setPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition.Resolvable>): this {
+        this.preconditions = normalizeArray(preconditions)
+            .map(precondition => precondition instanceof BaseCommandPrecondition
+                ? precondition
+                : BaseCommandPrecondition.from(precondition)
+            );
+
+        return this;
+    }
+
+    public addDisabledPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition.Resolvable|BaseCommandPrecondition.Resolvable['id']>): this {
+        this.disabledPreconditions.push(
+            ...normalizeArray(preconditions).map(precondition => typeof precondition === 'string'
+                ? precondition
+                : precondition.id
+            )
+        );
+        return this;
+    }
+
+    public setDisabledPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition.Resolvable|BaseCommandPrecondition.Resolvable['id']>): this {
+        this.disabledPreconditions = normalizeArray(preconditions).map(precondition => typeof precondition === 'string'
+            ? precondition
+            : precondition.id
+        );
+
+        return this;
+    }
+
+    public addPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition.Resolvable>): this {
+        this.postconditions.push(
+            ...normalizeArray(postconditions).map(postcondition => postcondition instanceof BaseCommandPostcondition
+                ? postcondition
+                : BaseCommandPostcondition.from(postcondition)
+            )
+        );
+        return this;
+    }
+
+    public setPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition.Resolvable>): this {
+        this.postconditions = normalizeArray(postconditions)
+            .map(postcondition => postcondition instanceof BaseCommandPostcondition
+                ? postcondition
+                : BaseCommandPostcondition.from(postcondition)
+            );
+
+        return this;
+    }
+
+    public addDisabledPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition.Resolvable|BaseCommandPostcondition.Resolvable['id']>): this {
+        this.disabledPostconditions.push(
+            ...normalizeArray(postconditions).map(postcondition => typeof postcondition === 'string'
+                ? postcondition
+                : postcondition.id
+            )
+        );
+        return this;
+    }
+
+    public setDisabledPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition.Resolvable|BaseCommandPostcondition.Resolvable['id']>): this {
+        this.disabledPostconditions = normalizeArray(postconditions).map(postcondition => typeof postcondition === 'string'
+            ? postcondition
+            : postcondition.id
+        );
+
         return this;
     }
 
@@ -50,6 +135,10 @@ export namespace BaseCommand {
     export interface Data<T extends CommandType> {
         id: string;
         type: T;
+        preconditions?: BaseCommandPrecondition<any>[];
+        postconditions?: BaseCommandPostcondition<any>[];
+        disabledPreconditions?: string[];
+        disabledPostconditions?: string[];
         data: AnyCommandBuilderData<T>;
         execute: (data: AnyCommandExecuteData<T>) => Promise<void>;
     }
@@ -58,9 +147,12 @@ export namespace BaseCommand {
         client: Client<true>;
         command: BaseCommand<T>;
         preconditionResults: PreconditionResultManager<T>;
+        postconditionResults: PostconditionResultManager<T>;
     }
 
-    export interface ExecuteOptions<T extends CommandType> extends Omit<ExecuteData<T>, 'command'|'preconditionResults'> {}
+    export interface ExecuteOptions<T extends CommandType> {
+        client: Client<true>;
+    }
 
     export function createBuilderInstance<T extends CommandType>(type: T): AnyCommandBuilder<T> {
         switch (type) {
@@ -82,5 +174,39 @@ export namespace BaseCommand {
             case CommandType.ContextMenu:
                 return new ContextMenuCommand(data as ContextMenuCommand.Data) as AnyCommand<T>;
         }
+    }
+
+    export async function executePreconditions<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<AnyCommandExecuteData<T>|null> {
+        await data.client.preconditions.execute({ data });
+
+        if (data.preconditionResults.hasErrors) {
+            const results = await data.client.postconditions.execute<CommandType, unknown>({
+                data: {
+                    reason: CommandPostconditionReason.PreconditionError,
+                    preconditionResult: data.preconditionResults,
+                    executeData: data
+                }
+            });
+
+            if (!results.cache.some(result => result.success)) {
+                throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
+            }
+
+            return data;
+        }
+
+        if (data.preconditionResults.hasFailures) {
+            await data.client.postconditions.execute<CommandType, unknown>({
+                data: {
+                    reason: CommandPostconditionReason.PreconditionFailure,
+                    preconditionResult: data.preconditionResults,
+                    executeData: data
+                }
+            });
+
+            return data;
+        }
+
+        return null;
     }
 }

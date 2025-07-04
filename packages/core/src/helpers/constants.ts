@@ -8,3 +8,14 @@ export enum CooldownTriggerType {
     Command = 1,
     Interaction = 2
 }
+
+export enum CommandPostconditionReason {
+    Error = 1,
+    Cooldown,
+    PreconditionError,
+    PreconditionFailure,
+    InvalidArgs,
+    MissingArgs,
+    InvalidFlags,
+    MissingFlags
+}

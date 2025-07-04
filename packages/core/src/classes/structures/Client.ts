@@ -6,17 +6,20 @@ import { CooldownManager } from '../managers/CooldownManager.js';
 import { PreconditionManager } from '../managers/PreconditionManager.js';
 import { CooldownAdapter } from '../adapters/CooldownAdapter.js';
 import { CommandManager } from '../managers/CommandManager.js';
-import { BasePrecondition } from '../abstract/BasePrecondition.js';
+import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
 import type { AnyCommandResolvable } from '../../helpers/types.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
+import { PostconditionManager } from '../managers/PostconditionManager.js';
+import { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
 
 declare module "discord.js" {
     interface ClientOptions {
         modules?: Module.Resolvable[];
-        preconditions?: BasePrecondition.Resolvable[];
+        preconditions?: BaseCommandPrecondition.Resolvable[];
+        postconditions?: BaseCommandPostcondition.Resolvable[];
         commands?: AnyCommandResolvable[];
         cooldownAdapter?: BaseCooldownAdapter.Constructor;
     }
@@ -48,6 +51,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     private _commands: CommandManager|null = null;
     private _cooldowns: CooldownManager<BaseCooldownAdapter>|null = null;
     private _preconditions: PreconditionManager|null = null;
+    private _postconditions: PostconditionManager|null = null;
 
     get modules() {
         return this._modules;
@@ -65,6 +69,10 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         return this._preconditions as If<Ready, PreconditionManager, null>;
     }
 
+    get postconditions() {
+        return this._postconditions as If<Ready, PostconditionManager, null>;
+    }
+
     public constructor(options: ClientOptions) {
         super(options);
 
@@ -79,12 +87,19 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this._commands = new CommandManager(this);
         this._cooldowns = new CooldownManager(this, this.options.cooldownAdapter ? new this.options.cooldownAdapter(this) : new CooldownAdapter(this));
         this._preconditions = new PreconditionManager(this);
+        this._postconditions = new PostconditionManager(this);
 
         await this.modules.enableModules();
 
         if (this.options.preconditions) {
             for (const precondition of this.options.preconditions) {
-                this._preconditions.cache.set(precondition.id, precondition instanceof BasePrecondition ? precondition : BasePrecondition.from(precondition));
+                this._preconditions.cache.set(precondition.id, precondition instanceof BaseCommandPrecondition ? precondition : BaseCommandPrecondition.from(precondition));
+            }
+        }
+
+        if (this.options.postconditions) {
+            for (const postcondition of this.options.postconditions) {
+                this._postconditions.cache.set(postcondition.id, postcondition instanceof BaseCommandPostcondition ? postcondition : BaseCommandPostcondition.from(postcondition));
             }
         }
 
@@ -113,6 +128,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this._commands = null;
         this._cooldowns = null;
         this._preconditions = null;
+        this._postconditions = null;
 
         this.removeListener('interactionCreate', this._executeCommand);
         this.removeListener('messageCreate', this._executeCommand);

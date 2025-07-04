@@ -4,15 +4,15 @@ import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { RecipleError } from '../structures/RecipleError.js';
 
-export abstract class BasePrecondition<D> implements BasePrecondition.Data<D> {
+export abstract class BaseCommandPrecondition<D> implements BaseCommandPrecondition.Data<D> {
     public id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
 
-    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<BasePrecondition.ResultDataResolvable<T, D>> {
+    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<BaseCommandPrecondition.ResultDataResolvable<T, D>> {
         throw new RecipleError(RecipleError.Code.NotImplemented());
     }
 
-    public toJSON(): BasePrecondition.Data<D> {
+    public toJSON(): BaseCommandPrecondition.Data<D> {
         return {
             id: this.id,
             scope: this.scope,
@@ -20,15 +20,15 @@ export abstract class BasePrecondition<D> implements BasePrecondition.Data<D> {
         };
     }
 
-    public static from<D>(options: BasePrecondition.Data<D>): BasePrecondition<D> {
-        const instance = class extends BasePrecondition<D> {};
+    public static from<D>(options: BaseCommandPrecondition.Data<D>): BaseCommandPrecondition<D> {
+        const instance = class extends BaseCommandPrecondition<D> {};
         Object.assign(instance.prototype, options);
         return new instance();
     }
 }
 
-export namespace BasePrecondition {
-    export type Resolvable<D = any> = BasePrecondition<D>|Data<D>;
+export namespace BaseCommandPrecondition {
+    export type Resolvable<D = any> = BaseCommandPrecondition<D>|Data<D>;
 
     export interface Data<D> {
         id: string;
@@ -43,7 +43,7 @@ export namespace BasePrecondition {
         client: Client;
         command: AnyCommand<T>;
         executeData: AnyCommandExecuteData<T>;
-        precondition: BasePrecondition<D>;
+        precondition: BaseCommandPrecondition<D>;
         success: boolean;
         error: Error|undefined;
         message: string|undefined;

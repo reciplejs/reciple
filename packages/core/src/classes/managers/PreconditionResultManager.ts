@@ -1,14 +1,17 @@
 import { Collection, type Constructable } from 'discord.js';
 import type { CommandType } from '../../helpers/constants.js';
 import { BaseManager } from '../abstract/BaseManager.js';
-import type { BasePrecondition } from '../abstract/BasePrecondition.js';
+import type { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
 import type { Client } from '../structures/Client.js';
 
-export class PreconditionResultManager<T extends CommandType, D = any> extends BaseManager<string, BasePrecondition.ResultData<T, D>, BasePrecondition.ResultData<T, D>> {
-    public preconditions = new Collection<string, BasePrecondition<D>>();
+export class PreconditionResultManager<T extends CommandType, D = any> extends BaseManager<string, BaseCommandPrecondition.ResultData<T, D>, BaseCommandPrecondition.ResultData<T, D>> {
+    public preconditions = new Collection<string, BaseCommandPrecondition<D>>();
+    public disabledPreconditions: string[] = [];
 
-    public constructor(client: Client, { preconditions, results }: preconditionResultManager.Options<T, D> = {}) {
-        super(client, Object as unknown as Constructable<BasePrecondition.ResultData<T, D>>);
+    public constructor(client: Client, { preconditions, results, disabledPreconditions }: preconditionResultManager.Options<T, D> = {}) {
+        super(client, Object as unknown as Constructable<BaseCommandPrecondition.ResultData<T, D>>);
+
+        this.disabledPreconditions = disabledPreconditions ?? [];
 
         if (preconditions) for (const precondition of preconditions) {
             this.preconditions.set(precondition.id, precondition);
@@ -38,7 +41,8 @@ export class PreconditionResultManager<T extends CommandType, D = any> extends B
 
 export namespace preconditionResultManager {
     export interface Options<T extends CommandType, D = any> {
-        preconditions?: Iterable<BasePrecondition<D>>;
-        results?: Iterable<BasePrecondition.ResultData<T, D>>;
+        preconditions?: Iterable<BaseCommandPrecondition<D>>;
+        results?: Iterable<BaseCommandPrecondition.ResultData<T, D>>;
+        disabledPreconditions?: string[];
     }
 }

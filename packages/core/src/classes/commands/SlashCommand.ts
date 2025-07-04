@@ -1,8 +1,9 @@
 import type { ChatInputCommandInteraction } from 'discord.js';
-import { CommandType } from '../../helpers/constants.js';
+import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { RecipleError } from '../structures/RecipleError.js';
+import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 
 export class SlashCommand extends BaseCommand<CommandType.Slash> {
     public readonly type: CommandType.Slash = CommandType.Slash;
@@ -43,21 +44,31 @@ export namespace SlashCommand {
             interaction,
             client,
             command,
-            preconditionResults: new PreconditionResultManager(client, {})
+            preconditionResults: new PreconditionResultManager(client, {
+                disabledPreconditions: command.disabledPreconditions
+            }),
+            postconditionResults: new PostconditionResultManager(client, {
+                disabledPostconditions: command.disabledPostconditions
+            })
         };
 
-        await client.preconditions.execute({ data });
-
-        if (!data.preconditionResults.errors.length) {
-            throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
-        }
-
-        if (!data.preconditionResults.hasFailures) return data;
+        const result = await BaseCommand.executePreconditions(data);
+        if (result) return data;
 
         try {
             await command.execute(data);
         } catch (error) {
-            throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            const results = await client.postconditions.execute({
+                data: {
+                    reason: CommandPostconditionReason.Error,
+                    executeData: data,
+                    error
+                }
+            });
+
+            if (!results.cache.some(result => result.success)) {
+                throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            }
         }
 
         return data;
