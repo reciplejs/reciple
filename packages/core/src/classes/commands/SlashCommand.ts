@@ -2,6 +2,7 @@ import type { ChatInputCommandInteraction } from 'discord.js';
 import { CommandType } from '../../helpers/constants.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
+import { RecipleError } from '../structures/RecipleError.js';
 
 export class SlashCommand extends BaseCommand<CommandType.Slash> {
     public readonly type: CommandType.Slash = CommandType.Slash;
@@ -48,8 +49,7 @@ export namespace SlashCommand {
         await client.preconditions.execute({ data });
 
         if (!data.preconditionResults.errors.length) {
-            // TODO: Use custom error
-            throw data.preconditionResults.errors[0];
+            throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
         }
 
         if (!data.preconditionResults.hasFailures) return data;
@@ -57,8 +57,7 @@ export namespace SlashCommand {
         try {
             await command.execute(data);
         } catch (error) {
-            // TODO: Use custom error
-            throw new Error(error instanceof Error ? error.message : String(error));
+            throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
         }
 
         return data;

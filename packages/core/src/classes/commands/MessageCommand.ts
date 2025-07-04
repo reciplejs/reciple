@@ -7,6 +7,7 @@ import { MessageCommandOptionValueManager } from '../managers/MessageCommandOpti
 import { MessageCommandParser } from '../structures/MessageCommandParser.js';
 import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
 import type { Client } from '../structures/Client.js';
+import { RecipleError } from '../structures/RecipleError.js';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
@@ -82,8 +83,7 @@ export namespace MessageCommand {
         await client.preconditions.execute({ data });
 
         if (!data.preconditionResults.errors.length) {
-            // TODO: Use custom error
-            throw data.preconditionResults.errors[0];
+            throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
         }
 
         if (!data.preconditionResults.hasFailures) return data;
@@ -91,8 +91,7 @@ export namespace MessageCommand {
         try {
             await command.execute(data);
         } catch (error) {
-            // TODO: Use custom error
-            throw new Error(error instanceof Error ? error.message : String(error));
+            throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
         }
 
         return data;

@@ -2,14 +2,14 @@ import { DiscordSnowflake } from '@sapphire/snowflake';
 import type { Client } from '../structures/Client.js';
 import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
+import { RecipleError } from '../structures/RecipleError.js';
 
 export abstract class BasePrecondition<D> implements BasePrecondition.Data<D> {
     public id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
 
     public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<BasePrecondition.ResultDataResolvable<T, D>> {
-        // TODO: Use custom error
-        throw new Error('Precondition not implemented');
+        throw new RecipleError(RecipleError.Code.NotImplemented());
     }
 
     public toJSON(): BasePrecondition.Data<D> {

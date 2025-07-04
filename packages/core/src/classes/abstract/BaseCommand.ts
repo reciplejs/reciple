@@ -10,6 +10,7 @@ import { MessageCommand } from '../commands/MessageCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
+import { RecipleError } from '../structures/RecipleError.js';
 
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
     public id: string = DiscordSnowflake.generate().toString();
@@ -17,8 +18,7 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
     public readonly abstract type: T;
     public data!: AnyCommandBuilderData<T>;
     public execute: (data: AnyCommandExecuteData<T>) => Promise<void> = async () => {
-        // TODO: Use custom error
-        throw new Error('Command not implemented');
+        throw new RecipleError(RecipleError.Code.NotImplemented());
     };
 
     constructor(data?: Partial<BaseCommand.Data<T>>) {
