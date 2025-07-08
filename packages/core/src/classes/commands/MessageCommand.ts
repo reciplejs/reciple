@@ -37,6 +37,7 @@ export namespace MessageCommand {
     }
 
     export interface ExecuteData extends BaseCommand.ExecuteData<CommandType.Message> {
+        type: CommandType.Message;
         command: MessageCommand;
         message: Message;
         parser: MessageCommandParser;
@@ -73,6 +74,7 @@ export namespace MessageCommand {
         parser.parse(command);
 
         const data: ExecuteData = {
+            type: CommandType.Message,
             message,
             client,
             command,

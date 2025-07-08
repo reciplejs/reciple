@@ -23,6 +23,7 @@ export namespace ContextMenuCommand {
     export interface Data extends BaseCommand.Data<CommandType.ContextMenu> {}
 
     export interface ExecuteData extends BaseCommand.ExecuteData<CommandType.ContextMenu> {
+        type: CommandType.ContextMenu;
         command: ContextMenuCommand;
         interaction: UserContextMenuCommandInteraction|MessageContextMenuCommandInteraction;
     }
@@ -41,6 +42,7 @@ export namespace ContextMenuCommand {
         if (!command) return null;
 
         const data: ExecuteData = {
+            type: CommandType.ContextMenu,
             interaction,
             client,
             command,

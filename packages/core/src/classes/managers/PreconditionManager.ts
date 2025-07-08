@@ -23,7 +23,7 @@ export class PreconditionManager {
         const results = options.data.preconditionResults as PreconditionResultManager<T, D>;
 
         for (const precondition of [...options.data.command.preconditions, ...(options.preconditions ?? this.cache.values())]) {
-            if ((precondition.scope.length && !precondition.scope.includes(options.data.command.type)) || results.preconditions.has(precondition.id)) continue;
+            if (results.preconditions.has(precondition.id) || (precondition.scope.length && !precondition.scope.includes(options.data.command.type))) continue;
 
             results.preconditions.set(precondition.id, precondition);
         }

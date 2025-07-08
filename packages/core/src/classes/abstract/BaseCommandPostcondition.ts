@@ -9,6 +9,7 @@ import type { PreconditionResultManager } from '../managers/PreconditionResultMa
 export abstract class BaseCommandPostcondition<D> implements BaseCommandPostcondition.Data<D> {
     public id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
+    public accepts: CommandPostconditionReason[] = [];
 
     public async execute<T extends CommandType>(data: BaseCommandPostcondition.ExecuteData<T>): Promise<BaseCommandPostcondition.ResultDataResolvable<T, D>> {
         throw new RecipleError(RecipleError.Code.NotImplemented());
@@ -34,7 +35,8 @@ export namespace BaseCommandPostcondition {
 
     export interface Data<D> {
         id: string;
-        scope: CommandType[];
+        scope?: CommandType[];
+        accepts?: CommandPostconditionReason[];
         execute: <T extends CommandType>(data: ExecuteData<T>) => Promise<ResultDataResolvable<T, D>>;
     }
 
@@ -56,7 +58,8 @@ export namespace BaseCommandPostcondition {
         executeData: AnyCommandExecuteData<T>;
     }
 
-    export type ExecuteData<T extends CommandType> = ErrorExecuteData<T>
+    export type ExecuteData<T extends CommandType> = UnknownExecuteData<T>
+        |ErrorExecuteData<T>
         |CooldownExecuteData<T>
         |PreconditionErrorExecuteData<T>
         |PreconditionFailureExecuteData<T>
@@ -64,6 +67,11 @@ export namespace BaseCommandPostcondition {
         |MissingArgsExecuteData<T>
         |InvalidFlagsExecuteData<T>
         |MissingFlagsExecuteData<T>;
+
+    export interface UnknownExecuteData<T extends CommandType> extends BaseExecuteData<T> {
+        reason: CommandPostconditionReason.Unknown;
+        [key: string|number|symbol]: unknown;
+    }
 
     export interface ErrorExecuteData<T extends CommandType> extends BaseExecuteData<T> {
         reason: CommandPostconditionReason.Error;

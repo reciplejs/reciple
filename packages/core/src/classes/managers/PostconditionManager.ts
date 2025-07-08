@@ -22,10 +22,14 @@ export class PostconditionManager {
     public async execute<T extends CommandType, D>(options: PostconditionManager.ExecuteOptions<T, D>): Promise<PostconditionResultManager<T, D>> {
         const results = options.data.executeData.postconditionResults as PostconditionResultManager<T, D>;
 
-        for (const precondition of [...options.data.executeData.command.postconditions, ...(options.postconditions ?? this.cache.values())]) {
-            if ((precondition.scope.length && !precondition.scope.includes(options.data.executeData.command.type)) || results.postconditions.has(precondition.id)) continue;
+        for (const postcondition of [...options.data.executeData.command.postconditions, ...(options.postconditions ?? this.cache.values())]) {
+            if (
+                results.postconditions.has(postcondition.id)
+                || (postcondition.scope.length && !postcondition.scope.includes(options.data.executeData.command.type))
+                || (postcondition.accepts.length && !postcondition.accepts.includes(options.data.reason))
+            ) continue;
 
-            results.postconditions.set(precondition.id, precondition);
+            results.postconditions.set(postcondition.id, postcondition);
         }
 
         for (const postcondition of results.postconditions.values()) {

@@ -10,7 +10,8 @@ export enum CooldownTriggerType {
 }
 
 export enum CommandPostconditionReason {
-    Error = 1,
+    Unknown = 1,
+    Error,
     Cooldown,
     PreconditionError,
     PreconditionFailure,

@@ -3,8 +3,9 @@ import type { Client } from '../structures/Client.js';
 import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { RecipleError } from '../structures/RecipleError.js';
+import type { BaseCommandPostcondition } from './BaseCommandPostcondition.js';
 
-export abstract class BaseCommandPrecondition<D> implements BaseCommandPrecondition.Data<D> {
+export abstract class BaseCommandPrecondition<D = any> implements BaseCommandPrecondition.Data<D> {
     public id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
 
@@ -30,13 +31,13 @@ export abstract class BaseCommandPrecondition<D> implements BaseCommandPrecondit
 export namespace BaseCommandPrecondition {
     export type Resolvable<D = any> = BaseCommandPrecondition<D>|Data<D>;
 
-    export interface Data<D> {
+    export interface Data<D = any> {
         id: string;
-        scope: CommandType[];
+        scope?: CommandType[];
         execute: <T extends CommandType>(data: AnyCommandExecuteData<T>) => Promise<ResultDataResolvable<T, D>>;
     }
 
-    export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'>|Error|boolean|string;
+    export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'|'postconditionData'>|Error|boolean|string;
 
     export interface ResultData<T extends CommandType, D = any> {
         id: string;
@@ -45,8 +46,9 @@ export namespace BaseCommandPrecondition {
         executeData: AnyCommandExecuteData<T>;
         precondition: BaseCommandPrecondition<D>;
         success: boolean;
-        error: Error|undefined;
-        message: string|undefined;
-        data: D|undefined;
+        error?: Error;
+        message?: string;
+        data?: D;
+        postconditionData?: BaseCommandPostcondition.ExecuteData<T>;
     }
 }

@@ -4,6 +4,8 @@ import { Cooldown } from '../structures/Cooldown.js';
 import type { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
 import EventEmitter from 'node:events';
 import { mix } from 'ts-mixer';
+import type { ChannelResolvable, GuildResolvable, UserResolvable } from 'discord.js';
+import { resolveDate } from '@reciple/utils';
 
 export interface CooldownManager<A extends BaseCooldownAdapter> extends BaseManager<string, Cooldown, Cooldown.Resolvable>, EventEmitter {}
 
@@ -26,9 +28,28 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         return cooldown;
     }
 
-    public async fetchForUser(userId: string, options: Partial<Pick<Cooldown.Data, 'guildId'|'channelId'>>): Promise<Cooldown.Data[]> {
-        const data = await this.adapter.fetchMany({ where: { userId, ...options } });
-        return data.map(cooldown => new Cooldown(this.client, cooldown));
+    public async fetchForUser(user: UserResolvable, options?: Partial<Pick<Cooldown.Data, 'guildId'|'channelId'|'trigger'>>): Promise<Cooldown[]> {
+        const userId = this.client.users.resolveId(user);
+        if (!userId) return [];
+
+        const data = await this.adapter.fetchMany({ where: { ...options, userId } });
+        return this._parseArray(data);
+    }
+
+    public async fetchForChannel(channel: ChannelResolvable, options?: Partial<Pick<Cooldown.Data, 'guildId'|'userId'|'trigger'>>): Promise<Cooldown[]> {
+        const channelId = this.client.channels.resolveId(channel);
+        if (!channelId) return [];
+
+        const data = await this.adapter.fetchMany({ where: { ...options, channelId } });
+        return this._parseArray(data);
+    }
+
+    public async fetchForGuild(guild: GuildResolvable, options?: Partial<Pick<Cooldown.Data, 'userId'|'channelId'|'trigger'>>): Promise<Cooldown[]> {
+        const guildId = this.client.guilds.resolveId(guild);
+        if (!guildId) return [];
+
+        const data = await this.adapter.fetchMany({ where: { ...options, guildId } });
+        return this._parseArray(data);
     }
 
     public async sweep(fetchAll: boolean = false): Promise<Cooldown[]> {
@@ -54,6 +75,24 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         this.emit('cooldownSweep', deleted);
 
         return deleted;
+    }
+
+    private _parseArray(data: Cooldown.Data[], cache: boolean = true): Cooldown[] {
+        const cooldowns = data.map(data => {
+            if (!cache) return new Cooldown(this.client, data);
+
+            const cooldown = this.cache.get(data.id) ?? new Cooldown(this.client, data);
+            this.cache.set(cooldown.id, this._updateCooldown(cooldown, data));
+            return cooldown;
+        });
+
+        return cooldowns;
+    }
+
+    private _updateCooldown(data: Cooldown, update: Partial<Cooldown.Data>): Cooldown {
+        Object.assign(data, update);
+        data.endsAt = resolveDate(data.endsAt);
+        return data;
     }
 }
 

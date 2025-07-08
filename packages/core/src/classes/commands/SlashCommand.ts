@@ -23,6 +23,7 @@ export namespace SlashCommand {
     export interface Data extends BaseCommand.Data<CommandType.Slash> {}
 
     export interface ExecuteData extends BaseCommand.ExecuteData<CommandType.Slash> {
+        type: CommandType.Slash;
         command: SlashCommand;
         interaction: ChatInputCommandInteraction;
     }
@@ -41,6 +42,7 @@ export namespace SlashCommand {
         if (!command) return null;
 
         const data: ExecuteData = {
+            type: CommandType.Slash,
             interaction,
             client,
             command,
