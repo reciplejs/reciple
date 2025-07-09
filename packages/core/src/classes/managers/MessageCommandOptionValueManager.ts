@@ -7,8 +7,14 @@ export class MessageCommandOptionValueManager {
     public readonly options: Collection<string, MessageCommandOption<any>> = new Collection();
 
     public constructor(public readonly client: Client, options: Iterable<MessageCommandOption<any>>, public readonly parser: MessageCommandParser) {
-        if (options) for (const option of options) {
+        for (const option of options) {
             this.options.set(option.name, option);
         }
+
+        // TODO: Implement this
+    }
+
+    public getOption<T = any>(name: string): MessageCommandOption<T>|null {
+        return this.options.get(name) ?? null;
     }
 }

@@ -1,6 +1,7 @@
 import type { Awaitable, Message } from 'discord.js';
 import type { MessageCommand } from '../commands/MessageCommand.js';
 import type { Client } from './Client.js';
+import type { MessageCommandParser } from './MessageCommandParser.js';
 
 export class MessageCommandFlag<T> implements MessageCommandFlag.Data<T> {
     public name!: string;
@@ -58,6 +59,7 @@ export namespace MessageCommandFlag {
     export interface BaseResolveValueOptions<V extends string|boolean, T> {
         type: V extends string ? 'string' : V extends boolean ? 'boolean' : 'string'|'boolean';
         values: V[];
+        parser: MessageCommandParser;
         flag: MessageCommandFlag<T>;
         command: MessageCommand;
         message: Message;
