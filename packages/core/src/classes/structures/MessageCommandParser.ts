@@ -1,9 +1,7 @@
 import { escapeRegexp } from '@reciple/utils';
 import { parseArgs } from 'node:util';
-import split from 'split-string';
 import type { MessageCommand } from '../commands/MessageCommand.js';
-
-const splitstring = split.default;
+import split, { type Options as SplitOptions } from 'split-string';
 
 export class MessageCommandParser implements MessageCommandParser.Data {
     public raw: string;
@@ -35,6 +33,8 @@ export class MessageCommandParser implements MessageCommandParser.Data {
     }
 
     public parse(command: MessageCommand): this {
+        const splitstring = split as unknown as typeof split.default;
+
         this.args = splitstring(this.rawArgs, {
             brackets: true,
             quotes: true,
@@ -97,6 +97,6 @@ export namespace MessageCommandParser {
         raw: string;
         separator?: string;
         prefix?: string;
-        splitOptions?: split.Options;
+        splitOptions?: SplitOptions;
     }
 }

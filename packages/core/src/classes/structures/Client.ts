@@ -14,6 +14,7 @@ import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
 import { PostconditionManager } from '../managers/PostconditionManager.js';
 import { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
+import { Utils } from './Utils.js';
 
 declare module "discord.js" {
     interface ClientOptions {
@@ -105,7 +106,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 
         if (this.options.commands) {
             for (const command of this.options.commands) {
-                this._commands.cache.set(command.id, command instanceof BaseCommand ? command : BaseCommand.createInstance(command));
+                this._commands.cache.set(command.id, command instanceof BaseCommand ? command : Utils.createCommandInstance(command));
             }
         }
 
@@ -141,6 +142,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     private async _executeCommand(trigger: Interaction|Message): Promise<void> {
         if (!this.isReady()) return;
 
+        // TODO: Add support for configuration
         if (trigger instanceof Message) {
             await MessageCommand.execute({
                 client: this,

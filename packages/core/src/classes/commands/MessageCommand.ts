@@ -68,7 +68,7 @@ export namespace MessageCommand {
                 : separator ?? undefined
         });
 
-        command ??= client.commands.get(CommandType.Message, parser.name) as MessageCommand|undefined;
+        command ??= client.commands.cache.find(c => c.type === CommandType.Message && (c.data.name === parser.name || c.data.aliases?.includes(parser.name))) as MessageCommand|undefined;
         if (!command) return null;
 
         parser.parse(command);

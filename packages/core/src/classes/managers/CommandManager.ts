@@ -7,6 +7,7 @@ import { CommandType } from '../../helpers/constants.js';
 import EventEmitter from 'node:events';
 import { mix } from 'ts-mixer';
 import { RecipleError } from '../structures/RecipleError.js';
+import { Utils } from '../structures/Utils.js';
 
 export interface CommandManager extends BaseManager<string, AnyCommand, AnyCommandResolvable>, EventEmitter<CommandManager.Events> {}
 
@@ -23,7 +24,7 @@ export class CommandManager {
     }
 
     public add<T extends CommandType>(data: AnyCommandResolvable<T>): this {
-        const command = data instanceof this.holds ? data : BaseCommand.createInstance(data) as AnyCommand<T>;
+        const command = data instanceof this.holds ? data : Utils.createCommandInstance(data) as AnyCommand<T>;
 
         if (this.cache.get(command.id)) throw new RecipleError(RecipleError.Code.CommandAlreadyExists(command));
 

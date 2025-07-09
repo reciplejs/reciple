@@ -2,6 +2,7 @@ import { CommandPostconditionReason, CommandType, CooldownTriggerType } from '..
 import type { AnyCommandExecuteData } from '../../helpers/types.js';
 import type { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
 import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
+import { Cooldown } from '../structures/Cooldown.js';
 
 export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCommandPostcondition.CooldownExecuteData<CommandType>> {
     public scope: CommandType[] = [];
@@ -20,15 +21,28 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
             }
         }).then(data => data.at(0));
 
-        return !cooldown
-            ? true
-            : {
-                postconditionData: {
-                    reason: CommandPostconditionReason.Cooldown,
-                    cooldown,
-                    executeData: data,
-                },
-                success: false
-            }
+        if (!cooldown) {
+            if (data.command.cooldown) await data.client.cooldowns.adapter.create(new Cooldown(data.client, {
+                userId,
+                guildId: guildId ?? undefined,
+                channelId: channelId ?? undefined,
+                endsAt: new Date(Date.now() + data.command.cooldown * 1000),
+                trigger: {
+                    type: CooldownTriggerType.Command,
+                    commands: [data.command]
+                }
+            }));
+
+            return true;
+        }
+
+        return {
+            postconditionData: {
+                reason: CommandPostconditionReason.Cooldown,
+                cooldown,
+                executeData: data,
+            },
+            success: false
+        };
     }
 }
