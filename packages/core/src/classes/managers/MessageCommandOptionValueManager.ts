@@ -95,7 +95,7 @@ export class MessageCommandOptionValueManager {
 
         if (option.validate) {
             try {
-                await option.validate({
+                const valid = await option.validate({
                     client: this.client,
                     command: this.command,
                     message: this.message,
@@ -103,6 +103,11 @@ export class MessageCommandOptionValueManager {
                     parser: this.parser,
                     value
                 });
+
+                if (!valid) {
+                    data.valid = false;
+                    data.error = new RecipleError(RecipleError.Code.MessageCommandInvalidOption(this.command, option, `Validate function returned ${valid}`));
+                }
             } catch (error) {
                 data.valid = false;
                 data.error = error;

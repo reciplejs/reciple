@@ -19,9 +19,9 @@ export class MessageCommandValidationPrecondition extends BaseCommandPreconditio
             if (invalid.length) {
                 return {
                     success: false,
-                    error: new RecipleError(RecipleError.Code.MultipleErrors(
-                        invalid.map(o => new RecipleError(RecipleError.Code.MessageCommandInvalidOption(data.command, o.option)))
-                    )),
+                    error: RecipleError.fromArray(
+                        invalid.map(o => o.error as RecipleError ?? new RecipleError(RecipleError.Code.MessageCommandInvalidOption(data.command, o.option)))
+                    ),
                     postconditionExecute: {
                         data: {
                             reason: CommandPostconditionReason.InvalidArgs,
@@ -34,9 +34,9 @@ export class MessageCommandValidationPrecondition extends BaseCommandPreconditio
             if (missing.length) {
                 return {
                     success: false,
-                    error: new RecipleError(RecipleError.Code.MultipleErrors(
+                    error: RecipleError.fromArray(
                         missing.map(o => new RecipleError(RecipleError.Code.MessageCommandMissingRequiredOption(data.command, o.option)))
-                    )),
+                    ),
                     postconditionExecute: {
                         data: {
                             reason: CommandPostconditionReason.MissingArgs,
@@ -54,9 +54,9 @@ export class MessageCommandValidationPrecondition extends BaseCommandPreconditio
             if (invalid.length) {
                 return {
                     success: false,
-                    error: new RecipleError(RecipleError.Code.MultipleErrors(
-                        invalid.map(f => new RecipleError(RecipleError.Code.MessageCommandInvalidFlag(data.command, f.flag)))
-                    )),
+                    error: RecipleError.fromArray(
+                        invalid.map(f => f.error as RecipleError ?? new RecipleError(RecipleError.Code.MessageCommandInvalidFlag(data.command, f.flag)))
+                    ),
                     postconditionExecute: {
                         data: {
                             reason: CommandPostconditionReason.InvalidFlags,
@@ -69,9 +69,9 @@ export class MessageCommandValidationPrecondition extends BaseCommandPreconditio
             if (missing.length) {
                 return {
                     success: false,
-                    error: new RecipleError(RecipleError.Code.MultipleErrors(
+                    error: RecipleError.fromArray(
                         missing.map(f => new RecipleError(RecipleError.Code.MessageCommandMissingRequiredFlag(data.command, f.flag)))
-                    )),
+                    ),
                     postconditionExecute: {
                         data: {
                             reason: CommandPostconditionReason.MissingFlags,

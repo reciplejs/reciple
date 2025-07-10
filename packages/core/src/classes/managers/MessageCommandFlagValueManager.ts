@@ -95,7 +95,7 @@ export class MessageCommandFlagValueManager {
         if (flag.validate) {
             try {
                 // @ts-expect-error
-                await flag.validate({
+                const valid = await flag.validate({
                     type: flag.value_type ?? 'string',
                     client: this.client,
                     command: this.command,
@@ -104,6 +104,11 @@ export class MessageCommandFlagValueManager {
                     parser: this.parser,
                     values
                 });
+
+                if (!valid) {
+                    data.valid = false;
+                    data.error = new RecipleError(RecipleError.Code.MessageCommandInvalidFlag(this.command, flag, `Validate function returned ${valid}`));
+                }
             } catch (error) {
                 data.valid = false;
                 data.error = error;

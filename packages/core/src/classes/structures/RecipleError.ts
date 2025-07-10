@@ -23,6 +23,11 @@ export class RecipleError extends Error {
     public toString() {
         return stripVTControlCharacters(super.toString());
     }
+
+    public static fromArray(errors: Error[]) {
+        if (errors.length === 1) return errors[0];
+        return new RecipleError(RecipleError.Code.MultipleErrors(errors));
+    }
 }
 
 export namespace RecipleError {

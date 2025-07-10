@@ -11,7 +11,7 @@ export class MessageCommandFlag<T> implements MessageCommandFlag.Data<T> {
     public multiple?: boolean;
     public default_values?: string[]|boolean[];
     public value_type?: 'string'|'boolean';
-    public validate?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<void>;
+    public validate?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<boolean>;
     public resolve?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<T[]>;
 
     public constructor(data?: Partial<MessageCommandFlag.Data<T>>) {
@@ -52,7 +52,7 @@ export namespace MessageCommandFlag {
         multiple?: boolean;
         default_values?: string[]|boolean[];
         value_type?: 'string'|'boolean';
-        validate?: (data: ResolveValueOptions<T>) => Awaitable<void>;
+        validate?: (data: ResolveValueOptions<T>) => Awaitable<boolean>;
         resolve?: (data: ResolveValueOptions<T>) => Awaitable<T[]>;
     }
 

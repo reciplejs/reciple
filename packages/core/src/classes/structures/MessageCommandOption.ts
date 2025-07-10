@@ -7,7 +7,7 @@ export class MessageCommandOption<T> implements MessageCommandOption.Data<T> {
     public name!: string;
     public description!: string;
     public required!: boolean;
-    public validate?: (data: MessageCommandOption.ResolveValueOptions<T>) => Awaitable<void>;
+    public validate?: (data: MessageCommandOption.ResolveValueOptions<T>) => Awaitable<boolean>;
     public resolve?: (data: MessageCommandOption.ResolveValueOptions<T>) => Awaitable<T>;
 
     public constructor(data?: Partial<MessageCommandOption.Data<T>>) {
@@ -36,7 +36,7 @@ export namespace MessageCommandOption {
         name: string;
         description: string;
         required: boolean;
-        validate?: (data: ResolveValueOptions<T>) => Awaitable<void>;
+        validate?: (data: ResolveValueOptions<T>) => Awaitable<boolean>;
         resolve?: (data: ResolveValueOptions<T>) => Awaitable<T>;
     }
 

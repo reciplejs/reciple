@@ -4,6 +4,7 @@ import { BaseCommand } from '../abstract/BaseCommand.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
+import { Utils } from '../structures/Utils.js';
 
 export class SlashCommand extends BaseCommand<CommandType.Slash> {
     public readonly type: CommandType.Slash = CommandType.Slash;
@@ -54,7 +55,7 @@ export namespace SlashCommand {
             })
         };
 
-        const result = await BaseCommand.executePreconditions(data);
+        const result = await Utils.executeCommandPreconditions(data);
         if (result) return data;
 
         try {

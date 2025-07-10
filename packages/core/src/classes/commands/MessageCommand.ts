@@ -10,11 +10,15 @@ import type { Client } from '../structures/Client.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { MessageCommandFlagValueManager } from '../managers/MessageCommandFlagValueManager.js';
+import { Utils } from '../structures/Utils.js';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
-    public options: MessageCommandOption<any>[] = [];
     public flags: MessageCommandFlag<any>[] = [];
+
+    get options() {
+        return this.data.options?.map(o => o instanceof MessageCommandOption ? o : new MessageCommandOption(o)) ?? [];
+    }
 
     public constructor(data?: Partial<MessageCommand.Data>) {
         super(data);
@@ -101,7 +105,7 @@ export namespace MessageCommand {
             })
         };
 
-        const result = await BaseCommand.executePreconditions(data);
+        const result = await Utils.executeCommandPreconditions(data);
         if (result) return data;
 
         try {

@@ -1,17 +1,15 @@
 import { DiscordSnowflake } from '@sapphire/snowflake';
-import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
+import { CommandType } from '../../helpers/constants.js';
 import type { AnyCommandBuilder, AnyCommandBuilderData, AnyCommandExecuteData } from '../../helpers/types.js';
-import { isJSONEncodable, normalizeArray, type Collection, type JSONEncodable, type RestOrArray } from 'discord.js';
-import { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
-import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
-import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
+import { isJSONEncodable, normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js';
 import type { Client } from '../structures/Client.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
-import { RecipleError } from '../structures/RecipleError.js';
+import type { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
 import { BaseCommandPostcondition } from './BaseCommandPostcondition.js';
-import type { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
+import { Utils } from '../structures/Utils.js';
 
+// FIXME: Fix TypeError: Class extends value undefined is not a constructor or null
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
     public id: string = DiscordSnowflake.generate().toString();
 
@@ -22,16 +20,14 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
     public postconditions: BaseCommandPostcondition<any>[] = [];
     public disabledPreconditions: string[] = [];
     public disabledPostconditions: string[] = [];
-    public execute: (data: AnyCommandExecuteData<T>) => Promise<void> = async () => {
-        throw new RecipleError(RecipleError.Code.NotImplemented());
-    };
+    public execute: (data: AnyCommandExecuteData<T>) => Promise<void> = async () => {};
 
     constructor(data?: Partial<BaseCommand.Data<T>>) {
         Object.assign(this, data);
     }
 
     public setData(data: AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>|((builder: AnyCommandBuilder<T>) => AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>)): this {
-        const resolved = typeof data === 'function' ? data(BaseCommand.createBuilderInstance(this.type)) : data;
+        const resolved = typeof data === 'function' ? data(Utils.createCommandBuilderInstance(this.type)) : data;
         this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
         return this;
     }
@@ -128,6 +124,11 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
         return {
             id: this.id,
             type: this.type,
+            cooldown: this.cooldown,
+            preconditions: this.preconditions,
+            postconditions: this.postconditions,
+            disabledPreconditions: this.disabledPreconditions,
+            disabledPostconditions: this.disabledPostconditions,
             data: this.data,
             execute: this.execute
         };
@@ -156,65 +157,5 @@ export namespace BaseCommand {
 
     export interface ExecuteOptions<T extends CommandType> {
         client: Client<true>;
-    }
-
-    export function createBuilderInstance<T extends CommandType>(type: T): AnyCommandBuilder<T> {
-        switch (type) {
-            case CommandType.Message:
-                return new MessageCommandBuilder() as AnyCommandBuilder<T>;
-            case CommandType.Slash:
-                return new SlashCommandBuilder() as AnyCommandBuilder<T>;
-            case CommandType.ContextMenu:
-                return new ContextMenuCommandBuilder() as AnyCommandBuilder<T>;
-        }
-    }
-
-    export async function executePreconditions<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<AnyCommandExecuteData<T>|null> {
-        await data.client.preconditions.execute({ data });
-
-        if (data.preconditionResults.hasErrors) {
-            const results = await data.client.postconditions.execute<CommandType, unknown>({
-                data: {
-                    reason: CommandPostconditionReason.PreconditionError,
-                    preconditionResult: data.preconditionResults,
-                    executeData: data
-                }
-            });
-
-            if (!results.cache.some(result => result.success)) {
-                throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
-            }
-
-            return data;
-        }
-
-        if (data.preconditionResults.postconditionExecutes.length) {
-            const withPostconditionData = (data.preconditionResults.cache as Collection<string, BaseCommandPrecondition.ResultData<CommandType>>)
-                .filter(result => !!result.postconditionExecute);
-
-            for (const [id, result] of withPostconditionData) {
-                const postconditionExecute = result.postconditionExecute!;
-
-                await data.client.postconditions.execute<CommandType, unknown>({
-                    data: postconditionExecute.data!,
-                    allowedPostconditions: postconditionExecute.allowedPostconditions,
-                    preconditionTrigger: result
-                });
-            }
-
-            return data;
-        } else if (data.preconditionResults.hasFailures) {
-            await data.client.postconditions.execute<CommandType, unknown>({
-                data: {
-                    reason: CommandPostconditionReason.PreconditionFailure,
-                    preconditionResult: data.preconditionResults,
-                    executeData: data
-                }
-            });
-
-            return data;
-        }
-
-        return null;
     }
 }
