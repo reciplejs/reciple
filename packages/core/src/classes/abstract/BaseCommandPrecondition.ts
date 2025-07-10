@@ -37,7 +37,7 @@ export namespace BaseCommandPrecondition {
         execute: <T extends CommandType>(data: AnyCommandExecuteData<T>) => Promise<ResultDataResolvable<T, D>>;
     }
 
-    export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'|'postconditionData'>|Error|boolean|string;
+    export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'|'postconditionExecute'>|Error|boolean|string;
 
     export interface ResultData<T extends CommandType, D = any> {
         id: string;
@@ -49,6 +49,9 @@ export namespace BaseCommandPrecondition {
         error?: Error;
         message?: string;
         data?: D;
-        postconditionData?: BaseCommandPostcondition.ExecuteData<T>;
+        postconditionExecute?: {
+            data: BaseCommandPostcondition.ExecuteData<T>;
+            allowedPostconditions?: (postcondition: BaseCommandPostcondition) => boolean;
+        };
     }
 }

@@ -23,7 +23,11 @@ export class PreconditionManager {
         const results = options.data.preconditionResults as PreconditionResultManager<T, D>;
 
         for (const precondition of [...options.data.command.preconditions, ...(options.preconditions ?? this.cache.values())]) {
-            if (results.preconditions.has(precondition.id) || (precondition.scope.length && !precondition.scope.includes(options.data.command.type))) continue;
+            if (
+                results.preconditions.has(precondition.id)
+                || (precondition.scope.length && !precondition.scope.includes(options.data.command.type))
+                || (options.allowedPreconditions && !options.allowedPreconditions(precondition))
+            ) continue;
 
             results.preconditions.set(precondition.id, precondition);
         }
@@ -58,6 +62,7 @@ export namespace PreconditionManager {
     export interface ExecuteOptions<T extends CommandType, D> {
         data: AnyCommandExecuteData<T>;
         preconditions?: BaseCommandPrecondition<D>[];
+        allowedPreconditions?: (precondition: BaseCommandPrecondition<D>) => boolean;
         returnOnFailure?: boolean;
     }
 

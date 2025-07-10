@@ -1,7 +1,7 @@
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import type { AnyCommandBuilder, AnyCommandBuilderData, AnyCommandExecuteData } from '../../helpers/types.js';
-import { isJSONEncodable, normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js';
+import { isJSONEncodable, normalizeArray, type Collection, type JSONEncodable, type RestOrArray } from 'discord.js';
 import { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
 import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
 import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
@@ -189,8 +189,17 @@ export namespace BaseCommand {
         }
 
         if (data.preconditionResults.postconditionData.length) {
-            for (const postconditionData of data.preconditionResults.postconditionData) {
-                await data.client.postconditions.execute<CommandType, unknown>({ data: postconditionData });
+            const withPostconditionData = (data.preconditionResults.cache as Collection<string, BaseCommandPrecondition.ResultData<CommandType>>)
+                .filter(result => !!result.postconditionExecute);
+
+            for (const [id, result] of withPostconditionData) {
+                const postconditionExecute = result.postconditionExecute!;
+
+                await data.client.postconditions.execute<CommandType, unknown>({
+                    data: postconditionExecute.data!,
+                    allowedPostconditions: postconditionExecute.allowedPostconditions,
+                    preconditionTrigger: result
+                });
             }
 
             return data;

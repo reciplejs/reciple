@@ -5,13 +5,14 @@ import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import type { Cooldown } from '../structures/Cooldown.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
+import type { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
 
-export abstract class BaseCommandPostcondition<D> implements BaseCommandPostcondition.Data<D> {
+export abstract class BaseCommandPostcondition<D = any> implements BaseCommandPostcondition.Data<D> {
     public id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
     public accepts: CommandPostconditionReason[] = [];
 
-    public async execute<T extends CommandType>(data: BaseCommandPostcondition.ExecuteData<T>): Promise<BaseCommandPostcondition.ResultDataResolvable<T, D>> {
+    public async execute<T extends CommandType>(data: BaseCommandPostcondition.ExecuteData<T>, preconditionTrigger?: BaseCommandPrecondition.ResultData<T, any>): Promise<BaseCommandPostcondition.ResultDataResolvable<T, D>> {
         throw new RecipleError(RecipleError.Code.NotImplemented());
     }
 
@@ -37,7 +38,7 @@ export namespace BaseCommandPostcondition {
         id: string;
         scope?: CommandType[];
         accepts?: CommandPostconditionReason[];
-        execute: <T extends CommandType>(data: ExecuteData<T>) => Promise<ResultDataResolvable<T, D>>;
+        execute: <T extends CommandType>(data: ExecuteData<T>, preconditionTrigger?: BaseCommandPrecondition.ResultData<T, any>) => Promise<ResultDataResolvable<T, D>>;
     }
 
     export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'>|Error|boolean|string;

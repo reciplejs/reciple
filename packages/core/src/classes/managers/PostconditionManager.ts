@@ -6,6 +6,7 @@ import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
 import type { PostconditionResultManager } from './PostconditionResultManager.js';
+import type { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
 
 export interface PostconditionManager extends BaseManager<string, BaseCommandPostcondition<any>, BaseCommandPostcondition.Resolvable>, EventEmitter<PostconditionManager.Events> {}
 
@@ -27,6 +28,7 @@ export class PostconditionManager {
                 results.postconditions.has(postcondition.id)
                 || (postcondition.scope.length && !postcondition.scope.includes(options.data.executeData.command.type))
                 || (postcondition.accepts.length && !postcondition.accepts.includes(options.data.reason))
+                || (options.allowedPostconditions && !options.allowedPostconditions(postcondition))
             ) continue;
 
             results.postconditions.set(postcondition.id, postcondition);
@@ -39,7 +41,7 @@ export class PostconditionManager {
                 options.data.executeData,
                 postcondition,
                 await postcondition
-                    .execute(options.data)
+                    .execute(options.data, options.preconditionTrigger)
                     .catch(err => err instanceof Error ? err : new Error(String(err)))
             );
 
@@ -62,6 +64,8 @@ export namespace PostconditionManager {
     export interface ExecuteOptions<T extends CommandType, D> {
         data: BaseCommandPostcondition.ExecuteData<T>;
         postconditions?: BaseCommandPostcondition<D>[];
+        allowedPostconditions?: (postcondition: BaseCommandPostcondition<D>) => boolean;
+        preconditionTrigger?: BaseCommandPrecondition.ResultData<T, any>;
         returnOnFailure?: boolean;
     }
 
