@@ -1,13 +1,12 @@
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import { CommandType } from '../../helpers/constants.js';
 import type { AnyCommandBuilder, AnyCommandBuilderData, AnyCommandExecuteData } from '../../helpers/types.js';
-import { isJSONEncodable, normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js';
+import { normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js';
 import type { Client } from '../structures/Client.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import type { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
-import { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
-import { BaseCommandPostcondition } from './BaseCommandPostcondition.js';
-import { Utils } from '../structures/Utils.js';
+import type { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
+import type { BaseCommandPostcondition } from './BaseCommandPostcondition.js';
 
 // FIXME: Fix TypeError: Class extends value undefined is not a constructor or null
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
@@ -26,34 +25,30 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
         Object.assign(this, data);
     }
 
-    public setData(data: AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>|((builder: AnyCommandBuilder<T>) => AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>)): this {
-        const resolved = typeof data === 'function' ? data(Utils.createCommandBuilderInstance(this.type)) : data;
-        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
-        return this;
-    }
+    public abstract setCommand(data: AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>|((builder: AnyCommandBuilder<T>) => AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>)): this;
 
     public setCooldown(cooldown: number): this {
         this.cooldown = cooldown;
         return this;
     }
 
-    public addPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition.Resolvable>): this {
-        this.preconditions.push(
-            ...normalizeArray(preconditions).map(precondition => precondition instanceof BaseCommandPrecondition
-                ? precondition
-                : BaseCommandPrecondition.from(precondition)
-            )
-        );
+    public addPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition>): this {
+        this.preconditions.push(...normalizeArray(preconditions));
         return this;
     }
 
-    public setPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition.Resolvable>): this {
-        this.preconditions = normalizeArray(preconditions)
-            .map(precondition => precondition instanceof BaseCommandPrecondition
-                ? precondition
-                : BaseCommandPrecondition.from(precondition)
-            );
+    public setPreconditions(...preconditions: RestOrArray<BaseCommandPrecondition>): this {
+        this.preconditions = normalizeArray(preconditions);
+        return this;
+    }
 
+    public addPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition>): this {
+        this.postconditions.push(...normalizeArray(postconditions));
+        return this;
+    }
+
+    public setPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition>): this {
+        this.postconditions = normalizeArray(postconditions);
         return this;
     }
 
@@ -72,26 +67,6 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
             ? precondition
             : precondition.id
         );
-
-        return this;
-    }
-
-    public addPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition.Resolvable>): this {
-        this.postconditions.push(
-            ...normalizeArray(postconditions).map(postcondition => postcondition instanceof BaseCommandPostcondition
-                ? postcondition
-                : BaseCommandPostcondition.from(postcondition)
-            )
-        );
-        return this;
-    }
-
-    public setPostconditions(...postconditions: RestOrArray<BaseCommandPostcondition.Resolvable>): this {
-        this.postconditions = normalizeArray(postconditions)
-            .map(postcondition => postcondition instanceof BaseCommandPostcondition
-                ? postcondition
-                : BaseCommandPostcondition.from(postcondition)
-            );
 
         return this;
     }

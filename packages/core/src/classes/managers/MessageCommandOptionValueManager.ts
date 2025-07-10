@@ -19,8 +19,6 @@ export class MessageCommandOptionValueManager {
         this.command = options.command;
         this.message = options.message;
         this.parser = options.parser;
-
-        // TODO: Implement this
     }
 
     get optionOrder() {

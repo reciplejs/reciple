@@ -1,16 +1,23 @@
-import type { MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from 'discord.js';
+import { isJSONEncodable, type JSONEncodable, type MessageContextMenuCommandInteraction, type UserContextMenuCommandInteraction } from 'discord.js';
 import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { Utils } from '../structures/Utils.js';
+import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
 
 export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
     public readonly type: CommandType.ContextMenu = CommandType.ContextMenu;
 
     public constructor(data?: Partial<ContextMenuCommand.Data>) {
         super(data);
+    }
+
+    public setCommand(data: ContextMenuCommandBuilder.Data|JSONEncodable<ContextMenuCommandBuilder.Data>|((builder: ContextMenuCommandBuilder) => ContextMenuCommandBuilder.Data|JSONEncodable<ContextMenuCommandBuilder.Data>)): this {
+        const resolved = typeof data === 'function' ? data(new ContextMenuCommandBuilder()) : data;
+        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        return this;
     }
 
     public toJSON(): ContextMenuCommand.Data {

@@ -19,8 +19,6 @@ export class MessageCommandFlagValueManager {
         this.command = options.command;
         this.message = options.message;
         this.parser = options.parser;
-
-        // TODO: Implement this
     }
 
     public getFlag<T = any>(name: string): MessageCommandFlag<T>|null {

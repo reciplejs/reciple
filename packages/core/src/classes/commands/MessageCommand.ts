@@ -1,4 +1,4 @@
-import { type Awaitable, type Guild, type Message } from 'discord.js';
+import { isJSONEncodable, type Awaitable, type Guild, type JSONEncodable, type Message } from 'discord.js';
 import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { MessageCommandOption } from '../structures/MessageCommandOption.js';
@@ -11,6 +11,7 @@ import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { MessageCommandFlagValueManager } from '../managers/MessageCommandFlagValueManager.js';
 import { Utils } from '../structures/Utils.js';
+import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
@@ -22,6 +23,12 @@ export class MessageCommand extends BaseCommand<CommandType.Message> {
 
     public constructor(data?: Partial<MessageCommand.Data>) {
         super(data);
+    }
+
+    public setCommand(data: MessageCommandBuilder.Data|JSONEncodable<MessageCommandBuilder.Data>|((builder: MessageCommandBuilder) => MessageCommandBuilder.Data|JSONEncodable<MessageCommandBuilder.Data>)): this {
+        const resolved = typeof data === 'function' ? data(new MessageCommandBuilder()) : data;
+        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        return this;
     }
 
     public toJSON(): MessageCommand.Data {

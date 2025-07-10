@@ -1,16 +1,23 @@
-import type { ChatInputCommandInteraction } from 'discord.js';
+import { isJSONEncodable, type ChatInputCommandInteraction, type JSONEncodable } from 'discord.js';
 import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { Utils } from '../structures/Utils.js';
+import { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
 
 export class SlashCommand extends BaseCommand<CommandType.Slash> {
     public readonly type: CommandType.Slash = CommandType.Slash;
 
     public constructor(data?: Partial<SlashCommand.Data>) {
         super(data);
+    }
+
+    public setCommand(data: SlashCommandBuilder.Data|JSONEncodable<SlashCommandBuilder.Data>|((builder: SlashCommandBuilder) => SlashCommandBuilder.Data|JSONEncodable<SlashCommandBuilder.Data>)): this {
+        const resolved = typeof data === 'function' ? data(new SlashCommandBuilder()) : data;
+        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        return this;
     }
 
     public toJSON(): SlashCommand.Data {
