@@ -58,7 +58,7 @@ export namespace MessageCommandFlag {
 
     export interface BaseResolveValueOptions<V extends string|boolean, T> {
         type: V extends string ? 'string' : V extends boolean ? 'boolean' : 'string'|'boolean';
-        values: V[];
+        values: V[]|null;
         parser: MessageCommandParser;
         flag: MessageCommandFlag<T>;
         command: MessageCommand;

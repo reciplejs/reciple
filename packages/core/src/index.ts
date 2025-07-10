@@ -26,6 +26,7 @@ export * from './classes/managers/PreconditionManager.js';
 export * from './classes/managers/PreconditionResultManager.js';
 
 export * from './classes/preconditions/CooldownPrecondition.js';
+export * from './classes/preconditions/MessageCommandValidationPrecondition.js';
 
 export * from './classes/structures/Client.js';
 export * from './classes/structures/Cooldown.js';

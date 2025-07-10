@@ -3,6 +3,7 @@ import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
 import type { Client } from '../structures/Client.js';
 import type { MessageCommandParser } from '../structures/MessageCommandParser.js';
 import type { MessageCommand } from '../commands/MessageCommand.js';
+import { RecipleError } from '../structures/RecipleError.js';
 
 export class MessageCommandFlagValueManager {
     public readonly flags: Collection<string, MessageCommandFlag<any>> = new Collection();
@@ -26,16 +27,36 @@ export class MessageCommandFlagValueManager {
         return this.flags.get(name) ?? null;
     }
 
-    public getFlagValues<R extends 'string'|'boolean', T = R extends 'string' ? string[] : R extends 'boolean' ? boolean[] : boolean[]|string[]>(name: string, type?: R): T|null {
-        return (this.parser.flags.find(f => f.name === name)?.value as T) ?? null;
+    public getFlagValues<ReturnType extends 'string'|'boolean', Returns = ReturnType extends 'string' ? string[] : ReturnType extends 'boolean' ? boolean[] : boolean[]|string[]>(name: string, options?: { type?: ReturnType; required?: boolean; }): Returns|null;
+    public getFlagValues<ReturnType extends 'string'|'boolean', Returns = ReturnType extends 'string' ? string[] : ReturnType extends 'boolean' ? boolean[] : boolean[]|string[]>(name: string, options?: { type?: ReturnType; required: true; }): Returns;
+    public getFlagValues<ReturnType extends 'string'|'boolean', Returns = ReturnType extends 'string' ? string[] : ReturnType extends 'boolean' ? boolean[] : boolean[]|string[]>(name: string, options?: { type?: ReturnType; required?: boolean; }): Returns|null {
+        const flag = this.getFlag(name);
+        if (!flag) {
+            if (!options?.required) return null;
+            throw new RecipleError(RecipleError.Code.MessageCommandUnknownFlag(this.command, name));
+        }
+
+        const value = (this.parser.flags.find(f => f.name === name)?.value as Returns) ?? null;
+
+        if (options?.required && (value === null || (Array.isArray(value) && !value.length))) {
+            throw new RecipleError(RecipleError.Code.MessageCommandMissingRequiredFlag(this.command, flag));
+        }
+
+        return value;
     }
 
-    public async getFlagResolvedValues<T = any>(name: string): Promise<T[]|null> {
+    public async getFlagResolvedValues<T = any>(name: string, required?: boolean): Promise<T[]|null>;
+    public async getFlagResolvedValues<T = any>(name: string, required: true): Promise<T[]>;
+    public async getFlagResolvedValues<T = any>(name: string, required?: boolean): Promise<T[]|null> {
         const flag = this.getFlag<T>(name);
-        if (!flag) return null;
+        if (!flag) {
+            if (!required) return null;
+
+            throw new RecipleError(RecipleError.Code.MessageCommandUnknownFlag(this.command, name));
+        }
 
         const values = this.getFlagValues(name);
-        if (!values) return null;
+        if (values === null || !values.length) return null;
 
         // @ts-expect-error
         return flag.resolve?.({
@@ -48,6 +69,50 @@ export class MessageCommandFlagValueManager {
             values
         }) ?? null;
     }
+
+    public async getInvalidFlags(): Promise<MessageCommandFlagValueManager.ValidateData[]> {
+        const valid = await Promise.all(this.flags.map(f => this.validateFlag(f, this.getFlagValues(f.name))));
+        return valid.filter(o => !o.valid);
+    }
+
+    public async validateFlag<T>(flag: MessageCommandFlag<T>, values: string[]|boolean[]|null): Promise<MessageCommandFlagValueManager.ValidateData<T>> {
+        const data: MessageCommandFlagValueManager.ValidateData = {
+            flag,
+            values,
+            valid: true,
+            missing: false
+        };
+
+        const isEmpty = values === null || (Array.isArray(values) && !values.length);
+
+        if (flag.required && isEmpty) {
+            data.valid = false;
+            data.missing = true;
+            data.error = new RecipleError(RecipleError.Code.MessageCommandMissingRequiredFlag(this.command, flag));
+            return data;
+        }
+
+        if (flag.validate) {
+            try {
+                // @ts-expect-error
+                await flag.validate({
+                    type: flag.value_type ?? 'string',
+                    client: this.client,
+                    command: this.command,
+                    message: this.message,
+                    flag,
+                    parser: this.parser,
+                    values
+                });
+            } catch (error) {
+                data.valid = false;
+                data.error = error;
+                return data;
+            }
+        }
+
+        return data;
+    }
 }
 
 export namespace MessageCommandFlagValueManager {
@@ -56,5 +121,13 @@ export namespace MessageCommandFlagValueManager {
         message: Message;
         flags: Iterable<MessageCommandFlag<any>>;
         parser: MessageCommandParser;
+    }
+
+    export interface ValidateData<T = any> {
+        flag: MessageCommandFlag<T>;
+        values: string[]|boolean[]|null;
+        error?: unknown;
+        missing: boolean;
+        valid: boolean;
     }
 }

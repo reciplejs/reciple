@@ -9,6 +9,7 @@ import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
 import type { Client } from '../structures/Client.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
+import { MessageCommandFlagValueManager } from '../managers/MessageCommandFlagValueManager.js';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
@@ -42,6 +43,7 @@ export namespace MessageCommand {
         message: Message;
         parser: MessageCommandParser;
         options: MessageCommandOptionValueManager;
+        flags: MessageCommandFlagValueManager;
     }
 
     export interface ExecuteOptions extends BaseCommand.ExecuteOptions<CommandType.Message> {
@@ -79,7 +81,18 @@ export namespace MessageCommand {
             client,
             command,
             parser,
-            options: new MessageCommandOptionValueManager(client, command.options, parser),
+            options: new MessageCommandOptionValueManager(client, {
+                command,
+                message,
+                options: command.options,
+                parser
+            }),
+            flags: new MessageCommandFlagValueManager(client, {
+                command,
+                message,
+                flags: command.flags,
+                parser
+            }),
             preconditionResults: new PreconditionResultManager(client, {
                 disabledPreconditions: command.disabledPreconditions
             }),

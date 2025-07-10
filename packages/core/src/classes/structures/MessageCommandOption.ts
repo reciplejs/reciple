@@ -1,6 +1,7 @@
 import type { Awaitable, Message } from 'discord.js';
 import type { MessageCommand } from '../commands/MessageCommand.js';
 import type { Client } from './Client.js';
+import type { MessageCommandParser } from './MessageCommandParser.js';
 
 export class MessageCommandOption<T> implements MessageCommandOption.Data<T> {
     public name!: string;
@@ -40,7 +41,8 @@ export namespace MessageCommandOption {
     }
 
     export interface ResolveValueOptions<T = any> {
-        value: string;
+        value: string|null;
+        parser: MessageCommandParser;
         option: MessageCommandOption<T>;
         command: MessageCommand;
         message: Message;

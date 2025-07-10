@@ -2,6 +2,9 @@ import { bold, red } from 'kleur/colors';
 import { stripVTControlCharacters } from 'node:util';
 import type { AnyCommand } from '../../helpers/types.js';
 import { CommandType } from '../../helpers/constants.js';
+import { MessageCommand } from '../commands/MessageCommand.js';
+import type { MessageCommandOption } from './MessageCommandOption.js';
+import type { MessageCommandFlag } from './MessageCommandFlag.js';
 
 export class RecipleError extends Error {
     get cleanStack() {
@@ -30,6 +33,11 @@ export namespace RecipleError {
     }
 
     export const Code = {
+        MultipleErrors: (errors: Error[]) => ({
+            name: 'MultipleErrors',
+            message: `${errors.length} error${errors.length === 1 ? '' : 's'} occurred while executing.`,
+            cause: errors.length === 1 ? errors[0] : errors,
+        }),
         NotImplemented: () => ({
             name: 'NotImplemented',
             message: 'This functionality is not yet implemented.',
@@ -51,6 +59,32 @@ export namespace RecipleError {
         CommandAlreadyExists: (command: AnyCommand) => ({
             name: 'CommandAlreadyExists',
             message: `The command (${CommandType[command.type]}: ${command.data.name}) already exists.`,
-        })
+        }),
+        MessageCommandMissingRequiredOption: (command: MessageCommand, option: MessageCommandOption<any>) => ({
+            name: 'MessageCommandMissingRequiredOption',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) is missing a required option (${option.name}).`,
+        }),
+        MessageCommandMissingRequiredFlag: (command: MessageCommand, flag: MessageCommandFlag<any>) => ({
+            name: 'MessageCommandMissingRequiredFlag',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) is missing a required flag (${flag.name}).`,
+        }),
+        MessageCommandInvalidOption: (command: MessageCommand, option: MessageCommandOption<any>, reason?: unknown) => ({
+            name: 'MessageCommandInvalidOption',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) has an invalid option (${option.name}).`,
+            cause: reason
+        }),
+        MessageCommandInvalidFlag: (command: MessageCommand, flag: MessageCommandFlag<any>, reason?: unknown) => ({
+            name: 'MessageCommandInvalidFlag',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) has an invalid flag (${flag.name}).`,
+            cause: reason
+        }),
+        MessageCommandUnknownOption: (command: MessageCommand, option: string) => ({
+            name: 'MessageCommandUnknownOption',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) does not have an option (${option}).`,
+        }),
+        MessageCommandUnknownFlag: (command: MessageCommand, flag: string) => ({
+            name: 'MessageCommandUnknownFlag',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) does not have a flag (${flag}).`,
+        }),
     } as const;
 }
