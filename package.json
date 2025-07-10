@@ -22,6 +22,7 @@
     "esbuild-plugin-version-injector": "^1.2.1",
     "lerna": "^8.2.2",
     "rimraf": "^6.0.1",
+    "terser": "^5.43.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   }
