@@ -37,10 +37,12 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
         }
 
         return {
-            postconditionData: {
-                reason: CommandPostconditionReason.Cooldown,
-                cooldown,
-                executeData: data,
+            postconditionExecute: {
+                data: {
+                    reason: CommandPostconditionReason.Cooldown,
+                    cooldown,
+                    executeData: data,
+                }
             },
             success: false
         };

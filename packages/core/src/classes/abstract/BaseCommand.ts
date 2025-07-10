@@ -188,7 +188,7 @@ export namespace BaseCommand {
             return data;
         }
 
-        if (data.preconditionResults.postconditionData.length) {
+        if (data.preconditionResults.postconditionExecutes.length) {
             const withPostconditionData = (data.preconditionResults.cache as Collection<string, BaseCommandPrecondition.ResultData<CommandType>>)
                 .filter(result => !!result.postconditionExecute);
 

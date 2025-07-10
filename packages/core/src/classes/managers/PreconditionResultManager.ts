@@ -34,8 +34,8 @@ export class PreconditionResultManager<T extends CommandType, D = any> extends B
         return this.cache.filter(r => r.error).map(r => r.error as Error);
     }
 
-    get postconditionData() {
-        return this.cache.map(r => r.postconditionData).filter(p => !!p);
+    get postconditionExecutes() {
+        return this.cache.filter(r => !!r.postconditionExecute).map(r => r.postconditionExecute);
     }
 
     [Symbol.iterator]() {
