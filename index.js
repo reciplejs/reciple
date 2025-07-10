@@ -19,7 +19,7 @@ client.on('ready', () => {
 
     client.commands?.add(
         new MessageCommand()
-            .setData(data => data
+            .setCommand(data => data
                 .setName('ping')
                 .setDescription('Ping pong!')
                 .setAliases('pong')
@@ -35,7 +35,7 @@ client.on('ready', () => {
                 /**
                  * @type {number}
                  */
-                const times = await data.options.getOptionResolvedValue('times', false) ?? 1;
+                const times = await data.options.getOptionResolvedValue('times', false) || 1;
 
                 await data.message.reply(('Pong!\n').repeat(times));
             })

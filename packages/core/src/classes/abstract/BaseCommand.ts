@@ -8,7 +8,6 @@ import type { PostconditionResultManager } from '../managers/PostconditionResult
 import type { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
 import type { BaseCommandPostcondition } from './BaseCommandPostcondition.js';
 
-// FIXME: Fix TypeError: Class extends value undefined is not a constructor or null
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
     public id: string = DiscordSnowflake.generate().toString();
 
