@@ -36,13 +36,13 @@ export namespace ContextMenuCommand {
         interaction: UserContextMenuCommandInteraction|MessageContextMenuCommandInteraction;
     }
 
-    export interface ExecuteOptions extends BaseCommand.ExecuteOptions<CommandType.ContextMenu> {
+    export interface ExecuteOptions extends BaseCommand.ExecuteOptions {
         command?: ContextMenuCommand;
         interaction: UserContextMenuCommandInteraction|MessageContextMenuCommandInteraction;
         acceptRepliedInteraction?: boolean;
     }
 
-    export async function execute({ interaction, client, command, acceptRepliedInteraction }: ExecuteOptions): Promise<ExecuteData|null> {
+    export async function execute({ interaction, client, command, acceptRepliedInteraction, throwOnExecuteError }: ExecuteOptions): Promise<ExecuteData|null> {
         if (!interaction.isContextMenuCommand()) return null;
         if ((interaction.replied || interaction.deferred) && !acceptRepliedInteraction) return null;
 
@@ -76,11 +76,14 @@ export namespace ContextMenuCommand {
                 }
             });
 
-            if (!results.cache.some(result => result.success)) {
+            if (!results.cache.some(result => result.success) && throwOnExecuteError) {
                 throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            } else {
+                return null;
             }
         }
 
+        data.client.commands.emit('commandExecute', data);
         return data;
     }
 }

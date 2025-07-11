@@ -51,6 +51,10 @@ export namespace RecipleError {
             name: 'ClientNotReady',
             message: 'The client is not yet ready. Please wait until the client is logged in before using this functionality.',
         }),
+        ClientAlreadyReady: () => ({
+            name: 'ClientAlreadyReady',
+            message: 'The client is already ready.',
+        }),
         PreconditionError: (errors: unknown[]) => ({
             name: 'PreconditionError',
             message: `${errors.length} precondition${errors.length === 1 ? '' : 's'} failed while executing.`,

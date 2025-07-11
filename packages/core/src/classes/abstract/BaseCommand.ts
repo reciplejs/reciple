@@ -129,7 +129,8 @@ export namespace BaseCommand {
         postconditionResults: PostconditionResultManager<T>;
     }
 
-    export interface ExecuteOptions<T extends CommandType> {
+    export interface ExecuteOptions {
         client: Client<true>;
+        throwOnExecuteError?: boolean;
     }
 }

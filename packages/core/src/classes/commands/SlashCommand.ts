@@ -36,13 +36,13 @@ export namespace SlashCommand {
         interaction: ChatInputCommandInteraction;
     }
 
-    export interface ExecuteOptions extends BaseCommand.ExecuteOptions<CommandType.Slash> {
+    export interface ExecuteOptions extends BaseCommand.ExecuteOptions {
         command?: SlashCommand;
         interaction: ChatInputCommandInteraction;
         acceptRepliedInteraction?: boolean;
     }
 
-    export async function execute({ interaction, client, command, acceptRepliedInteraction }: ExecuteOptions): Promise<ExecuteData|null> {
+    export async function execute({ interaction, client, command, acceptRepliedInteraction, throwOnExecuteError }: ExecuteOptions): Promise<ExecuteData|null> {
         if (!interaction.isChatInputCommand()) return null;
         if ((interaction.replied || interaction.deferred) && !acceptRepliedInteraction) return null;
 
@@ -76,11 +76,14 @@ export namespace SlashCommand {
                 }
             });
 
-            if (!results.cache.some(result => result.success)) {
+            if (!results.cache.some(result => result.success) && throwOnExecuteError) {
                 throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            } else {
+                return null;
             }
         }
 
+        data.client.commands.emit('commandExecute', data);
         return data;
     }
 }

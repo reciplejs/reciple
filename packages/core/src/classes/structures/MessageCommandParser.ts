@@ -1,7 +1,7 @@
 import { escapeRegexp } from '@reciple/utils';
 import { parseArgs } from 'node:util';
 import type { MessageCommand } from '../commands/MessageCommand.js';
-import split, { type Options as SplitOptions } from 'split-string';
+import split from 'split-string';
 
 export class MessageCommandParser implements MessageCommandParser.Data {
     public raw: string;
@@ -98,5 +98,29 @@ export namespace MessageCommandParser {
         separator?: string;
         prefix?: string;
         splitOptions?: SplitOptions;
+    }
+
+    export interface SplitASTNode {
+        type: 'root' | 'bracket';
+        nodes: SplitASTNode[];
+        stash: string[];
+    }
+
+    export interface SplitState {
+        input: string;
+        separator: string;
+        stack: SplitASTNode[];
+        bos(): boolean;
+        eos(): boolean;
+        prev(): string;
+        next(): string;
+    }
+
+    export interface SplitOptions {
+        brackets?: { [key: string]: string } | boolean;
+        quotes?: string[] | boolean;
+        separator?: string;
+        strict?: boolean;
+        keep?(value: string, state: SplitState): boolean;
     }
 }

@@ -6,12 +6,18 @@ import { isDateResolvable, resolveDate } from '@reciple/utils';
 import { CooldownTriggerType } from '../../helpers/constants.js';
 
 export class CooldownAdapter extends BaseCooldownAdapter {
+    public client!: Client;
+
     get cache(): Collection<string, Cooldown> {
         return this.client.cooldowns?.cache!;
     }
 
-    public constructor(client: Client) {
-        super(client);
+    public constructor() {
+        super();
+    }
+
+    public async $init(client: Client): Promise<void> {
+        this.client = client;
     }
 
     public async fetch(filter: BaseCooldownAdapter.Filter): Promise<Cooldown.Data | null> {

@@ -13,7 +13,11 @@ export interface CooldownManager<A extends BaseCooldownAdapter> extends BaseMana
 export class CooldownManager<A extends BaseCooldownAdapter> {
     public readonly holds = Cooldown;
 
-    public constructor(public readonly client: Client, public readonly adapter: A) {}
+    private _sweeper?: NodeJS.Timeout;
+
+    public constructor(public readonly client: Client, public readonly adapter: A, public readonly options?: CooldownManager.Options) {
+        this._createSweeper();
+    }
 
     public async fetch(id: string, options: { force: boolean; }): Promise<Cooldown.Data|null> {
         if (options.force !== true) {
@@ -58,7 +62,7 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         return this.cache.get(cooldown.id)!;
     }
 
-    public async sweep(fetchAll: boolean = false): Promise<Cooldown[]> {
+    public async sweep(fetchAll: boolean = this.options?.sweeperOptions?.fetchAll ?? false): Promise<Cooldown[]> {
         if (fetchAll) {
             const data = await this.adapter.fetchAll();
             for (const cooldown of data) {
@@ -81,6 +85,12 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         this.emit('cooldownSweep', deleted);
 
         return deleted;
+    }
+
+    private _createSweeper(): NodeJS.Timeout {
+        if (this._sweeper) clearInterval(this._sweeper);
+
+        return this._sweeper = setInterval(() => this.sweep(), this.options?.sweeperOptions?.interval ?? 60000);
     }
 
     private _parseArray(data: Cooldown.Data[], cache: boolean = true): Cooldown[] {
@@ -106,5 +116,12 @@ export namespace CooldownManager {
     export interface Events {
         cooldownSweep: [cooldown: Cooldown[]];
         cooldownRemove: [cooldown: Cooldown];
+    }
+
+    export interface Options {
+        sweeperOptions?: {
+            interval?: number;
+            fetchAll?: boolean;
+        };
     }
 }

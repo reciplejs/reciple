@@ -1,9 +1,11 @@
 import type { DateResolvable, RestOrArray } from 'discord.js';
-import type { Client } from '../structures/Client.js';
 import type { Cooldown } from '../structures/Cooldown.js';
+import type { Client } from '../structures/Client.js';
 
 export abstract class BaseCooldownAdapter {
-    public constructor(public readonly client: Client) {}
+    public constructor() {}
+
+    public abstract $init(client: Client<false>): Promise<void>;
 
     public abstract fetch(filter: BaseCooldownAdapter.Filter): Promise<Cooldown.Data|null>;
     public abstract fetchMany(filter: BaseCooldownAdapter.Filter): Promise<Cooldown.Data[]>;
@@ -24,7 +26,7 @@ export abstract class BaseCooldownAdapter {
 }
 
 export namespace BaseCooldownAdapter {
-    export type Constructor = new (client: Client) => BaseCooldownAdapter;
+    export type Constructor = new () => BaseCooldownAdapter;
 
     export interface Filter {
         where: FilterWhere|FilterWhere[];

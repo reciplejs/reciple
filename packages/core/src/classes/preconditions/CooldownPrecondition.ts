@@ -6,10 +6,16 @@ import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js'
 export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCommandPostcondition.CooldownExecuteData<CommandType>> {
     public scope: CommandType[] = [];
 
+    constructor(public readonly options?: CooldownCommandPrecondition.Options) {
+        super();
+
+        if (options?.scope) this.scope = options.scope;
+    }
+
     public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<BaseCommandPrecondition.ResultDataResolvable<T, BaseCommandPostcondition.CooldownExecuteData<CommandType>>> {
         const userId = data.type === CommandType.Message ? data.message.author.id : data.interaction.user.id;
-        const guildId = data.type === CommandType.Message ? data.message.guildId : data.interaction.guildId;
-        const channelId = data.type === CommandType.Message ? data.message.channelId : data.interaction.channelId;
+        const guildId = this.options?.matchWithin === 'guild' ? (data.type === CommandType.Message ? data.message.guildId : data.interaction.guildId) : undefined;
+        const channelId = this.options?.matchWithin === 'channel' ? (data.type === CommandType.Message ? data.message.channelId : data.interaction.channelId) : undefined;
 
         let cooldown = await data.client.cooldowns.fetchForUser(userId, {
             guildId: guildId ?? undefined,
@@ -21,7 +27,7 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
         }).then(data => data.at(0));
 
         if (cooldown?.isExpired) {
-            await data.client.cooldowns.adapter.delete({
+            if (this.options?.deleteWhenExpired !== false) await data.client.cooldowns.adapter.delete({
                 where: {
                     id: cooldown.id
                 }
@@ -55,5 +61,13 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
             },
             success: false
         };
+    }
+}
+
+export namespace CooldownCommandPrecondition {
+    export interface Options {
+        scope?: CommandType[];
+        matchWithin?: 'global'|'guild'|'channel';
+        deleteWhenExpired?: boolean;
     }
 }

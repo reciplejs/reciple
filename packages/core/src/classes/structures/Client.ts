@@ -1,7 +1,7 @@
 import { Client as DiscordJsClient, Message, type Awaitable, type ClientEvents, type ClientOptions, type If, type Interaction } from 'discord.js';
 import { ModuleManager } from '../managers/ModuleManager.js';
 import { Module } from './Module.js';
-import type { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
+import { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
 import { CooldownManager } from '../managers/CooldownManager.js';
 import { PreconditionManager } from '../managers/PreconditionManager.js';
 import { CooldownAdapter } from '../adapters/CooldownAdapter.js';
@@ -15,14 +15,17 @@ import { MessageCommand } from '../commands/MessageCommand.js';
 import { PostconditionManager } from '../managers/PostconditionManager.js';
 import { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
 import { Utils } from './Utils.js';
+import type { Config } from '../../helpers/config.js';
 
 declare module "discord.js" {
     interface ClientOptions {
+        token?: string;
         modules?: Module.Resolvable[];
         preconditions?: BaseCommandPrecondition.Resolvable[];
         postconditions?: BaseCommandPostcondition.Resolvable[];
         commands?: AnyCommandResolvable[];
-        cooldownAdapter?: BaseCooldownAdapter.Constructor;
+        cooldownAdapter?: BaseCooldownAdapter|BaseCooldownAdapter.Constructor;
+        config?: Config;
     }
 }
 
@@ -74,6 +77,14 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         return this._postconditions as If<Ready, PostconditionManager, null>;
     }
 
+    get config() {
+        return this.options.config;
+    }
+
+    set config(config: Config|undefined) {
+        this.options.config = config;
+    }
+
     public constructor(options: ClientOptions) {
         super(options);
 
@@ -84,12 +95,19 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this._executeCommand = this._executeCommand.bind(this);
     }
 
-    public async login(token: string): Promise<string> {
+    public async login(token: string|undefined = this.options.token): Promise<string> {
         this._commands = new CommandManager(this);
-        this._cooldowns = new CooldownManager(this, this.options.cooldownAdapter ? new this.options.cooldownAdapter(this) : new CooldownAdapter(this));
+        this._cooldowns = new CooldownManager(this,
+            this.options.cooldownAdapter instanceof BaseCooldownAdapter
+                ? this.options.cooldownAdapter
+                : this.options.cooldownAdapter
+                    ? new this.options.cooldownAdapter()
+                    : new CooldownAdapter()
+        );
         this._preconditions = new PreconditionManager(this);
         this._postconditions = new PostconditionManager(this);
 
+        await this.cooldowns?.adapter.$init(this as Client<false>);
         await this.modules.enableModules();
 
         if (this.options.preconditions) {
@@ -142,23 +160,24 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     private async _executeCommand(trigger: Interaction|Message): Promise<void> {
         if (!this.isReady()) return;
 
-        // TODO: Add support for configuration
         if (trigger instanceof Message) {
             await MessageCommand.execute({
+                ...this.config?.commands?.message,
                 client: this,
-                message: trigger,
-                prefix: '!'
+                message: trigger
             });
             return;
         }
 
         if (trigger.isChatInputCommand()) {
             await SlashCommand.execute({
+                ...this.config?.commands?.slash,
                 client: this,
                 interaction: trigger
             });
         } else if (trigger.isContextMenuCommand()) {
             await ContextMenuCommand.execute({
+                ...this.config?.commands?.contextMenu,
                 client: this,
                 interaction: trigger
             });

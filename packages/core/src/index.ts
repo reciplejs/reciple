@@ -38,5 +38,6 @@ export * from './classes/structures/Module.js';
 export * from './classes/structures/RecipleError.js';
 export * from './classes/structures/Utils.js';
 
+export * from './helpers/config.js';
 export * from './helpers/constants.js';
 export * from './helpers/types.js';

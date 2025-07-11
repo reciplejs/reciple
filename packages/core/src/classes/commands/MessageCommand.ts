@@ -57,11 +57,12 @@ export namespace MessageCommand {
         flags: MessageCommandFlagValueManager;
     }
 
-    export interface ExecuteOptions extends BaseCommand.ExecuteOptions<CommandType.Message> {
+    export interface ExecuteOptions extends BaseCommand.ExecuteOptions {
         command?: MessageCommand;
         message: Message;
         prefix?: string|((data: PerGuildStringResolveData) => Awaitable<string>);
         separator?: string|((data: PerGuildStringResolveData) => Awaitable<string>);
+        splitOptions?: Omit<MessageCommandParser.SplitOptions, 'separator'>;
     }
 
     export interface PerGuildStringResolveData {
@@ -70,7 +71,7 @@ export namespace MessageCommand {
         client: Client;
     }
 
-    export async function execute({ message, client, command, prefix, separator }: ExecuteOptions): Promise<ExecuteData|null> {
+    export async function execute({ message, client, command, prefix, separator, throwOnExecuteError, splitOptions }: ExecuteOptions): Promise<ExecuteData|null> {
         const parser = new MessageCommandParser({
             raw: message.content,
             prefix: typeof prefix === 'function'
@@ -78,7 +79,8 @@ export namespace MessageCommand {
                 : prefix ?? undefined,
             separator: typeof separator === 'function'
                 ? await separator({ guild: message.guild, message, client })
-                : separator ?? undefined
+                : separator ?? undefined,
+            splitOptions
         });
 
         command ??= client.commands.cache.find(c => c.type === CommandType.Message && (c.data.name === parser.name || c.data.aliases?.includes(parser.name))) as MessageCommand|undefined;
@@ -126,11 +128,14 @@ export namespace MessageCommand {
                 }
             });
 
-            if (!results.cache.some(result => result.success)) {
+            if (!results.cache.some(result => result.success) && throwOnExecuteError) {
                 throw new RecipleError(RecipleError.Code.CommandExecuteError(command, error));
+            } else {
+                return null;
             }
         }
 
+        data.client.commands.emit('commandExecute', data);
         return data;
     }
 }
