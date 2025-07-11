@@ -30,8 +30,9 @@
     "url": "https://github.com/thenorthsolution/Reciple",
     "directory": "packages/utils"
   },
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "kleur": "^4.1.5"
+  },
   "publishConfig": {
     "access": "public"
   }

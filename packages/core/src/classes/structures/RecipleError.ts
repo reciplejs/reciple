@@ -1,10 +1,10 @@
-import { bold, red } from 'kleur/colors';
 import { stripVTControlCharacters } from 'node:util';
 import type { AnyCommand } from '../../helpers/types.js';
 import { CommandType } from '../../helpers/constants.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
 import type { MessageCommandOption } from './MessageCommandOption.js';
 import type { MessageCommandFlag } from './MessageCommandFlag.js';
+import { colors } from '@reciple/utils';
 
 export class RecipleError extends Error {
     get cleanStack() {
@@ -17,7 +17,7 @@ export class RecipleError extends Error {
 
         super(options.message, { ...options });
 
-        if (options.name) this.name = bold(red(options.name));
+        if (options.name) this.name = colors.bold(colors.red(options.name));
     }
 
     public toString() {

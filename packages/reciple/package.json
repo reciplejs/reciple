@@ -20,7 +20,8 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "npm run clean && tsc",
+    "build": "tsup",
+    "build:tsc": "npm run clean && tsc",
     "check": "tsc --noEmit",
     "prepack": "npm run build"
   },
@@ -31,9 +32,11 @@
   },
   "dependencies": {
     "@reciple/utils": "^10.0.0",
+    "bundle-require": "^5.1.0",
     "commander": "^14.0.0",
     "dotenv": "^16.4.7",
     "prtyprnt": "^1.1.0",
+    "reciple": "^10.0.0",
     "semver": "^7.7.2"
   },
   "publishConfig": {
