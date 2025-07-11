@@ -4,9 +4,9 @@ import { mkdir, readdir, stat } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, spinner, text, type SpinnerOptions } from '@clack/prompts';
 import micromatch from 'micromatch';
 import type { CLI } from './CLI.js';
-import { RecipleError } from '@reciple/core';
 import path from 'node:path';
 import { statSync } from 'node:fs';
+import { NotAnError } from './NotAnError.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -23,6 +23,10 @@ export class TemplateBuilder {
         return this._directory ?? process.cwd();
     }
 
+    get relativeDirectory() {
+        return path.relative(process.cwd(), this.directory);
+    }
+
     constructor(options: TemplateBuilder.Options) {
         this.cli = options.cli;
         this._directory = options.directory;
@@ -37,44 +41,51 @@ export class TemplateBuilder {
     }
 
     public async createDirectory(options?: TemplateBuilder.CreateDirectoryOptions) {
-        this._directory = options?.directory ?? this.directory;
+        this._directory = options?.directory ?? this._directory;
 
         if (!this._directory) {
-            const dir = await text({
-                message: `Enter project directory`,
-                placeholder: `Leave empty to use current directory`,
-                defaultValue: process.cwd(),
-                validate: value => {
-                    const dir = path.resolve(value);
-                    if (!statSync(dir).isDirectory()) return 'Invalid folder directory';
-                }
-            });
+            const dir = this.defaultAll
+                ? process.cwd()
+                : await text({
+                    message: `Enter project directory`,
+                    placeholder: `Leave empty to use current directory`,
+                    defaultValue: process.cwd(),
+                    validate: value => {
+                        const dir = path.resolve(value);
+                        if (!statSync(dir).isDirectory()) return 'Invalid folder directory';
+                    }
+                });
 
-            if (isCancel(dir)) throw new RecipleError('operation cancelled');
+            if (isCancel(dir)) throw new NotAnError('Operation cancelled');
             this._directory = dir;
         }
 
+        this._directory = path.resolve(this._directory);
+
         const stats = await stat(this.directory).catch(() => undefined);
 
-        if (stats && !stats.isDirectory()) {
+        if (stats && stats.isDirectory()) {
             let files = await readdir(this.directory);
                 files = micromatch(files, options?.ignoredFiles ?? TemplateBuilder.ignoredDirectoryFiles);
 
             if (files.length) {
                 switch (options?.onNotEmpty) {
                     case 'throw':
-                        throw new RecipleError(`directory ${colors.cyan(this.directory)} is not empty`);
+                        throw new NotAnError(`directory ${colors.cyan(this.relativeDirectory)} is not empty`);
                     case 'ignore':
                         return this;
                     default:
-                        const overwrite = await confirm({
-                            message: `Directory ${colors.cyan(this.directory)} is not empty. Would you like to overwrite?`,
-                            active: 'Yes',
-                            inactive: 'No',
-                            initialValue: false
-                        });
+                        const overwrite = this.defaultAll
+                            ? true
+                            : await confirm({
+                                message: `Directory ${colors.cyan(this.relativeDirectory)} is not empty. Would you like to overwrite?`,
+                                active: 'Yes',
+                                inactive: 'No',
+                                initialValue: false
+                            });
 
-                        if (isCancel(overwrite) || !overwrite) throw new RecipleError('operation cancelled');
+                        if (!overwrite) throw new NotAnError('Directory is not empty');
+                        if (isCancel(overwrite)) throw new NotAnError('Operation cancelled');
                         break;
                 }
             }

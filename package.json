@@ -16,7 +16,7 @@
     "publish-dev": "lerna run build && lerna publish prerelease",
     "publish-latest": "lerna run build && lerna publish",
     "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
-    "create": "npm run build -w reciple && node ./packages/reciple/dist/bin/reciple.js create"
+    "create": "npm run build && node ./packages/reciple/dist/bin/reciple.js create"
   },
   "devDependencies": {
     "@types/node": "^22.15.32",
