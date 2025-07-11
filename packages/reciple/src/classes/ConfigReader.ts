@@ -3,7 +3,7 @@ import { colors } from '@reciple/utils';
 import { bundleRequire, type Options } from 'bundle-require';
 import { CLI } from './CLI.js';
 import path from 'node:path';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 
 export class ConfigReader {
     private _client: Client|null = null;
@@ -21,7 +21,7 @@ export class ConfigReader {
     public constructor(public readonly filepath: string) {}
 
     public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>) {
-        if (!await ConfigReader.hasConfig(this.filepath) && options?.upsert !== false) return ConfigReader.create({
+        if (!await ConfigReader.hasConfigFile(this.filepath) && options?.upsert !== false) return ConfigReader.create({
             filepath: this.filepath,
             readOptions: options
         });
@@ -48,7 +48,7 @@ export class ConfigReader {
         const extention = path.extname(options.filepath).slice(1);
         const type = options.type ?? (this.isJavascriptFileExtension(extention) ? 'js' : this.isTypescriptFileExtension(extention) ? 'ts' : 'js');
 
-        if (await ConfigReader.hasConfig(options.filepath) && !options.overwrite) {
+        if (await ConfigReader.hasConfigFile(options.filepath) && !options.overwrite) {
             if (options.throwOnConflict !== false) throw new RecipleError(`config file already exists at ${colors.green(options.filepath)}`);
 
             const reader = new ConfigReader(options.filepath);
@@ -66,12 +66,17 @@ export class ConfigReader {
     }
 
     public async exists(): Promise<boolean> {
-        return await ConfigReader.hasConfig(this.filepath);
+        return await ConfigReader.hasConfigFile(this.filepath);
     }
 
-    public static async hasConfig(filepath: string): Promise<boolean> {
+    public static async hasConfigFile(filepath: string): Promise<boolean> {
         const stats = await stat(filepath).catch(() => undefined);
-        return !!stats;
+        return !!stats && stats.isFile();
+    }
+
+    public static async findConfigFromDirectory(directory: string): Promise<string|null> {
+        const files = (await readdir(directory)).find(f => ConfigReader.defaultConfigFiles.includes(f));
+        return files ? path.join(directory, files) : null;
     }
 
     public static async getDefaultConfigContent(type: 'ts'|'js' = 'js'): Promise<string> {
@@ -103,6 +108,17 @@ export namespace ConfigReader {
     export const FileTypes = {
         ts: ['ts', 'mts', 'tsx'],
         js: ['js', 'mjs', 'jsx']
+    }
+
+    export const defaultConfigFiles = [
+        'reciple.config.ts',
+        'reciple.config.mts',
+        'reciple.config.js',
+        'reciple.config.mjs'
+    ];
+
+    export function createConfigFilename(type: 'ts'|'js', esm: boolean = false): string {
+        return `reciple.config.${type === 'ts' ? esm ? 'mts' : 'ts' : esm ? 'mjs' : 'js'}`;
     }
 
     export function isTypescriptFileExtension(extention: string): boolean {

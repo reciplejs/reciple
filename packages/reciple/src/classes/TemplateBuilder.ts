@@ -1,5 +1,5 @@
 import { colors, type PackageManager } from '@reciple/utils';
-import type { ConfigReader } from './ConfigReader.js';
+import { ConfigReader } from './ConfigReader.js';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, spinner, text, type SpinnerOptions } from '@clack/prompts';
 import micromatch from 'micromatch';
@@ -95,6 +95,20 @@ export class TemplateBuilder {
         return this;
     }
 
+    public async createConfig(options?: TemplateBuilder.CreateConfigOptions) {
+        let filepath = options?.filepath;
+
+        if (!filepath) filepath = await ConfigReader.findConfigFromDirectory(this.directory) ?? path.join(this.directory, ConfigReader.createConfigFilename(this.typescript ? 'ts' : 'js'));
+
+        this.config = await ConfigReader.create({
+            filepath,
+            type: this.typescript ? 'ts' : 'js',
+            overwrite: false
+        });
+
+        return this;
+    }
+
     public async build() {
         outro(`Project created in ${colors.cyan(this.directory)}`);
     }
@@ -119,6 +133,8 @@ export namespace TemplateBuilder {
         ignoredFiles?: string[];
         onNotEmpty?: 'prompt'|'throw'|'ignore';
     }
+
+    export interface CreateConfigOptions extends Partial<ConfigReader.CreateOptions> {}
 
     export interface SpinnerPromiseOptions<T> {
         indicator?: SpinnerOptions['indicator'];
