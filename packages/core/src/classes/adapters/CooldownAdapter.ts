@@ -3,6 +3,7 @@ import { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
 import { Collection, normalizeArray, type RestOrArray } from 'discord.js';
 import { Cooldown } from '../structures/Cooldown.js';
 import { isDateResolvable, resolveDate } from '@reciple/utils';
+import { CooldownTriggerType } from '../../helpers/constants.js';
 
 export class CooldownAdapter extends BaseCooldownAdapter {
     get cache(): Collection<string, Cooldown> {
@@ -82,13 +83,13 @@ export class CooldownAdapter extends BaseCooldownAdapter {
         return updated;
     }
 
-    public async create(data: Cooldown.Data): Promise<Cooldown.Data> {
-        if (this.cache.has(data.id)) throw new Error(`Cooldown with ID ${data.id} already exists.`);
-        this.cache.set(data.id, new Cooldown(this.client, data));
-        return data;
+    public async create(data: Omit<Cooldown.Data, 'id'>): Promise<Cooldown.Data> {
+        const cooldown = new Cooldown(this.client, data);
+        this.cache.set(cooldown.id, cooldown);
+        return cooldown.toJSON();
     }
 
-    public createMany(...data: RestOrArray<Cooldown.Data>): Promise<Cooldown.Data[]> {
+    public createMany(...data: RestOrArray<Omit<Cooldown.Data, 'id'>>): Promise<Cooldown.Data[]> {
         return Promise.all(normalizeArray(data).map(cooldown => this.create(cooldown)));
     }
 
@@ -108,7 +109,37 @@ export class CooldownAdapter extends BaseCooldownAdapter {
         if (where.userId && data.userId !== where.userId) isValid = false;
         if (where.guildId && data.guildId !== where.guildId) isValid = false;
         if (where.channelId && data.channelId !== where.channelId) isValid = false;
-        if (where.trigger && data.trigger !== where.trigger) isValid = false;
+
+        if (where.trigger) {
+            if (where.trigger.type === data.trigger?.type) {
+                if (
+                    where.trigger.type === CooldownTriggerType.Command
+                    && !where.trigger.commands
+                        .every(
+                            command =>
+                                data.trigger?.type === CooldownTriggerType.Command
+                                && data.trigger?.commands.some(cmd => cmd.id === command.id && cmd.type === command.type && cmd.name === command.name)
+                        )
+                ) {
+                    isValid = false;
+                }
+
+                if (
+                    where.trigger.type === CooldownTriggerType.Interaction
+                    && where.trigger.interactions
+                    && !where.trigger.interactions
+                        ?.every(
+                            interaction =>
+                                data.trigger?.type === CooldownTriggerType.Interaction
+                                && data.trigger?.interactions?.some(int => int.type === interaction.type && int.customId === interaction.customId && int.commandName === interaction.commandName)
+                        )
+                ) {
+                    isValid = false;
+                }
+            } else {
+                isValid = false;
+            }
+        }
 
         if (where.endsAt) {
             if (isDateResolvable(where.endsAt)) {

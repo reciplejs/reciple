@@ -4,7 +4,7 @@ import { Cooldown } from '../structures/Cooldown.js';
 import type { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
 import EventEmitter from 'node:events';
 import { mix } from 'ts-mixer';
-import type { ChannelResolvable, GuildResolvable, UserResolvable } from 'discord.js';
+import { isJSONEncodable, type ChannelResolvable, type GuildResolvable, type JSONEncodable, type UserResolvable } from 'discord.js';
 import { resolveDate } from '@reciple/utils';
 
 export interface CooldownManager<A extends BaseCooldownAdapter> extends BaseManager<string, Cooldown, Cooldown.Resolvable>, EventEmitter {}
@@ -50,6 +50,12 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
 
         const data = await this.adapter.fetchMany({ where: { ...options, guildId } });
         return this._parseArray(data);
+    }
+
+    public async create(data: Omit<Cooldown.Data, 'id'>|JSONEncodable<Omit<Cooldown.Data, 'id'>>): Promise<Cooldown> {
+        const cooldown = await this.adapter.create(isJSONEncodable(data) ? data.toJSON() : data);
+        this.cache.set(cooldown.id, new Cooldown(this.client, cooldown));
+        return this.cache.get(cooldown.id)!;
     }
 
     public async sweep(fetchAll: boolean = false): Promise<Cooldown[]> {

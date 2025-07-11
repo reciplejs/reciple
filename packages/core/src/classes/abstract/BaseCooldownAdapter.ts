@@ -17,8 +17,8 @@ export abstract class BaseCooldownAdapter {
     public abstract updateMany(filter: BaseCooldownAdapter.Filter, data: Partial<Cooldown.Data>): Promise<Cooldown.Data[]>;
     public abstract updateAll(data: Partial<Cooldown.Data>): Promise<Cooldown.Data[]>;
 
-    public abstract create(data: Cooldown.Data): Promise<Cooldown.Data>;
-    public abstract createMany(...data: RestOrArray<Cooldown.Data>): Promise<Cooldown.Data[]>;
+    public abstract create(data: Omit<Cooldown.Data, 'id'>): Promise<Cooldown.Data>;
+    public abstract createMany(...data: RestOrArray<Omit<Cooldown.Data, 'id'>>): Promise<Cooldown.Data[]>;
 
     public abstract upsert(filter: BaseCooldownAdapter.Filter, data: { create: Cooldown.Data; update: Partial<Cooldown.Data>; }): Promise<Cooldown.Data>;
 }

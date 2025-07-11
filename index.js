@@ -1,5 +1,6 @@
 // @ts-check
-import { Client, CooldownCommandPrecondition, MessageCommand, MessageCommandValidationPrecondition } from '@reciple/core';
+import { BaseCommandPostcondition, BaseCommandPrecondition, Client, CommandPostconditionReason, CommandType, CooldownCommandPrecondition, MessageCommand, MessageCommandValidationPrecondition } from '@reciple/core';
+import { time } from 'discord.js';
 import 'dotenv/config';
 
 const client = new Client({
@@ -31,6 +32,7 @@ client.on('ready', () => {
                     .setRequired(false)
                 )
             )
+            .setCooldown(20000)
             .setExecute(async data => {
                 /**
                  * @type {number}
@@ -39,7 +41,39 @@ client.on('ready', () => {
 
                 await data.message.reply(('Pong!\n').repeat(times));
             })
+            .addPostconditions(new CooldownPostcondition())
     );
 });
+
+class CooldownPostcondition extends BaseCommandPostcondition {
+    scope = [];
+
+    /**
+     * 
+     * @param {BaseCommandPostcondition.ExecuteData<CommandType>} data
+     * @param {BaseCommandPrecondition.ResultData<CommandType>} preconditionTrigger 
+     */
+    async execute(data, preconditionTrigger) {
+        if (data.reason !== CommandPostconditionReason.Cooldown) return false;
+        console.log(`Postcondition: ${CommandPostconditionReason[data.reason]} triggered for ${data.executeData.command.data.name}`);;
+
+        const response = {
+            content: `You are on cooldown. for ${time(data.cooldown.endsAt, 'R')}`,
+            ephemeral: true
+        };
+
+        switch (data.executeData.type) {
+            case CommandType.Message:
+                await data.executeData.message.reply(response);
+                break;
+            case CommandType.Slash:
+            case CommandType.ContextMenu:
+                await data.executeData.interaction.reply(response);
+                break;
+        }
+
+        return true;
+    }
+}
 
 await client.login(process.env.DISCORD_TOKEN ?? '');

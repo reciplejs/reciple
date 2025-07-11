@@ -2,7 +2,6 @@ import { CommandPostconditionReason, CommandType, CooldownTriggerType } from '..
 import type { AnyCommandExecuteData } from '../../helpers/types.js';
 import type { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
 import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
-import { Cooldown } from '../structures/Cooldown.js';
 
 export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCommandPostcondition.CooldownExecuteData<CommandType>> {
     public scope: CommandType[] = [];
@@ -12,7 +11,7 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
         const guildId = data.type === CommandType.Message ? data.message.guildId : data.interaction.guildId;
         const channelId = data.type === CommandType.Message ? data.message.channelId : data.interaction.channelId;
 
-        const cooldown = await data.client.cooldowns.fetchForUser(userId, {
+        let cooldown = await data.client.cooldowns.fetchForUser(userId, {
             guildId: guildId ?? undefined,
             channelId: channelId ?? undefined,
             trigger: {
@@ -21,17 +20,27 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
             }
         }).then(data => data.at(0));
 
+        if (cooldown?.isExpired) {
+            await data.client.cooldowns.adapter.delete({
+                where: {
+                    id: cooldown.id
+                }
+            });
+
+            cooldown = undefined;
+        }
+
         if (!cooldown) {
-            if (data.command.cooldown) await data.client.cooldowns.adapter.create(new Cooldown(data.client, {
+            if (data.command.cooldown) await data.client.cooldowns.create({
                 userId,
                 guildId: guildId ?? undefined,
                 channelId: channelId ?? undefined,
-                endsAt: new Date(Date.now() + data.command.cooldown * 1000),
+                endsAt: new Date(Date.now() + data.command.cooldown),
                 trigger: {
                     type: CooldownTriggerType.Command,
                     commands: [data.command]
                 }
-            }));
+            });
 
             return true;
         }
