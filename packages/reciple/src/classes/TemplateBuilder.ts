@@ -5,7 +5,7 @@ import { confirm, intro, isCancel, outro, spinner, text, type SpinnerOptions } f
 import micromatch from 'micromatch';
 import type { CLI } from './CLI.js';
 import path from 'node:path';
-import { statSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { NotAnError } from './NotAnError.js';
 
 export class TemplateBuilder {
@@ -24,7 +24,7 @@ export class TemplateBuilder {
     }
 
     get relativeDirectory() {
-        return path.relative(process.cwd(), this.directory);
+        return path.relative(process.cwd(), this.directory) || '.';
     }
 
     constructor(options: TemplateBuilder.Options) {
@@ -52,7 +52,7 @@ export class TemplateBuilder {
                     defaultValue: process.cwd(),
                     validate: value => {
                         const dir = path.resolve(value);
-                        if (!statSync(dir).isDirectory()) return 'Invalid folder directory';
+                        if (existsSync(dir) && !statSync(dir).isDirectory()) return 'Invalid folder directory';
                     }
                 });
 
@@ -66,25 +66,25 @@ export class TemplateBuilder {
 
         if (stats && stats.isDirectory()) {
             let files = await readdir(this.directory);
-                files = micromatch(files, options?.ignoredFiles ?? TemplateBuilder.ignoredDirectoryFiles);
+                files = files.filter(f => !micromatch.isMatch(f, options?.ignoredFiles ?? TemplateBuilder.ignoredDirectoryFiles, { dot: true }));
 
             if (files.length) {
                 switch (options?.onNotEmpty) {
                     case 'throw':
-                        throw new NotAnError(`directory ${colors.cyan(this.relativeDirectory)} is not empty`);
+                        throw new NotAnError(`Directory ${colors.cyan(this.relativeDirectory)} is not empty`);
                     case 'ignore':
                         return this;
                     default:
                         const overwrite = this.defaultAll
-                            ? true
+                            ? false
                             : await confirm({
-                                message: `Directory ${colors.cyan(this.relativeDirectory)} is not empty. Would you like to overwrite?`,
+                                message: `Directory ${colors.cyan(this.relativeDirectory)} is not empty. Would you like to continue?`,
                                 active: 'Yes',
                                 inactive: 'No',
                                 initialValue: false
                             });
 
-                        if (!overwrite) throw new NotAnError('Directory is not empty');
+                        if (!overwrite) throw new NotAnError(`Directory ${colors.cyan(this.relativeDirectory)} is not empty`);
                         if (isCancel(overwrite)) throw new NotAnError('Operation cancelled');
                         break;
                 }
