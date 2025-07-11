@@ -18,16 +18,18 @@ export class ConfigReader {
         return this._config ?? {};
     }
 
-    public async read(options: ConfigReader.ReadOptions) {
-        const stats = await stat(options.filepath).catch(() => undefined);
-        if (!stats && options.upsert) return ConfigReader.create({
-            filepath: options.filepath,
+    public constructor(public readonly filepath: string) {}
+
+    public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>) {
+        if (!await ConfigReader.hasConfig(this.filepath) && options?.upsert !== false) return ConfigReader.create({
+            filepath: this.filepath,
             readOptions: options
         });
 
         const { mod } = await bundleRequire({
             format: 'esm',
-            ...options
+            ...options,
+            filepath: this.filepath
         });
 
         if (!mod || !mod.client || !(mod.client instanceof Client)) {
@@ -38,26 +40,44 @@ export class ConfigReader {
         this._config = mod.config;
     }
 
+    public async create(options?: Omit<ConfigReader.CreateOptions, 'filepath'>): Promise<ConfigReader> {
+        return ConfigReader.create({ ...options, filepath: this.filepath });
+    }
+
     public static async create(options: ConfigReader.CreateOptions): Promise<ConfigReader> {
-        const stats = await stat(options.filepath).catch(() => undefined);
         const extention = path.extname(options.filepath).slice(1);
         const type = options.type ?? (this.isJavascriptFileExtension(extention) ? 'js' : this.isTypescriptFileExtension(extention) ? 'ts' : 'js');
 
-        if (stats && !options.overwrite) {
+        if (await ConfigReader.hasConfig(options.filepath) && !options.overwrite) {
             if (options.throwOnConflict !== false) throw new RecipleError(`config file already exists at ${colors.green(options.filepath)}`);
 
-            const reader = new ConfigReader();
-            await reader.read({ ...options.readOptions, filepath: options.filepath });
+            const reader = new ConfigReader(options.filepath);
+            await reader.read(options.readOptions);
             return reader;
         }
 
         await mkdir(path.dirname(options.filepath), { recursive: true });
-        await writeFile(options.filepath, await ConfigReader.getDefaultConfigContent(type));
+        await writeFile(options.filepath, await this.getDefaultConfigContent(type));
 
-        const reader = new ConfigReader();
+        const reader = new ConfigReader(options.filepath);
 
-        await reader.read({ ...options.readOptions, filepath: options.filepath });
+        await reader.read(options.readOptions);
         return reader;
+    }
+
+    public async exists(): Promise<boolean> {
+        return await ConfigReader.hasConfig(this.filepath);
+    }
+
+    public static async hasConfig(filepath: string): Promise<boolean> {
+        const stats = await stat(filepath).catch(() => undefined);
+        return !!stats;
+    }
+
+    public static async getDefaultConfigContent(type: 'ts'|'js' = 'js'): Promise<string> {
+        const filepath = path.join(CLI.root, 'assets', `reciple.config.${type}`);
+        const content = await readFile(filepath, 'utf-8');
+        return content;
     }
 }
 
@@ -91,11 +111,5 @@ export namespace ConfigReader {
 
     export function isJavascriptFileExtension(extention: string): boolean {
         return FileTypes.js.includes(extention);
-    }
-
-    export async function getDefaultConfigContent(type: 'ts'|'js' = 'js'): Promise<string> {
-        const filepath = path.join(CLI.root, 'assets', `reciple.config.${type}`);
-        const content = await readFile(filepath, 'utf-8');
-        return content;
     }
 }
