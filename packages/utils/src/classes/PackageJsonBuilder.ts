@@ -9,17 +9,7 @@ import type { PackageJson } from 'type-fest';
 export class PackageJsonBuilder {
     public indent: Indent = { type: 'space', amount: 2, indent: '  ' };
     public newline: '\n'|'\r\n' = '\n';
-    public data: PackageJson.PackageJsonStandard = {
-        name: undefined,
-        version: undefined,
-        type: undefined,
-        private: undefined,
-        license: undefined,
-        description: undefined,
-        scripts: {},
-        dependencies: {},
-        devDependencies: {}
-    };
+    public data: PackageJson.PackageJsonStandard = PackageJsonBuilder.defaultData;
 
     constructor(data?: Partial<PackageJson.PackageJsonStandard>) {
         Object.assign(this.data, data);
@@ -133,7 +123,22 @@ export class PackageJsonBuilder {
     }
 }
 
-export namespace PackageJsonBuilder {}
+export namespace PackageJsonBuilder {
+    export const defaultData: PackageJson.PackageJsonStandard = {
+        name: undefined,
+        version: undefined,
+        type: undefined,
+        private: undefined,
+        license: undefined,
+        description: undefined,
+        scripts: undefined,
+        dependencies: undefined,
+        devDependencies: undefined,
+        peerDependencies: undefined,
+        optionalDependencies: undefined,
+        bundledDependencies: undefined,
+    };
+}
 
 export type {
     Indent,

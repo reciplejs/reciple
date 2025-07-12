@@ -138,11 +138,27 @@ export class TemplateBuilder {
                 );
         }
 
+        const exists = await ConfigReader.hasConfigFile(filepath);
+
+        if (exists) {
+            const overwrite = this.defaultAll
+                ? false
+                : await confirm({
+                    message: `Config file already exists at ${colors.green(path.relative(process.cwd(), filepath))}. Would you like to overwrite it?`,
+                    active: 'Yes',
+                    inactive: 'No',
+                    initialValue: false
+                });
+
+            if (!overwrite) return this;
+            if (isCancel(overwrite)) throw new NotAnError('Operation cancelled');
+        }
+
         this.config = await ConfigReader.create({
             ...options,
             filepath,
             type: this.typescript ? 'ts' : 'js',
-            overwrite: false
+            overwrite: true
         });
 
         return this;
