@@ -3,22 +3,29 @@ import detectIndent from 'detect-indent';
 import { detectNewline } from 'detect-newline';
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { assign } from 'radash';
 import type { PackageJson } from 'type-fest';
 
 export class PackageJsonBuilder {
     public indent: Indent = { type: 'space', amount: 2, indent: ' ' };
     public newline: '\n'|'\r\n' = '\n';
-    public data: PackageJson = {
+    public data: PackageJson.PackageJsonStandard = {
+        name: undefined,
+        version: undefined,
+        type: undefined,
+        private: undefined,
+        license: undefined,
+        description: undefined,
         scripts: {},
         dependencies: {},
         devDependencies: {}
     };
 
-    constructor(data?: Partial<PackageJson>) {
+    constructor(data?: Partial<PackageJson.PackageJsonStandard>) {
         Object.assign(this.data, data);
     }
 
-    public toJSON(): PackageJson {
+    public toJSON(): PackageJson.PackageJsonStandard {
         return this.data;
     }
 
@@ -62,13 +69,13 @@ export class PackageJsonBuilder {
         return this;
     }
 
-    public setName(name: string): this {
-        this.data.name = name;
+    public merge(data: Partial<PackageJson.PackageJsonStandard>): this {
+        this.data = assign(this.data, data);
         return this;
     }
 
-    public setVersion(version: string): this {
-        this.data.version = version;
+    public remove(key: keyof PackageJson.PackageJsonStandard): this {
+        delete this.data[key];
         return this;
     }
 
@@ -106,7 +113,7 @@ export class PackageJsonBuilder {
         return this;
     }
 
-    public static async read(filepath: string, createIfNotExists?: boolean|Partial<PackageJson>): Promise<PackageJsonBuilder> {
+    public static async read(filepath: string, createIfNotExists?: boolean|Partial<PackageJson.PackageJsonStandard>): Promise<PackageJsonBuilder> {
         const stats = await stat(filepath).catch(() => undefined);
         if (!stats?.isFile()) {
             if (createIfNotExists === false) throw new Error('Invalid package.json file');
