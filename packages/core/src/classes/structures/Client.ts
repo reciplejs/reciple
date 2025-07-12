@@ -135,6 +135,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 
         this.once('ready', async () => {
             this.setMaxListeners(this.getMaxListeners() - 1);
+            this.cooldowns?.createSweeper();
             await this.modules.readyModules();
         });
 

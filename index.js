@@ -32,7 +32,6 @@ client.on('ready', () => {
                     .setRequired(false)
                 )
             )
-            .setCooldown(20000)
             .setExecute(async data => {
                 /**
                  * @type {number}

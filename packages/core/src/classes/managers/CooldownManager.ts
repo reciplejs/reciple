@@ -4,7 +4,7 @@ import { Cooldown } from '../structures/Cooldown.js';
 import type { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
 import EventEmitter from 'node:events';
 import { mix } from 'ts-mixer';
-import { isJSONEncodable, type ChannelResolvable, type GuildResolvable, type JSONEncodable, type UserResolvable } from 'discord.js';
+import { Collection, isJSONEncodable, type ChannelResolvable, type GuildResolvable, type JSONEncodable, type UserResolvable } from 'discord.js';
 import { resolveDate } from '@reciple/utils';
 
 export interface CooldownManager<A extends BaseCooldownAdapter> extends BaseManager<string, Cooldown, Cooldown.Resolvable>, EventEmitter {}
@@ -12,12 +12,11 @@ export interface CooldownManager<A extends BaseCooldownAdapter> extends BaseMana
 @mix(BaseManager, EventEmitter)
 export class CooldownManager<A extends BaseCooldownAdapter> {
     public readonly holds = Cooldown;
+    public readonly cache = new Collection<string, Cooldown>();
 
     private _sweeper?: NodeJS.Timeout;
 
-    public constructor(public readonly client: Client, public readonly adapter: A, public readonly options?: CooldownManager.Options) {
-        this._createSweeper();
-    }
+    public constructor(public readonly client: Client, public readonly adapter: A, public readonly options?: CooldownManager.Options) {}
 
     public async fetch(id: string, options: { force: boolean; }): Promise<Cooldown.Data|null> {
         if (options.force !== true) {
@@ -62,6 +61,12 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         return this.cache.get(cooldown.id)!;
     }
 
+    public createSweeper(interval?: number): NodeJS.Timeout {
+        if (this._sweeper) clearInterval(this._sweeper);
+
+        return this._sweeper = setInterval(() => this.sweep(), interval ?? this.options?.sweeperOptions?.interval ?? 60000);
+    }
+
     public async sweep(fetchAll: boolean = this.options?.sweeperOptions?.fetchAll ?? false): Promise<Cooldown[]> {
         if (fetchAll) {
             const data = await this.adapter.fetchAll();
@@ -85,12 +90,6 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         this.emit('cooldownSweep', deleted);
 
         return deleted;
-    }
-
-    private _createSweeper(): NodeJS.Timeout {
-        if (this._sweeper) clearInterval(this._sweeper);
-
-        return this._sweeper = setInterval(() => this.sweep(), this.options?.sweeperOptions?.interval ?? 60000);
     }
 
     private _parseArray(data: Cooldown.Data[], cache: boolean = true): Cooldown[] {
