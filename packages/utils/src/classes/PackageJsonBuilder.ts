@@ -109,7 +109,7 @@ export class PackageJsonBuilder {
     public static async read(filepath: string, createIfNotExists?: boolean|Partial<PackageJson>): Promise<PackageJsonBuilder> {
         const stats = await stat(filepath).catch(() => undefined);
         if (!stats?.isFile()) {
-            if (createIfNotExists !== false) throw new Error('Invalid package.json file');
+            if (createIfNotExists === false) throw new Error('Invalid package.json file');
 
             const builder = new PackageJsonBuilder(typeof createIfNotExists !== 'object' ? {} : createIfNotExists);
             await builder.write(filepath);

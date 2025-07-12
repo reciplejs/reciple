@@ -139,6 +139,7 @@ export class TemplateBuilder {
         }
 
         this.config = await ConfigReader.create({
+            ...options,
             filepath,
             type: this.typescript ? 'ts' : 'js',
             overwrite: false
@@ -177,7 +178,7 @@ export class TemplateBuilder {
 
         this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath);
 
-        if (!this.packageJson.data.name) this.packageJson.setName(path.dirname(this.directory));
+        if (!this.packageJson.data.name) this.packageJson.setName(path.basename(this.directory));
         if (!this.packageJson.data.version) this.packageJson.setVersion('0.0.1');
         if (!this.packageJson.data.type) this.packageJson.data.type = 'module';
         if (typeof this.packageJson.data.private !== 'boolean') this.packageJson.data.private = true;
