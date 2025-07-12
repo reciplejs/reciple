@@ -1,7 +1,7 @@
-import { colors, type PackageManager } from '@reciple/utils';
+import { colors, PackageManager } from '@reciple/utils';
 import { ConfigReader } from './ConfigReader.js';
 import { mkdir, readdir, stat } from 'node:fs/promises';
-import { confirm, intro, isCancel, outro, spinner, text, type SpinnerOptions } from '@clack/prompts';
+import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
 import micromatch from 'micromatch';
 import type { CLI } from './CLI.js';
 import path from 'node:path';
@@ -12,8 +12,8 @@ export class TemplateBuilder {
     private _directory?: string;
 
     public cli: CLI;
-    public typescript: boolean;
-    public packageManager: PackageManager;
+    public packageManager?: PackageManager;
+    public typescript?: boolean;
     public token?: string;
     public defaultAll: boolean;
 
@@ -95,16 +95,80 @@ export class TemplateBuilder {
         return this;
     }
 
+    public async setupLanguage(options?: TemplateBuilder.SetupLanguageOptions) {
+        this.typescript = options?.typescript ?? this.typescript;
+
+        if (!this.typescript) {
+            const isTypeScript = this.defaultAll
+                ? false
+                : await confirm({
+                    message: 'Would you like to use TypeScript?',
+                    active: 'Yes',
+                    inactive: 'No',
+                    initialValue: false
+                });
+
+            if (isCancel(isTypeScript)) throw new NotAnError('Operation cancelled');
+            this.typescript = isTypeScript;
+        }
+
+        return this;
+    }
+
     public async createConfig(options?: TemplateBuilder.CreateConfigOptions) {
         let filepath = options?.filepath;
 
-        if (!filepath) filepath = await ConfigReader.findConfigFromDirectory(this.directory) ?? path.join(this.directory, ConfigReader.createConfigFilename(this.typescript ? 'ts' : 'js'));
+        if (!filepath) {
+            filepath = await ConfigReader.findConfigFromDirectory(
+                    this.directory,
+                    this.typescript
+                        ? 'ts'
+                        : this.typescript === false
+                            ? 'js'
+                            : undefined
+                )
+                ?? path.join(
+                    this.directory,
+                    ConfigReader.createConfigFilename(this.typescript ? 'ts' : 'js')
+                );
+        }
 
         this.config = await ConfigReader.create({
             filepath,
             type: this.typescript ? 'ts' : 'js',
             overwrite: false
         });
+
+        return this;
+    }
+
+    public async createPackageManager(options?: TemplateBuilder.CreatePackageManagerOptions) {
+        this.packageManager = options?.packageManager instanceof PackageManager
+            ? options.packageManager
+            : options?.packageManager && new PackageManager(options?.packageManager);
+
+        if (!this.packageManager) {
+            const defaultNpmUserAgent = PackageManager.getNPMUserAgent() ?? 'npm';
+            const npmUserAgent: PackageManager.Type|symbol = this.defaultAll
+                ? defaultNpmUserAgent
+                : await select({
+                    message: 'Select package manager',
+                    options: [
+                        { value: defaultNpmUserAgent, label: defaultNpmUserAgent },
+                        ...[
+                            { value: 'npm', label: 'npm' },
+                            { value: 'yarn', label: 'yarn' },
+                            { value: 'pnpm', label: 'pnpm' },
+                            { value: 'bun', label: 'bun' },
+                            { value: 'deno', label: 'deno' }
+                        ].filter(o => o.value !== defaultNpmUserAgent) as { value: PackageManager.Type; label: string; }[]
+                    ],
+                    initialValue: defaultNpmUserAgent
+                });
+
+            if (isCancel(npmUserAgent)) throw new NotAnError('Operation cancelled');
+            this.packageManager = new PackageManager(npmUserAgent);
+        }
 
         return this;
     }
@@ -118,8 +182,8 @@ export namespace TemplateBuilder {
     export interface Options {
         cli: CLI;
         directory?: string;
-        typescript: boolean;
-        packageManager: PackageManager;
+        typescript?: boolean;
+        packageManager?: PackageManager;
         defaultAll?: boolean;
         token?: string;
     }
@@ -134,7 +198,15 @@ export namespace TemplateBuilder {
         onNotEmpty?: 'prompt'|'throw'|'ignore';
     }
 
+    export interface SetupLanguageOptions {
+        typescript?: boolean;
+    }
+
     export interface CreateConfigOptions extends Partial<ConfigReader.CreateOptions> {}
+
+    export interface CreatePackageManagerOptions {
+        packageManager?: PackageManager|PackageManager.Type;
+    }
 
     export interface SpinnerPromiseOptions<T> {
         indicator?: SpinnerOptions['indicator'];

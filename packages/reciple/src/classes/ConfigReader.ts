@@ -74,8 +74,9 @@ export class ConfigReader {
         return !!stats && stats.isFile();
     }
 
-    public static async findConfigFromDirectory(directory: string): Promise<string|null> {
-        const files = (await readdir(directory)).find(f => ConfigReader.defaultConfigFiles.includes(f));
+    public static async findConfigFromDirectory(directory: string, type?: 'ts'|'js'): Promise<string|null> {
+        const validFiles = ConfigReader.defaultConfigFiles.filter(f => type ? ConfigReader.FileTypes[type].includes(f) : true);
+        const files = (await readdir(directory)).find(f => validFiles.includes(f));
         return files ? path.join(directory, files) : null;
     }
 
