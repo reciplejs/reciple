@@ -7,7 +7,7 @@ import { assign } from 'radash';
 import type { PackageJson } from 'type-fest';
 
 export class PackageJsonBuilder {
-    public indent: Indent = { type: 'space', amount: 2, indent: ' ' };
+    public indent: Indent = { type: 'space', amount: 2, indent: '  ' };
     public newline: '\n'|'\r\n' = '\n';
     public data: PackageJson.PackageJsonStandard = {
         name: undefined,
