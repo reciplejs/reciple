@@ -1,6 +1,6 @@
 export * from './classes/abstract/BaseCommand.js';
-export * from './classes/abstract/BaseCommandPostcondition.js';
-export * from './classes/abstract/BaseCommandPrecondition.js';
+export * from './classes/structures/CommandPostcondition.js';
+export * from './classes/structures/CommandPrecondition.js';
 export * from './classes/abstract/BaseCooldownAdapter.js';
 export * from './classes/abstract/BaseManager.js';
 

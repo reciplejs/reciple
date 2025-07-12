@@ -6,14 +6,14 @@ import { CooldownManager } from '../managers/CooldownManager.js';
 import { PreconditionManager } from '../managers/PreconditionManager.js';
 import { CooldownAdapter } from '../adapters/CooldownAdapter.js';
 import { CommandManager } from '../managers/CommandManager.js';
-import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
+import { CommandPrecondition } from './CommandPrecondition.js';
 import type { AnyCommandResolvable } from '../../helpers/types.js';
 import { BaseCommand } from '../abstract/BaseCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
 import { PostconditionManager } from '../managers/PostconditionManager.js';
-import { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
+import { CommandPostcondition } from './CommandPostcondition.js';
 import { Utils } from './Utils.js';
 import type { Config } from '../../helpers/config.js';
 
@@ -21,8 +21,8 @@ declare module "discord.js" {
     interface ClientOptions {
         token?: string;
         modules?: Module.Resolvable[];
-        preconditions?: BaseCommandPrecondition.Resolvable[];
-        postconditions?: BaseCommandPostcondition.Resolvable[];
+        preconditions?: CommandPrecondition.Resolvable[];
+        postconditions?: CommandPostcondition.Resolvable[];
         commands?: AnyCommandResolvable[];
         cooldownAdapter?: BaseCooldownAdapter|BaseCooldownAdapter.Constructor;
         config?: Config;
@@ -112,13 +112,13 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 
         if (this.options.preconditions) {
             for (const precondition of this.options.preconditions) {
-                this._preconditions.cache.set(precondition.id, precondition instanceof BaseCommandPrecondition ? precondition : BaseCommandPrecondition.from(precondition));
+                this._preconditions.cache.set(precondition.id, precondition instanceof CommandPrecondition ? precondition : CommandPrecondition.from(precondition));
             }
         }
 
         if (this.options.postconditions) {
             for (const postcondition of this.options.postconditions) {
-                this._postconditions.cache.set(postcondition.id, postcondition instanceof BaseCommandPostcondition ? postcondition : BaseCommandPostcondition.from(postcondition));
+                this._postconditions.cache.set(postcondition.id, postcondition instanceof CommandPostcondition ? postcondition : CommandPostcondition.from(postcondition));
             }
         }
 

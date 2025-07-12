@@ -1,5 +1,5 @@
 // @ts-check
-import { BaseCommandPostcondition, BaseCommandPrecondition, Client, CommandPostconditionReason, CommandType, CooldownCommandPrecondition, MessageCommand, MessageCommandValidationPrecondition } from '@reciple/core';
+import { CommandPostcondition, CommandPrecondition, Client, CommandPostconditionReason, CommandType, CooldownCommandPrecondition, MessageCommand, MessageCommandValidationPrecondition } from '@reciple/core';
 import { time } from 'discord.js';
 import 'dotenv/config';
 
@@ -45,13 +45,13 @@ client.on('ready', () => {
     );
 });
 
-class CooldownPostcondition extends BaseCommandPostcondition {
+class CooldownPostcondition extends CommandPostcondition {
     scope = [];
 
     /**
      * 
-     * @param {BaseCommandPostcondition.ExecuteData<CommandType>} data
-     * @param {BaseCommandPrecondition.ResultData<CommandType>} preconditionTrigger 
+     * @param {CommandPostcondition.ExecuteData<CommandType>} data
+     * @param {CommandPrecondition.ResultData<CommandType>} preconditionTrigger 
      */
     async execute(data, preconditionTrigger) {
         if (data.reason !== CommandPostconditionReason.Cooldown) return false;

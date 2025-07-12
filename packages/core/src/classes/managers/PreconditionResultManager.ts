@@ -1,15 +1,15 @@
 import { Collection, type Constructable } from 'discord.js';
 import type { CommandType } from '../../helpers/constants.js';
 import { BaseManager } from '../abstract/BaseManager.js';
-import type { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
+import type { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import type { Client } from '../structures/Client.js';
 
-export class PreconditionResultManager<T extends CommandType, D = any> extends BaseManager<string, BaseCommandPrecondition.ResultData<T, D>, BaseCommandPrecondition.ResultData<T, D>> {
-    public preconditions = new Collection<string, BaseCommandPrecondition<D>>();
+export class PreconditionResultManager<T extends CommandType, D = any> extends BaseManager<string, CommandPrecondition.ResultData<T, D>, CommandPrecondition.ResultData<T, D>> {
+    public preconditions = new Collection<string, CommandPrecondition<D>>();
     public disabledPreconditions: string[] = [];
 
     public constructor(client: Client, { preconditions, results, disabledPreconditions }: preconditionResultManager.Options<T, D> = {}) {
-        super(client, Object as unknown as Constructable<BaseCommandPrecondition.ResultData<T, D>>);
+        super(client, Object as unknown as Constructable<CommandPrecondition.ResultData<T, D>>);
 
         this.disabledPreconditions = disabledPreconditions ?? [];
 
@@ -45,8 +45,8 @@ export class PreconditionResultManager<T extends CommandType, D = any> extends B
 
 export namespace preconditionResultManager {
     export interface Options<T extends CommandType, D = any> {
-        preconditions?: Iterable<BaseCommandPrecondition<D>>;
-        results?: Iterable<BaseCommandPrecondition.ResultData<T, D>>;
+        preconditions?: Iterable<CommandPrecondition<D>>;
+        results?: Iterable<CommandPrecondition.ResultData<T, D>>;
         disabledPreconditions?: string[];
     }
 }

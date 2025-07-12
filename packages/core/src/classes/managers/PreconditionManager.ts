@@ -1,21 +1,21 @@
 import { mix } from 'ts-mixer';
 import { BaseManager } from '../abstract/BaseManager.js';
-import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
+import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import type { Client } from '../structures/Client.js';
 import EventEmitter from 'node:events';
 import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { PreconditionResultManager } from './PreconditionResultManager.js';
 
-export interface PreconditionManager extends BaseManager<string, BaseCommandPrecondition<any>, BaseCommandPrecondition.Resolvable>, EventEmitter<PreconditionManager.Events> {}
+export interface PreconditionManager extends BaseManager<string, CommandPrecondition<any>, CommandPrecondition.Resolvable>, EventEmitter<PreconditionManager.Events> {}
 
 @mix(BaseManager, EventEmitter)
 export class PreconditionManager {
-    public readonly holds = BaseCommandPrecondition;
+    public readonly holds = CommandPrecondition;
 
-    constructor(public readonly client: Client, preconditions?: Iterable<BaseCommandPrecondition.Resolvable>) {
+    constructor(public readonly client: Client, preconditions?: Iterable<CommandPrecondition.Resolvable>) {
         if (preconditions) for (const precondition of preconditions) {
-            this.cache.set(precondition.id, precondition instanceof BaseCommandPrecondition ? precondition : BaseCommandPrecondition.from(precondition));
+            this.cache.set(precondition.id, precondition instanceof CommandPrecondition ? precondition : CommandPrecondition.from(precondition));
         }
     }
 
@@ -56,18 +56,18 @@ export class PreconditionManager {
 
 export namespace PreconditionManager {
     export interface Events {
-        preconditionExecute: [result: BaseCommandPrecondition.ResultData<CommandType, any>];
+        preconditionExecute: [result: CommandPrecondition.ResultData<CommandType, any>];
     }
 
     export interface ExecuteOptions<T extends CommandType, D> {
         data: AnyCommandExecuteData<T>;
-        preconditions?: BaseCommandPrecondition<D>[];
-        allowedPreconditions?: (precondition: BaseCommandPrecondition<D>) => boolean;
+        preconditions?: CommandPrecondition<D>[];
+        allowedPreconditions?: (precondition: CommandPrecondition<D>) => boolean;
         returnOnFailure?: boolean;
     }
 
-    export function resolveResultData<T extends CommandType, D>(data: AnyCommandExecuteData<T>, precondition: BaseCommandPrecondition<D>, result: BaseCommandPrecondition.ResultDataResolvable<T, D>): BaseCommandPrecondition.ResultData<T, D> {
-        const resultData: BaseCommandPrecondition.ResultData<T, D> = {
+    export function resolveResultData<T extends CommandType, D>(data: AnyCommandExecuteData<T>, precondition: CommandPrecondition<D>, result: CommandPrecondition.ResultDataResolvable<T, D>): CommandPrecondition.ResultData<T, D> {
+        const resultData: CommandPrecondition.ResultData<T, D> = {
             id: precondition.id,
             client: data.client,
             command: data.command as AnyCommand<T>,

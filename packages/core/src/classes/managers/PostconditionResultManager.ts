@@ -2,14 +2,14 @@ import { Collection, type Constructable } from 'discord.js';
 import type { CommandType } from '../../helpers/constants.js';
 import { BaseManager } from '../abstract/BaseManager.js';
 import type { Client } from '../structures/Client.js';
-import type { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
+import type { CommandPostcondition } from '../structures/CommandPostcondition.js';
 
-export class PostconditionResultManager<T extends CommandType, D = any> extends BaseManager<string, BaseCommandPostcondition.ResultData<T, D>, BaseCommandPostcondition.ResultData<T, D>> {
-    public postconditions = new Collection<string, BaseCommandPostcondition<D>>();
+export class PostconditionResultManager<T extends CommandType, D = any> extends BaseManager<string, CommandPostcondition.ResultData<T, D>, CommandPostcondition.ResultData<T, D>> {
+    public postconditions = new Collection<string, CommandPostcondition<D>>();
     public disabledPostconditions: string[] = [];
 
     public constructor(client: Client, { postconditions, results, disabledPostconditions }: PostconditionResultManager.Options<T, D> = {}) {
-        super(client, Object as unknown as Constructable<BaseCommandPostcondition.ResultData<T, D>>);
+        super(client, Object as unknown as Constructable<CommandPostcondition.ResultData<T, D>>);
 
         this.disabledPostconditions = disabledPostconditions ?? [];
 
@@ -41,8 +41,8 @@ export class PostconditionResultManager<T extends CommandType, D = any> extends 
 
 export namespace PostconditionResultManager {
     export interface Options<T extends CommandType, D = any> {
-        postconditions?: Iterable<BaseCommandPostcondition<D>>;
-        results?: Iterable<BaseCommandPostcondition.ResultData<T, D>>;
+        postconditions?: Iterable<CommandPostcondition<D>>;
+        results?: Iterable<CommandPostcondition.ResultData<T, D>>;
         disabledPostconditions?: string[];
     }
 }

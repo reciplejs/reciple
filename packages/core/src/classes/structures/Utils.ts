@@ -8,7 +8,6 @@ import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { RecipleError } from './RecipleError.js';
-import type { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
 
 export namespace Utils {
     export function createCommandInstance<T extends CommandType>(data: Omit<Partial<AnyCommandData<T>>, 'type'> & { type: T }): AnyCommand<T> {
@@ -53,7 +52,7 @@ export namespace Utils {
         }
 
         if (data.preconditionResults.postconditionExecutes.length) {
-            const withPostconditionData = (data.preconditionResults.cache as Collection<string, BaseCommandPrecondition.ResultData<CommandType>>)
+            const withPostconditionData = (data.preconditionResults.cache as Collection<string, CommandPrecondition.ResultData<CommandType>>)
                 .filter(result => !!result.postconditionExecute);
 
             for (const [id, result] of withPostconditionData) {

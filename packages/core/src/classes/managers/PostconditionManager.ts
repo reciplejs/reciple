@@ -4,19 +4,18 @@ import type { Client } from '../structures/Client.js';
 import EventEmitter from 'node:events';
 import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
-import { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
+import { CommandPostcondition } from '../structures/CommandPostcondition.js';
 import type { PostconditionResultManager } from './PostconditionResultManager.js';
-import type { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
 
-export interface PostconditionManager extends BaseManager<string, BaseCommandPostcondition<any>, BaseCommandPostcondition.Resolvable>, EventEmitter<PostconditionManager.Events> {}
+export interface PostconditionManager extends BaseManager<string, CommandPostcondition<any>, CommandPostcondition.Resolvable>, EventEmitter<PostconditionManager.Events> {}
 
 @mix(BaseManager, EventEmitter)
 export class PostconditionManager {
-    public readonly holds = BaseCommandPostcondition;
+    public readonly holds = CommandPostcondition;
 
-    constructor(public readonly client: Client, postconditions?: Iterable<BaseCommandPostcondition.Resolvable>) {
+    constructor(public readonly client: Client, postconditions?: Iterable<CommandPostcondition.Resolvable>) {
         if (postconditions) for (const postcondition of postconditions) {
-            this.cache.set(postcondition.id, postcondition instanceof BaseCommandPostcondition ? postcondition : BaseCommandPostcondition.from(postcondition));
+            this.cache.set(postcondition.id, postcondition instanceof CommandPostcondition ? postcondition : CommandPostcondition.from(postcondition));
         }
     }
 
@@ -58,19 +57,19 @@ export class PostconditionManager {
 
 export namespace PostconditionManager {
     export interface Events {
-        postconditionExecute: [result: BaseCommandPostcondition.ResultData<CommandType, any>];
+        postconditionExecute: [result: CommandPostcondition.ResultData<CommandType, any>];
     }
 
     export interface ExecuteOptions<T extends CommandType, D> {
-        data: BaseCommandPostcondition.ExecuteData<T>;
-        postconditions?: BaseCommandPostcondition<D>[];
-        allowedPostconditions?: (postcondition: BaseCommandPostcondition<D>) => boolean;
-        preconditionTrigger?: BaseCommandPrecondition.ResultData<T, any>;
+        data: CommandPostcondition.ExecuteData<T>;
+        postconditions?: CommandPostcondition<D>[];
+        allowedPostconditions?: (postcondition: CommandPostcondition<D>) => boolean;
+        preconditionTrigger?: CommandPrecondition.ResultData<T, any>;
         returnOnFailure?: boolean;
     }
 
-    export function resolveResultData<T extends CommandType, D>(data: AnyCommandExecuteData<T>, postcondition: BaseCommandPostcondition<D>, result: BaseCommandPostcondition.ResultDataResolvable<T, D>): BaseCommandPostcondition.ResultData<T, D> {
-        const resultData: BaseCommandPostcondition.ResultData<T, D> = {
+    export function resolveResultData<T extends CommandType, D>(data: AnyCommandExecuteData<T>, postcondition: CommandPostcondition<D>, result: CommandPostcondition.ResultDataResolvable<T, D>): CommandPostcondition.ResultData<T, D> {
+        const resultData: CommandPostcondition.ResultData<T, D> = {
             id: postcondition.id,
             client: data.client,
             command: data.command as AnyCommand<T>,

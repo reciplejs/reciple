@@ -1,7 +1,8 @@
+import { DiscordSnowflake } from '@sapphire/snowflake';
 import type { Client } from './Client.js';
 
-export abstract class Module implements Module.Data {
-    public abstract id: string;
+export class Module implements Module.Data {
+    public readonly id: string = DiscordSnowflake.generate().toString();
 
     public async onEnable(data: Module.EventData<boolean>): Promise<void> {}
 

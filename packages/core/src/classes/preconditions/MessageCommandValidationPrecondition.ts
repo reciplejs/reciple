@@ -1,12 +1,12 @@
 import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import type { AnyCommandExecuteData } from '../../helpers/types.js';
-import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
+import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import { RecipleError } from '../structures/RecipleError.js';
 
-export class MessageCommandValidationPrecondition extends BaseCommandPrecondition {
+export class MessageCommandValidationPrecondition extends CommandPrecondition {
     public scope = [CommandType.Message];
 
-    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<BaseCommandPrecondition.ResultDataResolvable<T, any>> {
+    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<CommandPrecondition.ResultDataResolvable<T, any>> {
         if (data.type !== CommandType.Message) return true;
 
         const invalidOptions = await data.options.getInvalidOptions();

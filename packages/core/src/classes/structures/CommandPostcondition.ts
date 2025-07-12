@@ -1,22 +1,22 @@
-import { DiscordSnowflake } from '@sapphire/snowflake';
-import type { Client } from '../structures/Client.js';
+import type { Client } from './Client.js';
 import type { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
-import { RecipleError } from '../structures/RecipleError.js';
-import type { Cooldown } from '../structures/Cooldown.js';
+import { RecipleError } from './RecipleError.js';
+import type { Cooldown } from './Cooldown.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
-import type { BaseCommandPrecondition } from './BaseCommandPrecondition.js';
+import { DiscordSnowflake } from '@sapphire/snowflake';
+import type { CommandPrecondition } from './CommandPrecondition.js';
 
-export abstract class BaseCommandPostcondition<D = any> implements BaseCommandPostcondition.Data<D> {
-    public id: string = DiscordSnowflake.generate().toString();
+export class CommandPostcondition<D = any> implements CommandPostcondition.Data<D> {
+    public readonly id: string = DiscordSnowflake.generate().toString();
     public scope: CommandType[] = [];
     public accepts: CommandPostconditionReason[] = [];
 
-    public async execute<T extends CommandType>(data: BaseCommandPostcondition.ExecuteData<T>, preconditionTrigger?: BaseCommandPrecondition.ResultData<T, any>): Promise<BaseCommandPostcondition.ResultDataResolvable<T, D>> {
+    public async execute<T extends CommandType>(data: CommandPostcondition.ExecuteData<T>, preconditionTrigger?: CommandPrecondition.ResultData<T, any>): Promise<CommandPostcondition.ResultDataResolvable<T, D>> {
         throw new RecipleError(RecipleError.Code.NotImplemented());
     }
 
-    public toJSON(): BaseCommandPostcondition.Data<D> {
+    public toJSON(): CommandPostcondition.Data<D> {
         return {
             id: this.id,
             scope: this.scope,
@@ -24,21 +24,23 @@ export abstract class BaseCommandPostcondition<D = any> implements BaseCommandPo
         };
     }
 
-    public static from<D>(options: BaseCommandPostcondition.Data<D>): BaseCommandPostcondition<D> {
-        const instance = class extends BaseCommandPostcondition<D> {};
-        Object.assign(instance.prototype, options);
-        return new instance();
+    public static from<D>(data: CommandPostcondition.Resolvable<D>): CommandPostcondition<D> {
+        if (data instanceof CommandPostcondition) return data;
+
+        const instance = new (class extends CommandPostcondition<D> { id = data.id; });
+        Object.assign(instance, data);
+        return instance;
     }
 }
 
-export namespace BaseCommandPostcondition {
-    export type Resolvable<D = any> = BaseCommandPostcondition<D>|Data<D>;
+export namespace CommandPostcondition {
+    export type Resolvable<D = any> = CommandPostcondition<D>|Data<D>;
 
     export interface Data<D> {
         id: string;
         scope?: CommandType[];
         accepts?: CommandPostconditionReason[];
-        execute: <T extends CommandType>(data: ExecuteData<T>, preconditionTrigger?: BaseCommandPrecondition.ResultData<T, any>) => Promise<ResultDataResolvable<T, D>>;
+        execute: <T extends CommandType>(data: ExecuteData<T>, preconditionTrigger?: CommandPrecondition.ResultData<T, any>) => Promise<ResultDataResolvable<T, D>>;
     }
 
     export type ResultDataResolvable<T extends CommandType, D = any> = Pick<ResultData<T, D>, 'success'|'error'|'message'|'data'>|Error|boolean|string;
@@ -48,7 +50,7 @@ export namespace BaseCommandPostcondition {
         client: Client;
         command: AnyCommand<T>;
         executeData: AnyCommandExecuteData<T>;
-        postcondition: BaseCommandPostcondition<D>;
+        postcondition: CommandPostcondition<D>;
         success: boolean;
         error: Error|undefined;
         message: string|undefined;

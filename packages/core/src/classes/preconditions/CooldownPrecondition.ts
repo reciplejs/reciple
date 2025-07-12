@@ -1,9 +1,8 @@
 import { CommandPostconditionReason, CommandType, CooldownTriggerType } from '../../helpers/constants.js';
 import type { AnyCommandExecuteData } from '../../helpers/types.js';
-import type { BaseCommandPostcondition } from '../abstract/BaseCommandPostcondition.js';
-import { BaseCommandPrecondition } from '../abstract/BaseCommandPrecondition.js';
+import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 
-export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCommandPostcondition.CooldownExecuteData<CommandType>> {
+export class CooldownCommandPrecondition extends CommandPrecondition<CommandPostcondition.CooldownExecuteData<CommandType>> {
     public scope: CommandType[] = [];
 
     constructor(public readonly options?: CooldownCommandPrecondition.Options) {
@@ -12,7 +11,7 @@ export class CooldownCommandPrecondition extends BaseCommandPrecondition<BaseCom
         if (options?.scope) this.scope = options.scope;
     }
 
-    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<BaseCommandPrecondition.ResultDataResolvable<T, BaseCommandPostcondition.CooldownExecuteData<CommandType>>> {
+    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<CommandPrecondition.ResultDataResolvable<T, CommandPostcondition.CooldownExecuteData<CommandType>>> {
         const userId = data.type === CommandType.Message ? data.message.author.id : data.interaction.user.id;
         const guildId = this.options?.matchWithin === 'guild' ? (data.type === CommandType.Message ? data.message.guildId : data.interaction.guildId) : undefined;
         const channelId = this.options?.matchWithin === 'channel' ? (data.type === CommandType.Message ? data.message.channelId : data.interaction.channelId) : undefined;
