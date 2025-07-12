@@ -81,7 +81,7 @@ export class ConfigReader {
     }
 
     public static async getDefaultConfigContent(type: 'ts'|'js' = 'js'): Promise<string> {
-        const filepath = path.join(CLI.root, 'assets', `reciple.config.${type}`);
+        const filepath = ConfigReader.defaultConfigFilePaths[type];
         const content = await readFile(filepath, 'utf-8');
         return content;
     }
@@ -109,7 +109,12 @@ export namespace ConfigReader {
     export const FileTypes = {
         ts: ['ts', 'mts', 'tsx'],
         js: ['js', 'mjs', 'jsx']
-    }
+    };
+
+    export const defaultConfigFilePaths = {
+        ts: path.join(CLI.root, 'assets/config', `reciple.config.ts`),
+        js: path.join(CLI.root, 'assets/config', `reciple.config.js`)
+    };
 
     export const defaultConfigFiles = [
         'reciple.config.ts',
