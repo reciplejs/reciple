@@ -8,6 +8,7 @@ import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { RecipleError } from './RecipleError.js';
+import type { CommandPrecondition } from './CommandPrecondition.js';
 
 export namespace Utils {
     export function createCommandInstance<T extends CommandType>(data: Omit<Partial<AnyCommandData<T>>, 'type'> & { type: T }): AnyCommand<T> {

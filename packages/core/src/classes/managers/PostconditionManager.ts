@@ -6,6 +6,7 @@ import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { CommandPostcondition } from '../structures/CommandPostcondition.js';
 import type { PostconditionResultManager } from './PostconditionResultManager.js';
+import type { CommandPrecondition } from '../structures/CommandPrecondition.js';
 
 export interface PostconditionManager extends BaseManager<string, CommandPostcondition<any>, CommandPostcondition.Resolvable>, EventEmitter<PostconditionManager.Events> {}
 

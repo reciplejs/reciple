@@ -1,5 +1,6 @@
 import { CommandPostconditionReason, CommandType, CooldownTriggerType } from '../../helpers/constants.js';
 import type { AnyCommandExecuteData } from '../../helpers/types.js';
+import type { CommandPostcondition } from '../structures/CommandPostcondition.js';
 import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 
 export class CooldownCommandPrecondition extends CommandPrecondition<CommandPostcondition.CooldownExecuteData<CommandType>> {

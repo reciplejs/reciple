@@ -1,6 +1,4 @@
 export * from './classes/abstract/BaseCommand.js';
-export * from './classes/structures/CommandPostcondition.js';
-export * from './classes/structures/CommandPrecondition.js';
 export * from './classes/abstract/BaseCooldownAdapter.js';
 export * from './classes/abstract/BaseManager.js';
 
@@ -30,6 +28,8 @@ export * from './classes/preconditions/CooldownPrecondition.js';
 export * from './classes/preconditions/MessageCommandValidationPrecondition.js';
 
 export * from './classes/structures/Client.js';
+export * from './classes/structures/CommandPostcondition.js';
+export * from './classes/structures/CommandPrecondition.js';
 export * from './classes/structures/Cooldown.js';
 export * from './classes/structures/MessageCommandFlag.js';
 export * from './classes/structures/MessageCommandOption.js';
