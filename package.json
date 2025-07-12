@@ -27,5 +27,11 @@
     "terser": "^5.43.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "detect-indent": "^7.0.1",
+    "detect-newline": "^4.0.1",
+    "package-json": "^10.0.1",
+    "type-fest": "^4.41.0"
   }
 }

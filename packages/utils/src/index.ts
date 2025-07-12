@@ -1,5 +1,6 @@
 import kleur from 'kleur';
 
+export * from './classes/PackageJsonBuilder.js';
 export * from './classes/PackageManager.js';
 export * from './helpers/constants.js';
 export * from './helpers/functions.js';

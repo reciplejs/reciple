@@ -1,4 +1,4 @@
-import { colors, PackageManager } from '@reciple/utils';
+import { colors, PackageJsonBuilder, PackageManager } from '@reciple/utils';
 import { ConfigReader } from './ConfigReader.js';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
@@ -18,6 +18,7 @@ export class TemplateBuilder {
     public defaultAll: boolean;
 
     public config?: ConfigReader;
+    public packageJson?: PackageJsonBuilder;
 
     get directory() {
         return this._directory ?? process.cwd();
@@ -25,6 +26,10 @@ export class TemplateBuilder {
 
     get relativeDirectory() {
         return path.relative(process.cwd(), this.directory) || '.';
+    }
+
+    get packageJsonPath() {
+        return path.join(this.directory, 'package.json');
     }
 
     constructor(options: TemplateBuilder.Options) {
@@ -169,6 +174,15 @@ export class TemplateBuilder {
             if (isCancel(npmUserAgent)) throw new NotAnError('Operation cancelled');
             this.packageManager = new PackageManager(npmUserAgent);
         }
+
+        this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath);
+
+        if (!this.packageJson.data.name) this.packageJson.setName(path.dirname(this.directory));
+        if (!this.packageJson.data.version) this.packageJson.setVersion('0.0.1');
+        if (!this.packageJson.data.type) this.packageJson.data.type = 'module';
+        if (typeof this.packageJson.data.private !== 'boolean') this.packageJson.data.private = true;
+
+        await this.packageJson.write(this.packageJsonPath, true);
 
         return this;
     }

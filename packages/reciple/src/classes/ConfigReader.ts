@@ -21,7 +21,7 @@ export class ConfigReader {
     public constructor(public readonly filepath: string) {}
 
     public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>) {
-        if (!await ConfigReader.hasConfigFile(this.filepath) && options?.upsert !== false) return ConfigReader.create({
+        if (!await ConfigReader.hasConfigFile(this.filepath) && options?.createIfNotExists !== false) return ConfigReader.create({
             filepath: this.filepath,
             readOptions: options
         });
@@ -71,7 +71,7 @@ export class ConfigReader {
 
     public static async hasConfigFile(filepath: string): Promise<boolean> {
         const stats = await stat(filepath).catch(() => undefined);
-        return !!stats && stats.isFile();
+        return !!stats?.isFile();
     }
 
     public static async findConfigFromDirectory(directory: string, type?: 'ts'|'js'): Promise<string|null> {
@@ -94,7 +94,7 @@ export namespace ConfigReader {
     }
 
     export interface ReadOptions extends Options {
-        upsert?: boolean;
+        createIfNotExists?: boolean;
         createOptions?: Omit<CreateOptions, 'readOptions'>;
     }
 
