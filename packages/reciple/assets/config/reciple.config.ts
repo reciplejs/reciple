@@ -50,8 +50,8 @@ export const config: Config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./src/*/*"],
-        ignore: ["./src/**/_*"],
+        directories: ["./modules/*/*", "./modules/*/*/*"],
+        ignore: ["./modules/**/_*"],
         filter: filepath => !!filepath
     }
 };

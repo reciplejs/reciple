@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
+    "@reciple/core": "^10.0.0",
     "@reciple/utils": "^10.0.0",
     "bundle-require": "^5.1.0",
     "commander": "^14.0.0",
@@ -41,12 +42,14 @@
     "micromatch": "^4.0.8",
     "ora": "^8.2.0",
     "prtyprnt": "^1.1.0",
-    "reciple": "^10.0.0",
     "semver": "^7.7.2"
   },
   "devDependencies": {
     "@types/micromatch": "^4.0.9",
-    "@types/semver": "^7.7.0"
+    "@types/node": "^22.16.3",
+    "@types/semver": "^7.7.0",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "discord.js": "^14.20.0"

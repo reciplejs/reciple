@@ -19,6 +19,15 @@ export function escapeRegexp(str: string): string {
     return str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
 }
 
+export function sortRecordByKey<T extends Record<any, any>>(record: T, sort?: (a: keyof T, b: keyof T) => number): T {
+    return Object.keys(record)
+        .sort(sort)
+        .reduce((obj, key: keyof T) => {
+            obj[key] = record[key];
+            return obj;
+        }, {} as T);
+}
+
 export function resolveDate(resolvable: DateResolvable): Date {
     if (resolvable instanceof Date) return resolvable;
     if (typeof resolvable === 'string' || typeof resolvable === 'number') return new Date(resolvable);

@@ -1,4 +1,4 @@
-import { colors, PackageJsonBuilder, PackageManager } from '@reciple/utils';
+import { colors, PackageJsonBuilder, PackageManager, sortRecordByKey, type PackageJson } from '@reciple/utils';
 import { ConfigReader } from './ConfigReader.js';
 import { copyFile, mkdir, readdir, stat } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
@@ -10,6 +10,7 @@ import { NotAnError } from './NotAnError.js';
 import { slug } from 'github-slugger';
 import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
+import { packageJSON } from '../helpers/constants.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -195,7 +196,7 @@ export class TemplateBuilder {
             ? options.packageManager
             : options?.packageManager && new PackageManager(options?.packageManager);
 
-        if (!this.packageManager) {
+        if (!this._packageManager) {
             const defaultNpmUserAgent = PackageManager.getNPMUserAgent() ?? 'npm';
             const npmUserAgent: PackageManager.Type|symbol = this.defaultAll
                 ? defaultNpmUserAgent
@@ -218,12 +219,15 @@ export class TemplateBuilder {
             this._packageManager = new PackageManager(npmUserAgent);
         }
 
-        this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath);
+        const dependencyRecord = TemplateBuilder.createDependencyRecord(this.typescript ? 'ts' : 'js');
 
+        this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath);
         this.packageJson.merge({
             name: this.name,
             version: '0.0.1',
             type: 'module',
+            dependencies: dependencyRecord.dependencies,
+            devDependencies: dependencyRecord.devDependencies,
             private: true
         });
 
@@ -272,9 +276,36 @@ export namespace TemplateBuilder {
         token?: string;
     }
 
-    export const ignoredDirectoryFiles = [
-        '.*'
-    ];
+    export const ignoredDirectoryFiles = ['.*', 'LICENSE'];
+
+    export const dependencies: Record<'ts'|'js'|'both', Partial<Record<'dependencies'|'devDependencies', PackageJson.Dependency>>> = {
+        both: {
+            dependencies: {
+                '@reciple/core': packageJSON.dependencies?.['@reciple/core'],
+                'reciple': `^${packageJSON.version}`,
+            },
+            devDependencies: {
+                '@types/node': packageJSON.devDependencies?.['@types/node'],
+                'nodemon': packageJSON.devDependencies?.nodemon,
+                'typescript': packageJSON.devDependencies?.typescript
+            }
+        },
+        ts: {},
+        js: {}
+    };
+
+    export function createDependencyRecord(type: 'ts'|'js'): Partial<Record<'dependencies'|'devDependencies', PackageJson.Dependency>> {
+        const record = type === 'ts'
+            ? dependencies.ts
+            : type === 'js'
+                ? dependencies.js
+                : {};
+
+        record.dependencies = sortRecordByKey({ ...record.dependencies, ...dependencies.both.dependencies });
+        record.devDependencies = sortRecordByKey({ ...record.devDependencies, ...dependencies.both.devDependencies });
+
+        return record;
+    }
 
     export interface CreateDirectoryOptions {
         directory?: string;
