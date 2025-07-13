@@ -40,7 +40,6 @@
     "globby": "^14.1.0",
     "micromatch": "^4.0.8",
     "ora": "^8.2.0",
-    "prtyprnt": "^1.1.0",
     "semver": "^7.7.2"
   },
   "devDependencies": {
@@ -48,6 +47,7 @@
     "@types/node": "^22.16.3",
     "@types/semver": "^7.7.0",
     "nodemon": "^3.1.10",
+    "prtyprnt": "^1.1.0",
     "rimraf": "^6.0.1",
     "tsc-alias": "^1.8.16",
     "tsup": "^8.5.0"

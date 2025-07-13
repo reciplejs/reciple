@@ -4,6 +4,7 @@ import path from 'node:path';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import micromatch from 'micromatch';
 import { globby, isDynamicPattern } from 'globby';
+import type { Logger, LoggerOptions } from 'prtyprnt';
 
 export class ModuleLoader {
     public constructor(public readonly config: ConfigReader) {
@@ -80,6 +81,7 @@ export namespace ModuleLoader {
     export interface Config {
         directories?: string[];
         ignore?: string[];
+        logger?: Logger|LoggerOptions;
         filter?: (filepath: string) => Awaitable<boolean>;
         sort?: (a: string, b: string) => number;
     }

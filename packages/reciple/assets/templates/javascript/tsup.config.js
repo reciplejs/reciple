@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 import { replaceTscAliasPaths } from 'tsc-alias';
 
 export default defineConfig({
-    entry: ['src/**/*.{js,jsx}'],
+    entry: ['./src/**/*.{js,jsx}'],
     outDir: './modules',
     tsconfig: './jsconfig.json',
     external: [],

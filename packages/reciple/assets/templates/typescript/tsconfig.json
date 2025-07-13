@@ -1,9 +1,10 @@
 {
   "extends": "@reciple/utils/tsconfig.json",
   "include": [
-    "./src/**/*"
+    "./src/**/*{.ts,.tsx}"
   ],
   "compilerOptions": {
+    "baseUrl": "./",
     "rootDir": "./src",
     "outDir": "./modules",
     "paths": {

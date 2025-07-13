@@ -11,6 +11,7 @@ import { slug } from 'github-slugger';
 import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
+import { RuntimeEnvironment } from './RuntimeEnvironment.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -253,6 +254,14 @@ export class TemplateBuilder {
             devDependencies: dependencyRecord.devDependencies,
             private: true
         });
+
+        return this;
+    }
+
+    public async checkRuntimeEnvironment(): Promise<this> {
+        const runtimeEnvironment = RuntimeEnvironment.get() ?? 'node';
+        const isInstalled = await RuntimeEnvironment.isInstalled(runtimeEnvironment);
+        if (!isInstalled) throw new NotAnError(`Runtime environment "${colors.cyan(runtimeEnvironment)}" is not installed`);
 
         return this;
     }
