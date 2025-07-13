@@ -11,6 +11,7 @@ import { slug } from 'github-slugger';
 import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
+import { ModuleLoader } from './ModuleLoader.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -179,9 +180,27 @@ export class TemplateBuilder {
 
     public async createTemplate(options?: TemplateBuilder.CreateModulesOptions): Promise<this> {
         const source = path.join(CLI.root, './assets/templates/', this.typescript ? 'typescript' : 'javascript');
+        const globals = path.join(CLI.root, './assets/global/');
+
+        function rename(data: TemplateBuilder.CopyMetadata) {
+            const newName = options?.rename?.(data) ?? data.basename;
+            if (newName != data.basename) return newName;
+
+            switch (data.basename) {
+                case 'env':
+                    return '.env';
+                case 'gitignore':
+                    return '.gitignore';
+                default:
+                    return data.basename;
+            }
+        }
 
         const [template, loader] = TemplateBuilder.createSpinnerPromise({
-            promise: TemplateBuilder.copy(source, this.directory, options),
+            promise: Promise.all([
+                TemplateBuilder.copy(source, this.directory, { ...options, rename }),
+                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite: false })
+            ]),
             message: 'Copying template files',
             successMessage: 'Files copied successfully',
             errorMessage: 'Failed to copy files'
@@ -226,6 +245,12 @@ export class TemplateBuilder {
             name: this.name,
             version: '0.0.1',
             type: 'module',
+            scripts: {
+                clean: 'rimraf ./modules',
+                build: `${this.packageManager.run('clean')} && tsc`,
+                start: 'reciple start',
+                dev: 'reciple dev',
+            },
             dependencies: dependencyRecord.dependencies,
             devDependencies: dependencyRecord.devDependencies,
             private: true
@@ -237,15 +262,21 @@ export class TemplateBuilder {
     }
 
     public async build(): Promise<this> {
-        await mkdir(this.directory, { recursive: true });
         await this.runCommand(this.packageManager.installAll());
+
+        const directories = await ModuleLoader.scanForDirectories(this.config?.config.modules!);
+
+        if (directories) for (const directory of directories) {
+            await mkdir(directory, { recursive: true });
+        }
 
         outro(`Project created in ${colors.cyan(this.directory)}`);
         return this;
     }
 
-    public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<TemplateBuilder.SpinnerPromiseOptions<void>, 'promise'>): Promise<void> {
+    public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<TemplateBuilder.SpinnerPromiseOptions<void>, 'promise'>): Promise<TemplateBuilder.RunCommandResult> {
         const result = TemplateBuilder.createSpinnerPromise({
+            indicator: 'timer',
             ...options,
             message: `$ ${colors.green(command)}`,
             successMessage: `${colors.bold(colors.green('✓'))} ${colors.green(command)}`,
@@ -281,13 +312,15 @@ export namespace TemplateBuilder {
     export const dependencies: Record<'ts'|'js'|'both', Partial<Record<'dependencies'|'devDependencies', PackageJson.Dependency>>> = {
         both: {
             dependencies: {
-                '@reciple/core': packageJSON.dependencies?.['@reciple/core'],
-                'reciple': `^${packageJSON.version}`,
+                // TODO: Uncomment when ready
+                // '@reciple/core': packageJSON.dependencies?.['@reciple/core'],
+                // 'reciple': `^${packageJSON.version}`,
             },
             devDependencies: {
                 '@types/node': packageJSON.devDependencies?.['@types/node'],
-                'nodemon': packageJSON.devDependencies?.nodemon,
-                'typescript': packageJSON.devDependencies?.typescript
+                nodemon: packageJSON.devDependencies?.nodemon,
+                rimraf: packageJSON.devDependencies?.rimraf,
+                typescript: packageJSON.devDependencies?.typescript
             }
         },
         ts: {},
@@ -319,7 +352,7 @@ export namespace TemplateBuilder {
 
     export interface CreateConfigOptions extends Partial<ConfigReader.CreateOptions> {}
 
-    export interface CreateModulesOptions {}
+    export interface CreateModulesOptions extends Partial<CopyOptions> {}
 
     export interface CreatePackageManagerOptions {
         packageManager?: PackageManager|PackageManager.Type;
@@ -416,20 +449,41 @@ export namespace TemplateBuilder {
         onOutput?: (data: string) => void;
     }
 
-    export function runCommand(command: string, options?: RunCommandOptions): Promise<void> {
+    export interface RunCommandResult {
+        output: string;
+        lastOutput: string;
+    }
+
+    export function runCommand(command: string, options?: RunCommandOptions): Promise<RunCommandResult> {
+        let lastOutput = '';
+        let output = '';
+
         const child = exec(command, {
             cwd: options?.cwd,
             env: options?.env
         });
 
+        const onOutput = (data: any) => {
+            lastOutput = String(data).trim();
+            output += `\n${lastOutput}`;
+
+            return options?.onOutput?.(lastOutput);
+        }
+
         return new Promise((resolve, reject) => {
-            const onExit = (code: number|null) => code === 0 ? resolve() : reject(new RecipleError(`Command exited "${command}" with code ${colors.red(code?.toString() ?? 'unknown')}`));
+            const onExit = (code: number|null) => code === 0
+                ? resolve({ output, lastOutput })
+                : reject(new RecipleError({
+                    message: `Command exited "${command}" with code ${colors.red(code?.toString() ?? 'unknown')}`,
+                    name: 'CommandError',
+                    cause: output
+                }));
 
             child.on('exit', onExit);
             child.on('error', error => reject(error));
 
-            child.stdout?.on('data', data => options?.onOutput?.(String(data).trim()));
-            child.stderr?.on('data', data => options?.onOutput?.(String(data).trim()));
+            child.stdout?.on('data', onOutput);
+            child.stderr?.on('data', onOutput);
         });
     }
 }
