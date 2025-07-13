@@ -25,6 +25,7 @@ export const client = new Client({
  * @type {import('reciple').Config}
  */
 export const config = {
+    token: process.env.DISCORD_TOKEN,
     commands: {
         message: {
             prefix: context => '!',

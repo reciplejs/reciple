@@ -1,6 +1,6 @@
 import { colors, PackageJsonBuilder, PackageManager, sortRecordByKey, type PackageJson } from '@reciple/utils';
 import { ConfigReader } from './ConfigReader.js';
-import { copyFile, mkdir, readdir, stat } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
 import micromatch from 'micromatch';
 import { CLI } from './CLI.js';
@@ -12,6 +12,7 @@ import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
 import { RuntimeEnvironment } from './RuntimeEnvironment.js';
+import { parse as parseDotenv } from '@dotenvx/dotenvx';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -266,6 +267,47 @@ export class TemplateBuilder {
         return this;
     }
 
+    public async createEnvFile(options?: TemplateBuilder.CreateEnvFileOptions): Promise<this> {
+        const tokenKey = options?.tokenKey ?? 'DISCORD_TOKEN';
+        const envFile = options?.envFile ? path.resolve(options.envFile) : path.join(this.directory, '.env');
+        const stats = await stat(envFile).catch(() => undefined);
+
+        let env = options?.env ?? {};
+            env = stats
+                ? parseDotenv(await readFile(envFile, 'utf-8'), {
+                    processEnv: env
+                })
+                : env;
+
+        if (env[tokenKey]) {
+            const skip = this.defaultAll || await confirm({
+                message: 'Discord bot token already exists in .env file, do you want to skip?',
+                initialValue: true,
+                active: 'Yes',
+                inactive: 'No'
+            });
+
+            if (isCancel(skip)) throw new NotAnError('Operation cancelled');
+            if (skip) return this;
+        }
+
+        const token = await text({
+            message: 'Enter Discord Bot Token',
+            placeholder: 'Bot Token from Discord Developer Portal',
+            defaultValue: env[tokenKey]
+        });
+
+        if (isCancel(token)) throw new NotAnError('Operation cancelled');
+        env[tokenKey] = token;
+
+        await writeFile(envFile, `\n${tokenKey}="${token}"\n`, {
+            encoding: 'utf-8',
+            flag: 'a'
+        });
+
+        return this;
+    }
+
     public async build(): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
         await this.runCommand(this.packageManager.installAll());
@@ -357,6 +399,12 @@ export namespace TemplateBuilder {
 
     export interface CreatePackageManagerOptions {
         packageManager?: PackageManager|PackageManager.Type;
+    }
+
+    export interface CreateEnvFileOptions {
+        envFile?: string;
+        tokenKey?: string;
+        env?: Record<string, string>;
     }
 
     export interface SpinnerPromiseOptions<T> {

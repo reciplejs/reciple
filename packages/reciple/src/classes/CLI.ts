@@ -4,7 +4,7 @@ import path from 'node:path';
 import { coerce } from 'semver';
 import { isDebugging, recursiveDefaults } from '@reciple/utils';
 import { Logger, type LoggerOptions } from 'prtyprnt';
-import { config as loadEnv } from 'dotenv';
+import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';
 

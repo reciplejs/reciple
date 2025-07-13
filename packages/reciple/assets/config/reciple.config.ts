@@ -21,6 +21,7 @@ export const client = new Client({
 });
 
 export const config: Config = {
+    token: process.env.DISCORD_TOKEN,
     commands: {
         message: {
             prefix: context => '!',

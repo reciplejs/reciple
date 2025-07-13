@@ -20,7 +20,7 @@ export class ConfigReader {
 
     public constructor(public readonly filepath: string) {}
 
-    public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>) {
+    public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>): Promise<ConfigReader> {
         if (!await ConfigReader.hasConfigFile(this.filepath) && options?.createIfNotExists !== false) return ConfigReader.create({
             filepath: this.filepath,
             readOptions: options
@@ -38,6 +38,8 @@ export class ConfigReader {
 
         this._client = mod.client;
         this._config = mod.config;
+
+        return this;
     }
 
     public async create(options?: Omit<ConfigReader.CreateOptions, 'filepath'>): Promise<ConfigReader> {
