@@ -15,8 +15,8 @@
     "publish-dev": "lerna run build && lerna publish prerelease",
     "publish-latest": "lerna run build && lerna publish",
     "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
-    "create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create example",
-    "create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create example -D"
+    "test-create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
+    "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
     "@types/node": "^22.16.3",
