@@ -1,6 +1,4 @@
 import { Client as DiscordJsClient, Message, type Awaitable, type ClientEvents, type ClientOptions, type If, type Interaction } from 'discord.js';
-import { ModuleManager } from '../managers/ModuleManager.js';
-import { Module } from './Module.js';
 import { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
 import { CooldownManager } from '../managers/CooldownManager.js';
 import { PreconditionManager } from '../managers/PreconditionManager.js';
@@ -20,7 +18,6 @@ import type { Config } from '../../helpers/config.js';
 declare module "discord.js" {
     interface ClientOptions {
         token?: string;
-        modules?: Module.Resolvable[];
         preconditions?: CommandPrecondition.Resolvable[];
         postconditions?: CommandPostcondition.Resolvable[];
         commands?: AnyCommandResolvable[];
@@ -51,15 +48,10 @@ export interface Client<Ready extends boolean = boolean> extends DiscordJsClient
 }
 
 export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Ready> {
-    private _modules: ModuleManager = new ModuleManager(this);
     private _commands: CommandManager|null = null;
     private _cooldowns: CooldownManager<BaseCooldownAdapter>|null = null;
     private _preconditions: PreconditionManager|null = null;
     private _postconditions: PostconditionManager|null = null;
-
-    get modules() {
-        return this._modules;
-    }
 
     get commands() {
         return this._commands as If<Ready, CommandManager, null>;
@@ -88,10 +80,6 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     public constructor(options: ClientOptions) {
         super(options);
 
-        if (options.modules) for (const module of options.modules) {
-            this.modules.cache.set(module.id, Module.from(module));
-        }
-
         this._executeCommand = this._executeCommand.bind(this);
     }
 
@@ -108,7 +96,6 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this._postconditions = new PostconditionManager(this);
 
         await this.cooldowns?.adapter.$init(this as Client<false>);
-        await this.modules.enableModules();
 
         if (this.options.preconditions) {
             for (const precondition of this.options.preconditions) {
@@ -136,15 +123,12 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this.once('ready', async () => {
             this.setMaxListeners(this.getMaxListeners() - 1);
             this.cooldowns?.createSweeper();
-            await this.modules.readyModules();
         });
 
         return super.login(token);
     }
 
-    public async destroy(clearModuleCache: boolean = false): Promise<void> {
-        await this.modules.disableModules({ removeFromCache: clearModuleCache });
-
+    public async destroy(): Promise<void> {
         this._commands = null;
         this._cooldowns = null;
         this._preconditions = null;

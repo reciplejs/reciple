@@ -18,7 +18,6 @@ export * from './classes/managers/CommandManager.js';
 export * from './classes/managers/CooldownManager.js';
 export * from './classes/managers/MessageCommandFlagValueManager.js';
 export * from './classes/managers/MessageCommandOptionValueManager.js';
-export * from './classes/managers/ModuleManager.js';
 export * from './classes/managers/PostconditionManager.js';
 export * from './classes/managers/PostconditionResultManager.js';
 export * from './classes/managers/PreconditionManager.js';
@@ -34,7 +33,6 @@ export * from './classes/structures/Cooldown.js';
 export * from './classes/structures/MessageCommandFlag.js';
 export * from './classes/structures/MessageCommandOption.js';
 export * from './classes/structures/MessageCommandParser.js';
-export * from './classes/structures/Module.js';
 export * from './classes/structures/RecipleError.js';
 export * from './classes/structures/Utils.js';
 
