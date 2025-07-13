@@ -2,9 +2,9 @@ import { defineConfig } from 'tsup';
 import { replaceTscAliasPaths } from 'tsc-alias';
 
 export default defineConfig({
-    entry: ['src/**/*.{ts,tsx}'],
+    entry: ['src/**/*.{js,jsx}'],
     outDir: './modules',
-    tsconfig: './tsconfig.json',
+    tsconfig: './jsconfig.json',
     external: [],
     noExternal: [],
     esbuildPlugins: [],
@@ -19,6 +19,6 @@ export default defineConfig({
     sourcemap: true,
     treeshake: true,
     onSuccess: () => replaceTscAliasPaths({
-        configFile: './tsconfig.json'
+        configFile: './jsconfig.json'
     }),
 });
