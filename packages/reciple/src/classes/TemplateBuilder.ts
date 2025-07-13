@@ -3,7 +3,7 @@ import { ConfigReader } from './ConfigReader.js';
 import { copyFile, mkdir, readdir, stat } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
 import micromatch from 'micromatch';
-import type { CLI } from './CLI.js';
+import { CLI } from './CLI.js';
 import path from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { NotAnError } from './NotAnError.js';
@@ -52,11 +52,12 @@ export class TemplateBuilder {
         this.token = options.token;
     }
 
-    public async init() {
+    public async init(): Promise<this> {
         intro(colors.bold(colors.black(colors.bgCyan(` ${this.cli.command.name()} v${this.cli.build} `))));
+        return this;
     }
 
-    public async createDirectory(options?: TemplateBuilder.CreateDirectoryOptions) {
+    public async createDirectory(options?: TemplateBuilder.CreateDirectoryOptions): Promise<this> {
         this._directory = options?.directory ?? this._directory;
 
         if (!this._directory) {
@@ -111,7 +112,7 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async setupLanguage(options?: TemplateBuilder.SetupLanguageOptions) {
+    public async setupLanguage(options?: TemplateBuilder.SetupLanguageOptions): Promise<this> {
         this.typescript = options?.typescript ?? this.typescript;
 
         if (!this.typescript) {
@@ -131,7 +132,7 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async createConfig(options?: TemplateBuilder.CreateConfigOptions) {
+    public async createConfig(options?: TemplateBuilder.CreateConfigOptions): Promise<this> {
         let filepath = options?.filepath;
 
         if (!filepath) {
@@ -175,7 +176,19 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async createModules(options?: TemplateBuilder.CreateModulesOptions) {}
+    public async createTemplate(options?: TemplateBuilder.CreateModulesOptions): Promise<this> {
+        const source = path.join(CLI.root, './assets/templates/', this.typescript ? 'typescript' : 'javascript');
+
+        const [template, loader] = TemplateBuilder.createSpinnerPromise({
+            promise: TemplateBuilder.copy(source, this.directory, options),
+            message: 'Copying template files',
+            successMessage: 'Files copied successfully',
+            errorMessage: 'Failed to copy files'
+        });
+
+        await template;
+        return this;
+    }
 
     public async createPackageManager(options?: TemplateBuilder.CreatePackageManagerOptions) {
         this._packageManager = options?.packageManager instanceof PackageManager
@@ -219,15 +232,16 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async build() {
+    public async build(): Promise<this> {
         await mkdir(this.directory, { recursive: true });
         await this.runCommand(this.packageManager.installAll());
 
         outro(`Project created in ${colors.cyan(this.directory)}`);
+        return this;
     }
 
     public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<TemplateBuilder.SpinnerPromiseOptions<void>, 'promise'>): Promise<void> {
-        const result = TemplateBuilder.spinnerPromise({
+        const result = TemplateBuilder.createSpinnerPromise({
             ...options,
             message: `$ ${colors.green(command)}`,
             successMessage: `${colors.bold(colors.green('✓'))} ${colors.green(command)}`,
@@ -274,12 +288,7 @@ export namespace TemplateBuilder {
 
     export interface CreateConfigOptions extends Partial<ConfigReader.CreateOptions> {}
 
-    export interface CreateModulesOptions {
-        modules?: {
-            directory: string;
-            source: string;
-        }[];
-    }
+    export interface CreateModulesOptions {}
 
     export interface CreatePackageManagerOptions {
         packageManager?: PackageManager|PackageManager.Type;
@@ -293,7 +302,7 @@ export namespace TemplateBuilder {
         errorMessage?: string;
     }
 
-    export function spinnerPromise<T>(options: SpinnerPromiseOptions<T>): [Promise<T>, ReturnType<typeof spinner>] {
+    export function createSpinnerPromise<T>(options: SpinnerPromiseOptions<T>): [Promise<T>, ReturnType<typeof spinner>] {
         const loader = spinner({ indicator: options.indicator });
 
         return [
