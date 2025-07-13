@@ -11,7 +11,6 @@ import { slug } from 'github-slugger';
 import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
-import { ModuleLoader } from './ModuleLoader.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -261,12 +260,6 @@ export class TemplateBuilder {
     public async build(): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
         await this.runCommand(this.packageManager.installAll());
-
-        const directories = await ModuleLoader.scanForDirectories(this.config?.config.modules!);
-
-        if (directories) for (const directory of directories) {
-            await mkdir(directory, { recursive: true });
-        }
 
         outro(`Project created in ${colors.cyan(this.directory)}`);
         return this;
