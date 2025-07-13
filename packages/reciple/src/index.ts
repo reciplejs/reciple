@@ -1,10 +1,12 @@
-import type { Logger } from 'prtyprnt';
+import type { Logger, LoggerOptions } from 'prtyprnt';
 import type { CLI } from './classes/CLI.js';
 import type { ModuleLoader } from './classes/ModuleLoader.js';
 
 declare module "@reciple/core" {
     interface Config {
+        token?: string;
         modules?: ModuleLoader.Config;
+        logger?: Logger|LoggerOptions
     }
 
     interface Client {
