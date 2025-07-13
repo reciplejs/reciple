@@ -35,19 +35,23 @@
     "@reciple/utils": "^10.0.0",
     "bundle-require": "^5.1.0",
     "commander": "^14.0.0",
-    "dotenv": "^16.4.7",
-    "globby": "^11.1.0",
+    "dotenv": "^17.2.0",
+    "github-slugger": "^2.0.0",
+    "globby": "^14.1.0",
     "micromatch": "^4.0.8",
-    "ora": "^5.4.1",
+    "ora": "^8.2.0",
     "prtyprnt": "^1.1.0",
     "reciple": "^10.0.0",
     "semver": "^7.7.2"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "devDependencies": {
     "@types/micromatch": "^4.0.9",
     "@types/semver": "^7.7.0"
+  },
+  "peerDependencies": {
+    "discord.js": "^14.20.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

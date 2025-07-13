@@ -87,7 +87,7 @@ export class CLI {
         this.logger.debug(`Debug mode is ${this.flags.debug ? 'enabled' : 'disabled'}`);
         process.env.NODE_ENV = this.flags.debug ? 'development' : process.env.NODE_ENV;
 
-        loadEnv({ path: this.flags.env });
+        loadEnv({ path: this.flags.env, debug: this.flags.debug });
         this.logger.debug(`Loaded environment variables from ${this.flags.env.join(', ')}`);
     }
 

@@ -1,4 +1,4 @@
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition, type Config } from '@reciple/core';
+import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition, type Config } from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -48,5 +48,10 @@ export const config: Config = {
     },
     postconditions: {
         returnOnFailure: false
+    },
+    modules: {
+        directories: ["./src/*"],
+        ignore: ["./src/*/_*"],
+        filter: filepath => !!filepath
     }
 };

@@ -1,18 +1,21 @@
 import { colors, PackageJsonBuilder, PackageManager } from '@reciple/utils';
 import { ConfigReader } from './ConfigReader.js';
-import { mkdir, readdir, stat } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, stat } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
 import micromatch from 'micromatch';
 import type { CLI } from './CLI.js';
 import path from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { NotAnError } from './NotAnError.js';
+import { slug } from 'github-slugger';
+import { exec } from 'node:child_process';
+import { RecipleError } from '@reciple/core';
 
 export class TemplateBuilder {
     private _directory?: string;
+    private _packageManager?: PackageManager;
 
     public cli: CLI;
-    public packageManager?: PackageManager;
     public typescript?: boolean;
     public token?: string;
     public defaultAll: boolean;
@@ -24,6 +27,10 @@ export class TemplateBuilder {
         return this._directory ?? process.cwd();
     }
 
+    get packageManager() {
+        return this._packageManager ?? new PackageManager(PackageManager.getNPMUserAgent() ?? undefined);
+    }
+
     get relativeDirectory() {
         return path.relative(process.cwd(), this.directory) || '.';
     }
@@ -32,11 +39,15 @@ export class TemplateBuilder {
         return path.join(this.directory, 'package.json');
     }
 
+    get name() {
+        return slug(path.basename(this.directory));
+    }
+
     constructor(options: TemplateBuilder.Options) {
         this.cli = options.cli;
         this._directory = options.directory;
         this.typescript = options.typescript;
-        this.packageManager = options.packageManager;
+        this._packageManager = options.packageManager;
         this.defaultAll = options.defaultAll ?? false;
         this.token = options.token;
     }
@@ -69,9 +80,9 @@ export class TemplateBuilder {
 
         const stats = await stat(this.directory).catch(() => undefined);
 
-        if (stats && stats.isDirectory()) {
+        if (stats) {
             let files = await readdir(this.directory);
-                files = files.filter(f => !micromatch.isMatch(f, options?.ignoredFiles ?? TemplateBuilder.ignoredDirectoryFiles, { dot: true }));
+                files = micromatch.not(files, options?.ignoredFiles ?? TemplateBuilder.ignoredDirectoryFiles, { dot: true });
 
             if (files.length) {
                 switch (options?.onNotEmpty) {
@@ -164,8 +175,10 @@ export class TemplateBuilder {
         return this;
     }
 
+    public async createModules(options?: TemplateBuilder.CreateModulesOptions) {}
+
     public async createPackageManager(options?: TemplateBuilder.CreatePackageManagerOptions) {
-        this.packageManager = options?.packageManager instanceof PackageManager
+        this._packageManager = options?.packageManager instanceof PackageManager
             ? options.packageManager
             : options?.packageManager && new PackageManager(options?.packageManager);
 
@@ -189,13 +202,13 @@ export class TemplateBuilder {
                 });
 
             if (isCancel(npmUserAgent)) throw new NotAnError('Operation cancelled');
-            this.packageManager = new PackageManager(npmUserAgent);
+            this._packageManager = new PackageManager(npmUserAgent);
         }
 
         this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath);
 
         this.packageJson.merge({
-            name: path.basename(this.directory),
+            name: this.name,
             version: '0.0.1',
             type: 'module',
             private: true
@@ -207,7 +220,31 @@ export class TemplateBuilder {
     }
 
     public async build() {
+        await mkdir(this.directory, { recursive: true });
+        await this.runCommand(this.packageManager.installAll());
+
         outro(`Project created in ${colors.cyan(this.directory)}`);
+    }
+
+    public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<TemplateBuilder.SpinnerPromiseOptions<void>, 'promise'>): Promise<void> {
+        const result = TemplateBuilder.spinnerPromise({
+            ...options,
+            message: `$ ${colors.green(command)}`,
+            successMessage: `${colors.bold(colors.green('✓'))} ${colors.green(command)}`,
+            errorMessage: `${colors.bold(colors.red('✗'))} ${colors.red(command)}`,
+            promise: TemplateBuilder.runCommand(command, {
+                cwd: this.directory,
+                ...options,
+                onOutput
+            })
+        });
+
+        function onOutput(data: string) {
+            if (options?.onOutput) options.onOutput(data);
+            if (result[1]) result[1].message(data);
+        };
+
+        return result[0];
     }
 }
 
@@ -237,6 +274,13 @@ export namespace TemplateBuilder {
 
     export interface CreateConfigOptions extends Partial<ConfigReader.CreateOptions> {}
 
+    export interface CreateModulesOptions {
+        modules?: {
+            directory: string;
+            source: string;
+        }[];
+    }
+
     export interface CreatePackageManagerOptions {
         packageManager?: PackageManager|PackageManager.Type;
     }
@@ -249,22 +293,103 @@ export namespace TemplateBuilder {
         errorMessage?: string;
     }
 
-    export async function spinnerPromise<T>(options: SpinnerPromiseOptions<T>): Promise<T> {
+    export function spinnerPromise<T>(options: SpinnerPromiseOptions<T>): [Promise<T>, ReturnType<typeof spinner>] {
         const loader = spinner({ indicator: options.indicator });
 
-        return new Promise<T>((resolve, reject) => {
+        return [
+            new Promise<T>((resolve, reject) => {
+                loader.start(options.message);
 
-            loader.start(options.message);
+                options.promise
+                    .then((value) => {
+                        loader.stop(options.successMessage);
+                        resolve(value);
+                    })
+                    .catch((error) => {
+                        loader.stop(options.errorMessage);
+                        reject(error);
+                    });
+            }),
+            loader
+        ];
+    }
 
-            options.promise
-                .then((value) => {
-                    loader.stop(options.successMessage);
-                    resolve(value);
-                })
-                .catch((error) => {
-                    loader.stop(options.errorMessage);
-                    reject(error);
-                });
+    export interface CopyOptions {
+        overwrite?: boolean;
+        filter?: (data: CopyMetadata) => boolean;
+        rename?: (data: CopyMetadata) => string;
+    }
+
+    export interface CopyMetadata {
+        basename: string;
+        src: string;
+        dest: string;
+    }
+
+    export async function copy(from: string, to: string, options?: CopyOptions): Promise<void> {
+        const fromStats = await stat(from).catch(() => undefined);
+        if (!fromStats) return;
+
+        if (fromStats.isDirectory()) {
+            const files = await readdir(from);
+
+            for (const file of files) {
+                const data: CopyMetadata = {
+                    basename: file,
+                    src: from,
+                    dest: to
+                };
+
+                if (options?.filter && !options.filter(data)) continue;
+
+                await copy(
+                    path.join(from, file),
+                    path.join(to,
+                        options?.rename
+                            ? options.rename(data)
+                            : file
+                    ),
+                    options
+                );
+            }
+            return;
+        }
+
+        const data: CopyMetadata = {
+            basename: path.basename(from),
+            src: from,
+            dest: to
+        };
+
+        if (options?.filter && !options.filter(data)) return;
+
+        const toStats = await stat(to).catch(() => undefined);
+        if (toStats && options?.overwrite === false) return;
+
+        await mkdir(path.dirname(to), { recursive: true });
+        await copyFile(from, to);
+    }
+
+    export interface RunCommandOptions {
+        cwd?: string;
+        env?: NodeJS.ProcessEnv;
+        onOutput?: (data: string) => void;
+    }
+
+    export function runCommand(command: string, options?: RunCommandOptions): Promise<void> {
+        const child = exec(command, {
+            cwd: options?.cwd,
+            env: options?.env
+        });
+
+        return new Promise((resolve, reject) => {
+            const onExit = (code: number|null) => code === 0 ? resolve() : reject(new RecipleError(`Command exited "${command}" with code ${colors.red(code?.toString() ?? 'unknown')}`));
+
+            child.on('exit', onExit);
+            child.on('error', error => reject(error));
+
+            child.stdout?.on('data', data => options?.onOutput?.(String(data).trim()));
+            child.stderr?.on('data', data => options?.onOutput?.(String(data).trim()));
         });
     }
 }

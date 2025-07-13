@@ -1,5 +1,5 @@
 // @ts-check
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition } from '@reciple/core';
+import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition } from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -22,7 +22,7 @@ export const client = new Client({
 });
 
 /**
- * @type {import('@reciple/core').Config}
+ * @type {import('reciple').Config}
  */
 export const config = {
     commands: {
@@ -52,5 +52,10 @@ export const config = {
     },
     postconditions: {
         returnOnFailure: false
+    },
+    modules: {
+        directories: ["./src/*"],
+        ignore: ["./src/*/_*"],
+        filter: filepath => !!filepath
     }
 };

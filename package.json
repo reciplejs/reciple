@@ -16,22 +16,16 @@
     "publish-dev": "lerna run build && lerna publish prerelease",
     "publish-latest": "lerna run build && lerna publish",
     "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
-    "create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create",
-    "create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create -D"
+    "create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create example",
+    "create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create example -D"
   },
   "devDependencies": {
-    "@types/node": "^22.15.32",
+    "@types/node": "^22.16.3",
     "esbuild-plugin-version-injector": "^1.2.1",
     "lerna": "^8.2.2",
     "rimraf": "^6.0.1",
     "terser": "^5.43.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "detect-indent": "^7.0.1",
-    "detect-newline": "^4.0.1",
-    "package-json": "^10.0.1",
-    "type-fest": "^4.41.0"
   }
 }

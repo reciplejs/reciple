@@ -71,7 +71,7 @@ export class ConfigReader {
 
     public static async hasConfigFile(filepath: string): Promise<boolean> {
         const stats = await stat(filepath).catch(() => undefined);
-        return !!stats?.isFile();
+        return !!stats;
     }
 
     public static async findConfigFromDirectory(directory: string, type?: 'ts'|'js'): Promise<string|null> {

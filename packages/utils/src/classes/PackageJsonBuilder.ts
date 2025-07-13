@@ -27,7 +27,7 @@ export class PackageJsonBuilder {
         const content = this.toString();
 
         const stats = await stat(filepath).catch(() => undefined);
-        if (stats?.isFile() && !overwrite) {
+        if (stats && !overwrite) {
             throw new Error(`File already exists: ${filepath}`);
         }
 
@@ -105,7 +105,7 @@ export class PackageJsonBuilder {
 
     public static async read(filepath: string, createIfNotExists?: boolean|Partial<PackageJson.PackageJsonStandard>): Promise<PackageJsonBuilder> {
         const stats = await stat(filepath).catch(() => undefined);
-        if (!stats?.isFile()) {
+        if (!stats) {
             if (createIfNotExists === false) throw new Error('Invalid package.json file');
 
             const builder = new PackageJsonBuilder(typeof createIfNotExists !== 'object' ? {} : createIfNotExists);
