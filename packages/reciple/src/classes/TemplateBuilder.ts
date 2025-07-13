@@ -246,8 +246,7 @@ export class TemplateBuilder {
             version: '0.0.1',
             type: 'module',
             scripts: {
-                clean: 'rimraf ./modules',
-                build: `${this.packageManager.run('clean')} && tsc`,
+                build: `tsup`,
                 start: 'reciple start',
                 dev: 'reciple dev',
             },
@@ -256,12 +255,11 @@ export class TemplateBuilder {
             private: true
         });
 
-        await this.packageJson.write(this.packageJsonPath, true);
-
         return this;
     }
 
     public async build(): Promise<this> {
+        await this.packageJson?.write(this.packageJsonPath, true);
         await this.runCommand(this.packageManager.installAll());
 
         const directories = await ModuleLoader.scanForDirectories(this.config?.config.modules!);
@@ -320,7 +318,8 @@ export namespace TemplateBuilder {
                 '@types/node': packageJSON.devDependencies?.['@types/node'],
                 nodemon: packageJSON.devDependencies?.nodemon,
                 rimraf: packageJSON.devDependencies?.rimraf,
-                typescript: packageJSON.devDependencies?.typescript
+                'tsc-alias': packageJSON.devDependencies?.['tsc-alias'],
+                tsup: packageJSON.devDependencies?.tsup
             }
         },
         ts: {},

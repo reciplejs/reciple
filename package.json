@@ -9,9 +9,7 @@
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
     "build": "lerna run build",
-    "build:tsc": "lerna run build:tsc",
     "check": "lerna run check",
-    "watch": "tsc --watch --noEmit",
     "test": "npm run dev -w example",
     "publish-dev": "lerna run build && lerna publish prerelease",
     "publish-latest": "lerna run build && lerna publish",
@@ -25,7 +23,6 @@
     "lerna": "^8.2.2",
     "rimraf": "^6.0.1",
     "terser": "^5.43.1",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "tsup": "^8.5.0"
   }
 }
