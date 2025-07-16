@@ -1,21 +1,22 @@
 import { mix } from 'ts-mixer';
-import { Module } from '../Module.js';
+import { BaseModule } from '../modules/BaseModule.js';
 import { BaseManager, RecipleError, type Client } from '@reciple/core';
 import EventEmitter from 'node:events';
+import type { AnyModule } from '../../helpers/types.js';
 
-export interface ModuleManager extends BaseManager<string, Module, Module.Resolvable>, EventEmitter<ModuleManager.Events> {}
+export interface ModuleManager extends BaseManager<string, BaseModule, BaseModule.Resolvable>, EventEmitter<ModuleManager.Events> {}
 
 @mix(BaseManager, EventEmitter)
 export class ModuleManager {
-    public readonly holds = Module;
+    public readonly holds = BaseModule;
 
     public constructor(public readonly client: Client) {}
 
-    public async enableModules({ modules }: ModuleManager.EventExecuteData = { modules: Array.from(this.cache.values()) }): Promise<Module[]> {
-        const enabledModules: Module[] = [];
+    public async enableModules({ modules }: ModuleManager.EventExecuteData = { modules: Array.from(this.cache.values()) }): Promise<BaseModule[]> {
+        const enabledModules: BaseModule[] = [];
 
         for (const resolvable of modules ?? []) {
-            const module = Module.from(resolvable);
+            const module = BaseModule.from(resolvable);
 
             this.emit('modulePreEnable', module);
 
@@ -30,13 +31,13 @@ export class ModuleManager {
         return enabledModules;
     }
 
-    public async readyModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<Module[]> {
-        const readyModules: Module[] = [];
+    public async readyModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<BaseModule[]> {
+        const readyModules: BaseModule[] = [];
 
         if (!this.client.isReady()) throw new RecipleError(RecipleError.Code.ClientNotReady());
 
         for (const resolvable of modules ?? []) {
-            const module = Module.from(resolvable);
+            const module = BaseModule.from(resolvable);
 
             this.emit('modulePreReady', module);
 
@@ -54,11 +55,11 @@ export class ModuleManager {
         return readyModules;
     }
 
-    public async disableModules({ modules, removeFromCache }: ModuleManager.EventExecuteData & { removeFromCache?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<Module[]> {
-        const disabledModules: Module[] = [];
+    public async disableModules({ modules, removeFromCache }: ModuleManager.EventExecuteData & { removeFromCache?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<BaseModule[]> {
+        const disabledModules: BaseModule[] = [];
 
         for (const resolvable of modules ?? []) {
-            const module = Module.from(resolvable);
+            const module = BaseModule.from(resolvable);
 
             this.emit('modulePreDisable', module);
 
@@ -84,23 +85,23 @@ export class ModuleManager {
 
 export namespace ModuleManager {
     export interface Events {
-        modulePreEnable: [module: Module];
-        moduleEnable: [module: Module];
-        moduleEnableError: [module: Module, error: Error];
-        enabledModules: [modules: Module[]];
+        modulePreEnable: [module: AnyModule];
+        moduleEnable: [module: AnyModule];
+        moduleEnableError: [module: AnyModule, error: Error];
+        enabledModules: [modules: AnyModule[]];
 
-        modulePreReady: [module: Module];
-        moduleReady: [module: Module];
-        moduleReadyError: [module: Module, error: Error];
-        readyModules: [modules: Module[]];
+        modulePreReady: [module: AnyModule];
+        moduleReady: [module: AnyModule];
+        moduleReadyError: [module: AnyModule, error: Error];
+        readyModules: [modules: AnyModule[]];
 
-        modulePreDisable: [module: Module];
-        moduleDisable: [module: Module];
-        moduleDisableError: [module: Module, error: Error];
-        disabledModules: [modules: Module[]];
+        modulePreDisable: [module: AnyModule];
+        moduleDisable: [module: AnyModule];
+        moduleDisableError: [module: AnyModule, error: Error];
+        disabledModules: [modules: AnyModule[]];
     }
 
     export interface EventExecuteData {
-        modules?: Module.Resolvable[];
+        modules?: BaseModule.Resolvable[];
     }
 }

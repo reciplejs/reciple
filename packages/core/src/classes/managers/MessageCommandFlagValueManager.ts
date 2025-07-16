@@ -58,7 +58,7 @@ export class MessageCommandFlagValueManager {
 
         // @ts-expect-error
         return flag.resolve?.({
-            type: flag.value_type ?? 'string',
+            type: flag.valueType ?? 'string',
             flag,
             client: this.client,
             command: this.command,
@@ -94,7 +94,7 @@ export class MessageCommandFlagValueManager {
             try {
                 // @ts-expect-error
                 const valid = await flag.validate({
-                    type: flag.value_type ?? 'string',
+                    type: flag.valueType ?? 'string',
                     client: this.client,
                     command: this.command,
                     message: this.message,

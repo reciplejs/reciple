@@ -34,6 +34,8 @@
     "@dotenvx/dotenvx": "^1.47.5",
     "@reciple/core": "^10.0.0",
     "@reciple/utils": "^10.0.0",
+    "@sapphire/shapeshift": "^4.0.0",
+    "@sapphire/snowflake": "^3.5.5",
     "bundle-require": "^5.1.0",
     "commander": "^14.0.0",
     "github-slugger": "^2.0.0",

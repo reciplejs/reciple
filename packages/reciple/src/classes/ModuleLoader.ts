@@ -1,14 +1,27 @@
 import type { Awaitable } from 'discord.js';
-import type { ConfigReader } from './ConfigReader.js';
 import path from 'node:path';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import micromatch from 'micromatch';
 import { globby, isDynamicPattern } from 'globby';
+import { CommandType, RecipleError, type Client } from '@reciple/core';
+import type { AnyModule, AnyModuleData } from '../helpers/types.js';
+import { recursiveDefaults } from '@reciple/utils';
+import { BaseModule } from './modules/BaseModule.js';
+import { BaseModuleValidator } from './validation/BaseModuleValidator.js';
+import { ModuleType } from '../helpers/constants.js';
+import { PostconditionModule } from './modules/PostconditionModule.js';
+import { PreconditionModule } from './modules/PreconditionModule.js';
+import { EventModule } from './modules/events/EventModule.js';
+import { MessageCommandModule } from './modules/commands/MessageCommandModule.js';
+import { SlashCommandModule } from './modules/commands/SlashCommandModule.js';
+import { ContextMenuCommandModule } from './modules/commands/ContextMenuCommandModule.js';
+import { CommandModuleValidator } from './validation/CommandModuleValidator.js';
+import { EventModuleValidator } from './validation/EventModuleValidator.js';
+import { PreconditionModuleValidator } from './validation/PreconditionModule.js';
+import { PostconditionModuleValidator } from './validation/PostconditionModule.js';
 
 export class ModuleLoader {
-    public constructor(public readonly config: ConfigReader) {
-        this.config = config;
-    }
+    public constructor(public readonly client: Client) {}
 
     public static async scanForDirectories(config: Pick<ModuleLoader.Config, 'directories'> & { cwd?: string; createDirectories?: boolean; }) {
         const cwd = config.cwd ?? process.cwd();
@@ -71,6 +84,43 @@ export class ModuleLoader {
         if (config.sort) modules.sort(config.sort);
 
         return modules;
+    }
+
+    public static async getModule(filepath: string): Promise<AnyModule> {
+        const stats = await stat(filepath).catch(() => undefined);
+        if (!stats) throw new RecipleError(`Module not found: ${filepath}`);
+
+        let data = recursiveDefaults<AnyModule|AnyModuleData|undefined>(await import(filepath));
+        if (BaseModule.isModule(data)) return data;
+
+        switch (data?.moduleType) {
+            case ModuleType.Command:
+                CommandModuleValidator.isValid(data);
+
+                switch (data.type) {
+                    case CommandType.Message:
+                        return MessageCommandModule.from(data);
+                    case CommandType.Slash:
+                        return SlashCommandModule.from(data);
+                    case CommandType.ContextMenu:
+                        return ContextMenuCommandModule.from(data);
+                    default:
+                        throw new RecipleError(`Unknown command type from module: ${filepath}`);
+                }
+            case ModuleType.Event:
+                EventModuleValidator.isValid(data);
+                return EventModule.from(data);
+            case ModuleType.Precondition:
+                PreconditionModuleValidator.isValid(data);
+                return PreconditionModule.from(data);
+            case ModuleType.Postcondition:
+                PostconditionModuleValidator.isValid(data);
+                return PostconditionModule.from(data);
+            case ModuleType.Base:
+            default:
+                BaseModuleValidator.isValid(data);
+                return BaseModule.from(data);
+        }
     }
 }
 

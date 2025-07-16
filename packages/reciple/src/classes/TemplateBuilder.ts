@@ -184,23 +184,32 @@ export class TemplateBuilder {
         const globals = path.join(CLI.root, './assets/global/');
 
         function rename(data: TemplateBuilder.CopyMetadata) {
-            const newName = options?.rename?.(data) ?? data.basename;
-            if (newName != data.basename) return newName;
-
             switch (data.basename) {
-                case 'env':
-                    return '.env';
                 case 'gitignore':
                     return '.gitignore';
                 default:
-                    return data.basename;
+                    return options?.rename?.(data) ?? data.basename;
+            }
+        }
+
+        function overwrite(data: TemplateBuilder.CopyMetadata) {
+            switch (data.basename) {
+                case 'gitignore':
+                    return false;
+                case 'tsconfig.json':
+                case 'jsconfig.json':
+                case 'tsup.config.js':
+                case 'tsup.config.ts':
+                    return true;
+                default:
+                    return (typeof options?.overwrite === 'boolean' ? options.overwrite : options?.overwrite?.(data)) ?? true;
             }
         }
 
         const [template, loader] = TemplateBuilder.createSpinnerPromise({
             promise: Promise.all([
-                TemplateBuilder.copy(source, this.directory, { ...options, rename }),
-                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite: false })
+                TemplateBuilder.copy(source, this.directory, { ...options, rename, overwrite }),
+                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite })
             ]),
             message: 'Copying template files',
             successMessage: 'Files copied successfully',
@@ -437,7 +446,7 @@ export namespace TemplateBuilder {
     }
 
     export interface CopyOptions {
-        overwrite?: boolean;
+        overwrite?: boolean|((data: CopyMetadata) => boolean);
         filter?: (data: CopyMetadata) => boolean;
         rename?: (data: CopyMetadata) => string;
     }
@@ -458,14 +467,12 @@ export namespace TemplateBuilder {
             for (const file of files) {
                 const data: CopyMetadata = {
                     basename: file,
-                    src: from,
+                    src: path.join(from, file),
                     dest: to
                 };
 
-                if (options?.filter && !options.filter(data)) continue;
-
                 await copy(
-                    path.join(from, file),
+                    data.src,
                     path.join(to,
                         options?.rename
                             ? options.rename(data)
@@ -486,7 +493,11 @@ export namespace TemplateBuilder {
         if (options?.filter && !options.filter(data)) return;
 
         const toStats = await stat(to).catch(() => undefined);
-        if (toStats && options?.overwrite === false) return;
+        const overwrite = typeof options?.overwrite === 'function'
+            ? options.overwrite(data)
+            : options?.overwrite ?? true;
+
+        if (toStats && overwrite) return;
 
         await mkdir(path.dirname(to), { recursive: true });
         await copyFile(from, to);

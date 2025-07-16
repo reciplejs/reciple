@@ -16,3 +16,11 @@ export const cli = new CLI({
     subcommandsDir: path.join(path.dirname(CLI.bin), './commands'),
     logger
 });
+
+export enum ModuleType {
+    Base = 1,
+    Command,
+    Event,
+    Precondition,
+    Postcondition
+}
