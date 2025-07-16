@@ -9,8 +9,8 @@ export class MessageCommandFlag<T> implements MessageCommandFlag.Data<T> {
     public description!: string;
     public required!: boolean;
     public multiple?: boolean;
-    public default_values?: string[]|boolean[];
-    public value_type?: 'string'|'boolean';
+    public defaultValues?: string[]|boolean[];
+    public valueType?: 'string'|'boolean';
     public validate?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<boolean>;
     public resolve?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<T[]>;
 
@@ -20,8 +20,8 @@ export class MessageCommandFlag<T> implements MessageCommandFlag.Data<T> {
         this.description = data?.description ?? '';
         this.required = data?.required ?? false;
         this.multiple = data?.multiple;
-        this.default_values = data?.default_values;
-        this.value_type = data?.value_type;
+        this.defaultValues = data?.defaultValues;
+        this.valueType = data?.valueType;
         this.validate = data?.validate;
         this.resolve = data?.resolve;
     }
@@ -33,8 +33,8 @@ export class MessageCommandFlag<T> implements MessageCommandFlag.Data<T> {
             description: this.description,
             required: this.required,
             multiple: this.multiple,
-            default_values: this.default_values,
-            value_type: this.value_type,
+            defaultValues: this.defaultValues,
+            valueType: this.valueType,
             validate: this.validate,
             resolve: this.resolve
         };
@@ -50,8 +50,8 @@ export namespace MessageCommandFlag {
         description: string;
         required: boolean;
         multiple?: boolean;
-        default_values?: string[]|boolean[];
-        value_type?: 'string'|'boolean';
+        defaultValues?: string[]|boolean[];
+        valueType?: 'string'|'boolean';
         validate?: (data: ResolveValueOptions<T>) => Awaitable<boolean>;
         resolve?: (data: ResolveValueOptions<T>) => Awaitable<T[]>;
     }

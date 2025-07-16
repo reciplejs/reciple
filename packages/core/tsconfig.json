@@ -1,6 +1,6 @@
 {
   "extends": "@reciple/utils/tsconfig.json",
-  "include": ["./src/**/*", "../reciple/src/classes/Module.ts", "../reciple/src/classes/managers/ModuleManager.ts"],
+  "include": ["./src/**/*"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

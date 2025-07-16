@@ -2,6 +2,10 @@ import { normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js
 import type { MessageCommandOption } from '../structures/MessageCommandOption.js';
 import { MessageCommandOptionBuilder } from './MessageCommandOptionBuilder.js';
 import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
+import { MessageCommandBuilderValidator } from '../validators/MessageCommandBuilderValidator.js';
+import { MessageCommandOptionValidator } from '../validators/MessageCommandOptionValidator.js';
+import { MessageCommandFlagValidator } from '../validators/MessageCommandFlagValidator.js';
+import { MessageCommandFlagBuilder } from './MessageCommandFlagBuilder.js';
 
 export class MessageCommandBuilder implements Omit<MessageCommandBuilder.Data, 'options'|'flags'> {
     public name!: string;
@@ -11,32 +15,47 @@ export class MessageCommandBuilder implements Omit<MessageCommandBuilder.Data, '
     public flags: JSONEncodable<MessageCommandFlag.Data>[] = [];
 
     public constructor(options?: Partial<MessageCommandBuilder.Data>) {
+        MessageCommandBuilderValidator.object
+            .partial()
+            .optional()
+            .setValidationEnabled(MessageCommandBuilderValidator.isValidationEnabled)
+            .parse(options);
+
         Object.assign(this, options);
     }
 
-    public setName(name: string): MessageCommandBuilder {
+    public setName(name: string): this {
+        MessageCommandBuilderValidator.isValidName(name);
         this.name = name;
         return this;
     }
 
-    public setDescription(description: string): MessageCommandBuilder {
+    public setDescription(description: string): this {
+        MessageCommandBuilderValidator.isValidDescription(description);
         this.description = description;
         return this;
     }
 
-    public setAliases(...aliases: RestOrArray<string>): MessageCommandBuilder {
-        this.aliases = normalizeArray(aliases);
+    public setAliases(...aliases: RestOrArray<string>): this {
+        const values = normalizeArray(aliases);
+
+        MessageCommandBuilderValidator.isValidAliases(values);
+        this.aliases = values;
         return this;
     }
 
-    public addOption<T>(option: JSONEncodable<MessageCommandOption.Data<T>>|((builder: MessageCommandOptionBuilder<T>) => JSONEncodable<MessageCommandOption.Data<T>>)): MessageCommandBuilder {
+    public addOption<T>(option: JSONEncodable<MessageCommandOption.Data<T>>|((builder: MessageCommandOptionBuilder<T>) => JSONEncodable<MessageCommandOption.Data<T>>)): this {
         const resolved = typeof option === 'function' ? option(new MessageCommandOptionBuilder()) : option;
+
+        MessageCommandOptionValidator.isValid(resolved);
         this.options.push(resolved);
         return this;
     }
 
-    public addFlag<T>(flag: JSONEncodable<MessageCommandFlag.Data<T>>|((builder: MessageCommandOptionBuilder<T>) => JSONEncodable<MessageCommandFlag.Data<T>>)): MessageCommandBuilder {
-        const resolved = typeof flag === 'function' ? flag(new MessageCommandOptionBuilder()) : flag;
+    public addFlag<T>(flag: JSONEncodable<MessageCommandFlag.Data<T>>|((builder: MessageCommandFlagBuilder<T>) => JSONEncodable<MessageCommandFlag.Data<T>>)): this {
+        const resolved = typeof flag === 'function' ? flag(new MessageCommandFlagBuilder()) : flag;
+
+        MessageCommandFlagValidator.isValid(resolved);
         this.flags.push(resolved);
         return this;
     }

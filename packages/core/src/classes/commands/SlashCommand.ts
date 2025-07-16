@@ -6,6 +6,7 @@ import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { Utils } from '../structures/Utils.js';
 import { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
+import { Validator } from '../validators/Validator.js';
 
 export class SlashCommand extends BaseCommand<CommandType.Slash> {
     public readonly type: CommandType.Slash = CommandType.Slash;
@@ -15,8 +16,11 @@ export class SlashCommand extends BaseCommand<CommandType.Slash> {
     }
 
     public setCommand(data: SlashCommandBuilder.Data|JSONEncodable<SlashCommandBuilder.Data>|((builder: SlashCommandBuilder) => SlashCommandBuilder.Data|JSONEncodable<SlashCommandBuilder.Data>)): this {
-        const resolved = typeof data === 'function' ? data(new SlashCommandBuilder()) : data;
-        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        let resolved = typeof data === 'function' ? data(new SlashCommandBuilder()) : data;
+            resolved = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+
+        Validator.baseApplicationCommand.setValidationEnabled(Validator.isValidationEnabled).parse(resolved);
+        this.data = resolved;
         return this;
     }
 

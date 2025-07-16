@@ -49,6 +49,8 @@ export class CommandManager {
     public get<T extends CommandType>(type: T, name: string): AnyCommand<T>|undefined {
         return this.cache.find(c => c.type === type && c.data.name === name) as AnyCommand<T>|undefined;
     }
+
+    // TODO: Implement interaction command registration
 }
 
 export namespace CommandManager {

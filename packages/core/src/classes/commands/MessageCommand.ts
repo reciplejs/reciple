@@ -5,20 +5,24 @@ import { MessageCommandOption } from '../structures/MessageCommandOption.js';
 import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { MessageCommandOptionValueManager } from '../managers/MessageCommandOptionValueManager.js';
 import { MessageCommandParser } from '../structures/MessageCommandParser.js';
-import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
+import { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
 import type { Client } from '../structures/Client.js';
 import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { MessageCommandFlagValueManager } from '../managers/MessageCommandFlagValueManager.js';
 import { Utils } from '../structures/Utils.js';
 import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
+import { MessageCommandValidator } from '../validators/MessageCommandValidator.js';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
-    public flags: MessageCommandFlag<any>[] = [];
 
     get options() {
         return this.data.options?.map(o => o instanceof MessageCommandOption ? o : new MessageCommandOption(o)) ?? [];
+    }
+
+    get flags() {
+        return this.data.flags?.map(f => f instanceof MessageCommandFlag ? f : new MessageCommandFlag(f)) ?? [];
     }
 
     public constructor(data?: Partial<MessageCommand.Data>) {
@@ -26,27 +30,23 @@ export class MessageCommand extends BaseCommand<CommandType.Message> {
     }
 
     public setCommand(data: MessageCommandBuilder.Data|JSONEncodable<MessageCommandBuilder.Data>|((builder: MessageCommandBuilder) => MessageCommandBuilder.Data|JSONEncodable<MessageCommandBuilder.Data>)): this {
-        const resolved = typeof data === 'function' ? data(new MessageCommandBuilder()) : data;
-        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        let resolved = typeof data === 'function' ? data(new MessageCommandBuilder()) : data;
+            resolved = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+
+        MessageCommandValidator.isValid(resolved);
+        this.data = resolved;
         return this;
     }
 
     public toJSON(): MessageCommand.Data {
-        return {
-            ...super.toJSON(),
-            options: this.options.map(option => option.toJSON()),
-            flags: this.flags.map(flag => flag.toJSON())
-        };
+        return super.toJSON();
     }
 }
 
 export namespace MessageCommand {
     export type Resolvable = MessageCommand | MessageCommand.Data;
 
-    export interface Data extends BaseCommand.Data<CommandType.Message> {
-        options?: MessageCommandOption.Data[];
-        flags?: MessageCommandFlag.Data[];
-    }
+    export interface Data extends BaseCommand.Data<CommandType.Message> {}
 
     export interface ExecuteData extends BaseCommand.ExecuteData<CommandType.Message> {
         type: CommandType.Message;

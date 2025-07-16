@@ -6,6 +6,7 @@ import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import { Utils } from '../structures/Utils.js';
 import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
+import { Validator } from '../validators/Validator.js';
 
 export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
     public readonly type: CommandType.ContextMenu = CommandType.ContextMenu;
@@ -15,8 +16,11 @@ export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
     }
 
     public setCommand(data: ContextMenuCommandBuilder.Data|JSONEncodable<ContextMenuCommandBuilder.Data>|((builder: ContextMenuCommandBuilder) => ContextMenuCommandBuilder.Data|JSONEncodable<ContextMenuCommandBuilder.Data>)): this {
-        const resolved = typeof data === 'function' ? data(new ContextMenuCommandBuilder()) : data;
-        this.data = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+        let resolved = typeof data === 'function' ? data(new ContextMenuCommandBuilder()) : data;
+            resolved = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
+
+        Validator.baseApplicationCommand.setValidationEnabled(Validator.isValidationEnabled).parse(resolved);
+        this.data = resolved;
         return this;
     }
 

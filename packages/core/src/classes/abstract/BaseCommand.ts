@@ -7,6 +7,7 @@ import type { PreconditionResultManager } from '../managers/PreconditionResultMa
 import type { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
 import type { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import type { CommandPostcondition } from '../structures/CommandPostcondition.js';
+import { BaseCommandValidator } from '../validators/BaseCommandValidator.js';
 
 export abstract class BaseCommand<T extends CommandType> implements BaseCommand.Data<T> {
     public id: string = DiscordSnowflake.generate().toString();
@@ -21,75 +22,105 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
     public execute: (data: AnyCommandExecuteData<T>) => Promise<void> = async () => {};
 
     constructor(data?: Partial<BaseCommand.Data<T>>) {
+        BaseCommandValidator.object
+            .partial()
+            .optional()
+            .setValidationEnabled(BaseCommandValidator.isValidationEnabled)
+            .parse(data);
+
         Object.assign(this, data);
+
+        if (data?.execute) this.setExecute(data?.execute);
     }
 
     public abstract setCommand(data: AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>|((builder: AnyCommandBuilder<T>) => AnyCommandBuilderData<T>|JSONEncodable<AnyCommandBuilderData<T>>)): this;
 
     public setCooldown(cooldown: number): this {
+        BaseCommandValidator.isValidCooldown(cooldown);
         this.cooldown = cooldown;
         return this;
     }
 
     public addPreconditions(...preconditions: RestOrArray<CommandPrecondition>): this {
-        this.preconditions.push(...normalizeArray(preconditions));
+        const data = normalizeArray(preconditions);
+
+        BaseCommandValidator.isValidPreconditions(data);
+        this.preconditions.push(...data);
         return this;
     }
 
     public setPreconditions(...preconditions: RestOrArray<CommandPrecondition>): this {
-        this.preconditions = normalizeArray(preconditions);
+        const data = normalizeArray(preconditions);
+
+        BaseCommandValidator.isValidPreconditions(data);
+        this.preconditions = data;
         return this;
     }
 
     public addPostconditions(...postconditions: RestOrArray<CommandPostcondition>): this {
-        this.postconditions.push(...normalizeArray(postconditions));
+        const data = normalizeArray(postconditions);
+
+        BaseCommandValidator.isValidPostconditions(data);
+        this.postconditions.push(...data);
         return this;
     }
 
     public setPostconditions(...postconditions: RestOrArray<CommandPostcondition>): this {
-        this.postconditions = normalizeArray(postconditions);
+        const data = normalizeArray(postconditions);
+
+        BaseCommandValidator.isValidPostconditions(data);
+        this.postconditions = data;
         return this;
     }
 
     public addDisabledPreconditions(...preconditions: RestOrArray<CommandPrecondition.Resolvable|CommandPrecondition.Resolvable['id']>): this {
-        this.disabledPreconditions.push(
-            ...normalizeArray(preconditions).map(precondition => typeof precondition === 'string'
+        const data = normalizeArray(preconditions)
+            .map(precondition => typeof precondition === 'string'
                 ? precondition
                 : precondition.id
-            )
-        );
+            );
+
+        BaseCommandValidator.isValidDisabledPreconditions(data);
+        this.disabledPreconditions.push(...data);
         return this;
     }
 
     public setDisabledPreconditions(...preconditions: RestOrArray<CommandPrecondition.Resolvable|CommandPrecondition.Resolvable['id']>): this {
-        this.disabledPreconditions = normalizeArray(preconditions).map(precondition => typeof precondition === 'string'
+        const data = normalizeArray(preconditions).map(precondition => typeof precondition === 'string'
             ? precondition
             : precondition.id
         );
 
+        BaseCommandValidator.isValidDisabledPreconditions(data);
+        this.disabledPreconditions = data;
         return this;
     }
 
     public addDisabledPostconditions(...postconditions: RestOrArray<CommandPostcondition.Resolvable|CommandPostcondition.Resolvable['id']>): this {
-        this.disabledPostconditions.push(
-            ...normalizeArray(postconditions).map(postcondition => typeof postcondition === 'string'
-                ? postcondition
-                : postcondition.id
-            )
-        );
-        return this;
-    }
-
-    public setDisabledPostconditions(...postconditions: RestOrArray<CommandPostcondition.Resolvable|CommandPostcondition.Resolvable['id']>): this {
-        this.disabledPostconditions = normalizeArray(postconditions).map(postcondition => typeof postcondition === 'string'
+        const data = normalizeArray(postconditions)
+        .map(postcondition => typeof postcondition === 'string'
             ? postcondition
             : postcondition.id
         );
 
+        BaseCommandValidator.isValidDisabledPostconditions(data);
+        this.disabledPostconditions.push(...data);
+        return this;
+    }
+
+    public setDisabledPostconditions(...postconditions: RestOrArray<CommandPostcondition.Resolvable|CommandPostcondition.Resolvable['id']>): this {
+        const data = normalizeArray(postconditions).map(postcondition => typeof postcondition === 'string'
+            ? postcondition
+            : postcondition.id
+        );
+
+        BaseCommandValidator.isValidDisabledPostconditions(data);
+        this.disabledPostconditions = data;
         return this;
     }
 
     public setExecute(execute: (data: AnyCommandExecuteData<T>) => Promise<void>): this {
+        BaseCommandValidator.isValidExecute(execute);
         this.execute = execute;
         return this;
     }

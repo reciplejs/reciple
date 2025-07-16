@@ -53,10 +53,10 @@ export class MessageCommandParser implements MessageCommandParser.Data {
                         o.name,
                         Object.fromEntries(
                             Object.entries({
-                                type: o.value_type ?? 'string',
+                                type: o.valueType ?? 'string',
                                 multiple: o.multiple,
                                 short: o.shortcut,
-                                default: o.multiple ? o.default_values : o.default_values?.[0],
+                                default: o.multiple ? o.defaultValues : o.defaultValues?.[0],
                             })
                             .filter(([key, value]) => value !== undefined)
                         ) as any

@@ -36,6 +36,12 @@ export * from './classes/structures/MessageCommandParser.js';
 export * from './classes/structures/RecipleError.js';
 export * from './classes/structures/Utils.js';
 
+export * from './classes/validators/BaseCommandValidator.js';
+export * from './classes/validators/MessageCommandBuilderValidator.js';
+export * from './classes/validators/MessageCommandFlagValidator.js';
+export * from './classes/validators/MessageCommandOptionValidator.js';
+export * from './classes/validators/Validator.js';
+
 export * from './helpers/config.js';
 export * from './helpers/constants.js';
 export * from './helpers/types.js';
