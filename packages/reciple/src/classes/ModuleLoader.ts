@@ -5,7 +5,7 @@ import micromatch from 'micromatch';
 import { globby, isDynamicPattern } from 'globby';
 import { CommandType, RecipleError, type Client } from '@reciple/core';
 import type { AnyModule, AnyModuleData } from '../helpers/types.js';
-import { recursiveDefaults } from '@reciple/utils';
+import { colors, recursiveDefaults } from '@reciple/utils';
 import { BaseModule } from './modules/BaseModule.js';
 import { BaseModuleValidator } from './validation/BaseModuleValidator.js';
 import { ModuleType } from '../helpers/constants.js';
@@ -19,17 +19,51 @@ import { CommandModuleValidator } from './validation/CommandModuleValidator.js';
 import { EventModuleValidator } from './validation/EventModuleValidator.js';
 import { PreconditionModuleValidator } from './validation/PreconditionModule.js';
 import { PostconditionModuleValidator } from './validation/PostconditionModule.js';
+import type { Logger } from 'prtyprnt';
 
 export class ModuleLoader {
-    public constructor(public readonly client: Client) {}
+    public readonly logger: Logger;
 
-    public static async scanForDirectories(config: Pick<ModuleLoader.Config, 'directories'> & { cwd?: string; createDirectories?: boolean; }) {
-        const cwd = config.cwd ?? process.cwd();
+    public constructor(public readonly client: Client) {
+        this.logger = this.client.logger.clone({
+            label: 'ModuleLoader'
+        });
+    }
+
+    public async findModules(ignoreErrors: boolean = false): Promise<AnyModule[]> {
+        this.logger.debug('Scanning for modules...');
+
+        const modulePaths = await ModuleLoader.scanForModules(this.client.config?.modules);
+        const modules: AnyModule[] = [];
+
+        this.logger.debug(`Found ${modulePaths.length} modules`, modulePaths);
+
+        for (const path of modulePaths) {
+            try {
+                this.logger.debug(`Resolving module: ${colors.cyan(path)}`);
+                modules.push(await ModuleLoader.resolveModulePath(path));
+                this.logger.debug(`Resolved module: ${colors.cyan(path)}`);
+            } catch (error) {
+                this.logger.debug(`Failed to load module: ${colors.cyan(path)}`, error);
+                if (ignoreErrors) continue;
+
+                throw new RecipleError({
+                    message: `Failed to load module: ${colors.cyan(path)}`,
+                    cause: error
+                });
+            }
+        }
+
+        return modules;
+    }
+
+    public static async scanForDirectories(config?: Pick<ModuleLoader.Config, 'directories'> & { cwd?: string; createDirectories?: boolean; }) {
+        const cwd = config?.cwd ?? process.cwd();
 
         let scanned: string[] = [];
         let directories: string[] = [];
 
-        for (const directory of config.directories ?? []) {
+        for (const directory of config?.directories ?? []) {
             if (isDynamicPattern(directory, { cwd })) {
                 const matches = await globby(directory, {
                     cwd,
@@ -47,7 +81,7 @@ export class ModuleLoader {
         for (const directory of scanned) {
             const stats = await stat(directory).catch(() => undefined);
 
-            if (!stats && config.createDirectories !== false) {
+            if (!stats && config?.createDirectories !== false) {
                 await mkdir(directory, { recursive: true });
             }
 
@@ -57,7 +91,7 @@ export class ModuleLoader {
         return directories;
     }
 
-    public static async scanForModules(config: ModuleLoader.Config & { cwd?: string; createDirectories?: boolean; }): Promise<string[]> {
+    public static async scanForModules(config?: ModuleLoader.Config & { cwd?: string; createDirectories?: boolean; }): Promise<string[]> {
         const directories = await ModuleLoader.scanForDirectories(config);
 
         let modules: string[] = [];
@@ -65,7 +99,7 @@ export class ModuleLoader {
         directoryLoop: for (const directory of directories) {
             let files = await readdir(directory);
 
-            if (config.ignore?.length) {
+            if (config?.ignore?.length) {
                 files = micromatch.not(files, config.ignore, {
                     cwd: directory,
                     matchBase: true,
@@ -76,36 +110,31 @@ export class ModuleLoader {
             files = files.map(f => path.join(directory, f));
 
             fileLoop: for (const file of files) {
-                if (config.filter && !(await config.filter(file))) continue;
+                if (config?.filter && !(await config?.filter(file))) continue;
                 modules.push(file);
             }
         }
 
-        if (config.sort) modules.sort(config.sort);
+        if (config?.sort) modules.sort(config.sort);
 
         return modules;
     }
 
-    public static async getModule(filepath: string): Promise<AnyModule> {
+    public static async resolveModulePath(filepath: string, options?: { cwd?: string; }): Promise<AnyModule> {
         const stats = await stat(filepath).catch(() => undefined);
         if (!stats) throw new RecipleError(`Module not found: ${filepath}`);
 
-        let data = recursiveDefaults<AnyModule|AnyModuleData|undefined>(await import(filepath));
+        const data = recursiveDefaults<AnyModule|AnyModuleData|undefined>(await import(`file://${path.resolve(options?.cwd ?? process.cwd(), filepath)}`));
         if (BaseModule.isModule(data)) return data;
 
         switch (data?.moduleType) {
             case ModuleType.Command:
                 CommandModuleValidator.isValid(data);
-
                 switch (data.type) {
-                    case CommandType.Message:
-                        return MessageCommandModule.from(data);
-                    case CommandType.Slash:
-                        return SlashCommandModule.from(data);
-                    case CommandType.ContextMenu:
-                        return ContextMenuCommandModule.from(data);
-                    default:
-                        throw new RecipleError(`Unknown command type from module: ${filepath}`);
+                    case CommandType.Message: return MessageCommandModule.from(data);
+                    case CommandType.Slash: return SlashCommandModule.from(data);
+                    case CommandType.ContextMenu: return ContextMenuCommandModule.from(data);
+                    default: throw new RecipleError(`Unknown command type from module: ${colors.cyan(filepath)}`);
                 }
             case ModuleType.Event:
                 EventModuleValidator.isValid(data);

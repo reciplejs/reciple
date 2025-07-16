@@ -53,6 +53,8 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     private _preconditions: PreconditionManager|null = null;
     private _postconditions: PostconditionManager|null = null;
 
+    private _onBeforeDestroy: null|((client: Client) => Awaitable<void>) = null;
+
     get commands() {
         return this._commands as If<Ready, CommandManager, null>;
     }
@@ -129,6 +131,8 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     }
 
     public async destroy(): Promise<void> {
+        await this._onBeforeDestroy?.(this);
+
         this._commands = null;
         this._cooldowns = null;
         this._preconditions = null;

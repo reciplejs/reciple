@@ -4,7 +4,7 @@ import { BaseManager, RecipleError, type Client } from '@reciple/core';
 import EventEmitter from 'node:events';
 import type { AnyModule } from '../../helpers/types.js';
 
-export interface ModuleManager extends BaseManager<string, BaseModule, BaseModule.Resolvable>, EventEmitter<ModuleManager.Events> {}
+export interface ModuleManager extends BaseManager<string, AnyModule, BaseModule.Resolvable>, EventEmitter<ModuleManager.Events> {}
 
 @mix(BaseManager, EventEmitter)
 export class ModuleManager {
@@ -12,12 +12,10 @@ export class ModuleManager {
 
     public constructor(public readonly client: Client) {}
 
-    public async enableModules({ modules }: ModuleManager.EventExecuteData = { modules: Array.from(this.cache.values()) }): Promise<BaseModule[]> {
-        const enabledModules: BaseModule[] = [];
+    public async enableModules({ modules }: ModuleManager.EventExecuteData = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+        const enabledModules: AnyModule[] = [];
 
-        for (const resolvable of modules ?? []) {
-            const module = BaseModule.from(resolvable);
-
+        for (const module of modules ?? []) {
             this.emit('modulePreEnable', module);
 
             await module.onEnable({ client: this.client }).catch(e => this.emitOrThrow('moduleEnableError', module, e));
@@ -31,14 +29,12 @@ export class ModuleManager {
         return enabledModules;
     }
 
-    public async readyModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<BaseModule[]> {
-        const readyModules: BaseModule[] = [];
+    public async readyModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+        const readyModules: AnyModule[] = [];
 
         if (!this.client.isReady()) throw new RecipleError(RecipleError.Code.ClientNotReady());
 
-        for (const resolvable of modules ?? []) {
-            const module = BaseModule.from(resolvable);
-
+        for (const module of modules ?? []) {
             this.emit('modulePreReady', module);
 
             await module.onReady({ client: this.client }).catch(e => {
@@ -55,12 +51,10 @@ export class ModuleManager {
         return readyModules;
     }
 
-    public async disableModules({ modules, removeFromCache }: ModuleManager.EventExecuteData & { removeFromCache?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<BaseModule[]> {
-        const disabledModules: BaseModule[] = [];
+    public async disableModules({ modules, removeFromCache }: ModuleManager.EventExecuteData & { removeFromCache?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+        const disabledModules: AnyModule[] = [];
 
-        for (const resolvable of modules ?? []) {
-            const module = BaseModule.from(resolvable);
-
+        for (const module of modules ?? []) {
             this.emit('modulePreDisable', module);
 
             await module.onDisable({ client: this.client }).catch(e => this.emitOrThrow('moduleDisableError', module, e));
@@ -102,6 +96,6 @@ export namespace ModuleManager {
     }
 
     export interface EventExecuteData {
-        modules?: BaseModule.Resolvable[];
+        modules?: AnyModule[];
     }
 }
