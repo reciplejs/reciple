@@ -14,7 +14,7 @@ export abstract class PostconditionModule<D = any> implements PostconditionModul
     public static from<D = any>(data: PostconditionModule.Resolvable<D>): PostconditionModule<D> {
         if (data instanceof PostconditionModule || hasMixin(data, PostconditionModule)) return data;
 
-        const ModuleInstance = class extends PostconditionModule { id = data.id; execute = data.execute; };
+        const ModuleInstance = class extends PostconditionModule { execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);
         return new ModuleInstance();
     }
@@ -23,7 +23,7 @@ export abstract class PostconditionModule<D = any> implements PostconditionModul
 export namespace PostconditionModule {
     export type Resolvable<D = any> = PostconditionModule<D>|PostconditionModule.Data<D>;
 
-    export interface Data<D = any> extends Omit<BaseModule.Data, 'moduleType'>, CommandPostcondition.Data<D> {
+    export interface Data<D = any> extends Omit<BaseModule.Data, 'moduleType'>, Omit<CommandPostcondition.Data<D>, 'id'> {
         moduleType: ModuleType.Postcondition;
     }
 }

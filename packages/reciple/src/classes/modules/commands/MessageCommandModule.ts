@@ -19,7 +19,7 @@ export abstract class MessageCommandModule implements MessageCommandModule {
     public static from(data: MessageCommandModule.Resolvable): MessageCommandModule {
         if (data instanceof MessageCommandModule || hasMixin(data, MessageCommandModule)) return data;
 
-        const ModuleInstance = class extends MessageCommandModule { id = data.id; data = data.data; execute = data.execute; };
+        const ModuleInstance = class extends MessageCommandModule { data = data.data; execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);
         return new ModuleInstance();
     }
@@ -28,7 +28,7 @@ export abstract class MessageCommandModule implements MessageCommandModule {
 export namespace MessageCommandModule {
     export type Resolvable = MessageCommandModule|MessageCommandModule.Data;
 
-    export interface Data extends Omit<BaseModule.Data, 'moduleType'>, MessageCommand.Data {
+    export interface Data extends Omit<BaseModule.Data, 'moduleType'>, Omit<MessageCommand.Data, 'id'> {
         moduleType: ModuleType.Command;
     }
 

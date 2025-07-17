@@ -4,6 +4,24 @@ import { bundleRequire, type Options } from 'bundle-require';
 import { CLI } from './CLI.js';
 import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import type { ModuleLoader } from './ModuleLoader.js';
+import type { Logger, LoggerOptions } from 'prtyprnt';
+import type { ModuleManager } from './managers/ModuleManager.js';
+
+declare module "@reciple/core" {
+    interface Config {
+        token?: string;
+        modules?: ModuleLoader.Config;
+        logger?: Logger|LoggerOptions;
+    }
+
+    interface Client {
+        readonly modules: ModuleManager;
+        readonly moduleLoader: ModuleLoader;
+        readonly cli: CLI;
+        logger: Logger;
+    }
+}
 
 export class ConfigReader {
     private _client: Client|null = null;

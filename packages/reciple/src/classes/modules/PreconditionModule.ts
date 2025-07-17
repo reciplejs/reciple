@@ -23,7 +23,7 @@ export abstract class PreconditionModule<D = any> implements PreconditionModule<
 export namespace PreconditionModule {
     export type Resolvable<D = any> = PreconditionModule<D>|PreconditionModule.Data<D>;
 
-    export interface Data<D = any> extends Omit<BaseModule.Data, 'moduleType'>, CommandPrecondition.Data<D> {
+    export interface Data<D = any> extends Omit<BaseModule.Data, 'moduleType'>, Omit<CommandPrecondition.Data<D>, 'id'> {
         moduleType: ModuleType.Precondition;
     }
 }
