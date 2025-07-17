@@ -36,8 +36,8 @@ export default class CreateSubcommand extends CLISubcommand {
             await template.setupLanguage();
             await template.createConfig();
             await template.createPackageManager();
+            await template.checkInstalledPackageManager();
             await template.createTemplate();
-            await template.checkRuntimeEnvironment();
             await template.createEnvFile({ envFile: this.cli.flags.env[0] });
             await template.build();
         } catch (error) {

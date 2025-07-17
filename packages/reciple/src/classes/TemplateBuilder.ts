@@ -11,8 +11,8 @@ import { slug } from 'github-slugger';
 import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
-import { RuntimeEnvironment } from './RuntimeEnvironment.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
+import { RuntimeEnvironment } from './RuntimeEnvironment.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -25,6 +25,8 @@ export class TemplateBuilder {
 
     public config?: ConfigReader;
     public packageJson?: PackageJsonBuilder;
+
+    public isPackageManagerInstalled = false;
 
     get directory() {
         return this._directory ?? process.cwd();
@@ -246,6 +248,14 @@ export class TemplateBuilder {
 
             if (isCancel(npmUserAgent)) throw new NotAnError('Operation cancelled');
             this._packageManager = new PackageManager(npmUserAgent);
+
+            switch (npmUserAgent) {
+                case 'npm':
+                case 'yarn':
+                case 'pnpm':
+                case 'bun':
+                case 'deno':
+            }
         }
 
         const dependencyRecord = TemplateBuilder.createDependencyRecord(this.typescript ? 'ts' : 'js');
@@ -268,10 +278,19 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async checkRuntimeEnvironment(): Promise<this> {
-        const runtimeEnvironment = RuntimeEnvironment.get() ?? 'node';
-        const isInstalled = await RuntimeEnvironment.isInstalled(runtimeEnvironment);
-        if (!isInstalled) throw new NotAnError(`Runtime environment "${colors.cyan(runtimeEnvironment)}" is not installed`);
+    public async checkInstalledPackageManager(): Promise<this> {
+        this.isPackageManagerInstalled = await RuntimeEnvironment.isInstalled(this.packageManager.type);
+        if (this.isPackageManagerInstalled) return this;
+
+        const skip = await confirm({
+            message: `Package manager ${colors.bold(colors.cyan(this.packageManager.type))} is not installed, would you like to continue?`,
+            initialValue: false,
+            active: 'Yes',
+            inactive: 'No'
+        });
+
+        if (isCancel(skip)) throw new NotAnError('Operation cancelled');
+        if (!skip) throw new NotAnError(`Package manager ${colors.bold(colors.cyan(this.packageManager.type))} is not installed`);
 
         return this;
     }
@@ -319,7 +338,10 @@ export class TemplateBuilder {
 
     public async build(): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
-        await this.runCommand(this.packageManager.installAll());
+
+        if (this.isPackageManagerInstalled) {
+            await this.runCommand(this.packageManager.installAll());
+        }
 
         outro(`Project created in ${colors.cyan(this.directory)}`);
         return this;

@@ -1,3 +1,4 @@
+import type { PackageManager } from '@reciple/utils';
 import { TemplateBuilder } from './TemplateBuilder.js';
 
 export class RuntimeEnvironment {}
@@ -13,7 +14,7 @@ export namespace RuntimeEnvironment {
         return null;
     }
 
-    export async function isInstalled(environment: Type): Promise<boolean> {
+    export async function isInstalled(environment: Type|PackageManager.Type): Promise<boolean> {
         return TemplateBuilder.runCommand(`${environment} -v`)
             .then(() => true)
             .catch(() => false);
