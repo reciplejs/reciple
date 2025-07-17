@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "reciple build",
-    "start": "reciple start",
-    "dev": "reciple dev"
+    "build": "node ../packages/reciple/dist/bin/reciple.js build",
+    "start": "node ../packages/reciple/dist/bin/reciple.js start",
+    "dev": "node ../packages/reciple/dist/bin/reciple.js dev"
   },
   "dependencies": {},
   "devDependencies": {
