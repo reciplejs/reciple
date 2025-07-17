@@ -1,7 +1,7 @@
 import { CommandType } from '../../helpers/constants.js';
 import type { BaseCommand } from '../abstract/BaseCommand.js';
-import { CommandPostcondition } from '../structures/CommandPostcondition.js';
-import { CommandPrecondition } from '../structures/CommandPrecondition.js';
+import { CommandPostconditionValidator } from './CommandPostconditionValidator.js';
+import { CommandPreconditionValidator } from './CommandPreconditionValidator.js';
 import { MessageCommandBuilderValidator } from './MessageCommandBuilderValidator.js';
 import { Validator } from './Validator.js';
 
@@ -18,13 +18,11 @@ export class BaseCommandValidator extends Validator {
         .positive({ message: 'Command cooldowns only accepts positive number' })
         .optional();
 
-    public static preconditions = BaseCommandValidator.s
-        .instance(CommandPrecondition)
+    public static preconditions = CommandPreconditionValidator.object
         .array()
         .optional();
 
-    public static postconditions = BaseCommandValidator.s
-        .instance(CommandPostcondition)
+    public static postconditions = CommandPostconditionValidator.object
         .array()
         .optional();
 
@@ -98,10 +96,24 @@ export class BaseCommandValidator extends Validator {
         BaseCommandValidator.isValidType(data.type);
         BaseCommandValidator.isValidData(data.data);
         BaseCommandValidator.isValidCooldown(data.cooldown);
-        BaseCommandValidator.isValidPreconditions(data.preconditions);
-        BaseCommandValidator.isValidPostconditions(data.postconditions);
         BaseCommandValidator.isValidDisabledPreconditions(data.disabledPreconditions);
         BaseCommandValidator.isValidDisabledPostconditions(data.disabledPostconditions);
         BaseCommandValidator.isValidExecute(data.execute);
+
+        if ('preconditions' in data && Array.isArray(data.preconditions)) {
+            for (const precondition of data.preconditions) {
+                CommandPreconditionValidator.isValid(precondition);
+            }
+        } else {
+            BaseCommandValidator.isValidPreconditions(data.preconditions);
+        }
+
+        if ('postconditions' in data && Array.isArray(data.postconditions)) {
+            for (const postcondition of data.postconditions) {
+                CommandPostconditionValidator.isValid(postcondition);
+            }
+        } else {
+            BaseCommandValidator.isValidPostconditions(data.postconditions);
+        }
     }
 }

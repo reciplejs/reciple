@@ -1,12 +1,11 @@
 import { isJSONEncodable, type JSONEncodable, type MessageContextMenuCommandInteraction, type UserContextMenuCommandInteraction } from 'discord.js';
-import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
-import { BaseCommand } from '../abstract/BaseCommand.js';
-import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
-import { RecipleError } from '../structures/RecipleError.js';
 import { PostconditionResultManager } from '../managers/PostconditionResultManager.js';
-import { Utils } from '../structures/Utils.js';
+import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
+import { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
-import { Validator } from '../validators/Validator.js';
+import { BaseCommand } from '../abstract/BaseCommand.js';
+import { RecipleError } from '../structures/RecipleError.js';
+import { Utils } from '../structures/Utils.js';
 
 export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
     public readonly type: CommandType.ContextMenu = CommandType.ContextMenu;
@@ -19,7 +18,6 @@ export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
         let resolved = typeof data === 'function' ? data(new ContextMenuCommandBuilder()) : data;
             resolved = isJSONEncodable(resolved) ? resolved.toJSON() : resolved;
 
-        Validator.baseApplicationCommand.setValidationEnabled(Validator.isValidationEnabled).parse(resolved);
         this.data = resolved;
         return this;
     }

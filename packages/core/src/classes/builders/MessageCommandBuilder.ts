@@ -2,10 +2,10 @@ import { normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js
 import type { MessageCommandOption } from '../structures/MessageCommandOption.js';
 import { MessageCommandOptionBuilder } from './MessageCommandOptionBuilder.js';
 import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
+import { MessageCommandFlagBuilder } from './MessageCommandFlagBuilder.js';
 import { MessageCommandBuilderValidator } from '../validators/MessageCommandBuilderValidator.js';
 import { MessageCommandOptionValidator } from '../validators/MessageCommandOptionValidator.js';
 import { MessageCommandFlagValidator } from '../validators/MessageCommandFlagValidator.js';
-import { MessageCommandFlagBuilder } from './MessageCommandFlagBuilder.js';
 
 export class MessageCommandBuilder implements Omit<MessageCommandBuilder.Data, 'options'|'flags'> {
     public name!: string;

@@ -36,7 +36,7 @@ export class CommandPostcondition<D = any> implements CommandPostcondition.Data<
 export namespace CommandPostcondition {
     export type Resolvable<D = any> = CommandPostcondition<D>|Data<D>;
 
-    export interface Data<D> {
+    export interface Data<D = any> {
         id: string;
         scope?: CommandType[];
         accepts?: CommandPostconditionReason[];

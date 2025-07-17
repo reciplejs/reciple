@@ -7,8 +7,6 @@ export class Validator {
 
     public static nameRegex = /^[\p{Ll}\p{Lm}\p{Lo}\p{N}\p{sc=Devanagari}\p{sc=Thai}_-]+$/u;
 
-    protected constructor() {}
-
     public static isValidationEnabled(): boolean {
         return Validator._isValidationEnabled ?? isValidationEnabled();
     }

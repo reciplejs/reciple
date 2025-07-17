@@ -1,6 +1,5 @@
 import { MessageCommandOption } from '../structures/MessageCommandOption.js';
 import { MessageCommandOptionValidator } from '../validators/MessageCommandOptionValidator.js';
-
 export class MessageCommandOptionBuilder<T> extends MessageCommandOption<T> {
     constructor(data?: Partial<MessageCommandOption.Data<T>>) {
         MessageCommandOptionValidator.object
