@@ -256,7 +256,7 @@ export class TemplateBuilder {
             version: '0.0.1',
             type: 'module',
             scripts: {
-                build: `tsup`,
+                build: `reciple build`,
                 start: 'reciple start',
                 dev: 'reciple dev',
             },
@@ -369,10 +369,7 @@ export namespace TemplateBuilder {
             },
             devDependencies: {
                 '@types/node': packageJSON.devDependencies?.['@types/node'],
-                nodemon: packageJSON.devDependencies?.nodemon,
-                rimraf: packageJSON.devDependencies?.rimraf,
-                'tsc-alias': packageJSON.devDependencies?.['tsc-alias'],
-                tsup: packageJSON.devDependencies?.tsup
+                nodemon: packageJSON.devDependencies?.nodemon
             }
         },
         ts: {},
