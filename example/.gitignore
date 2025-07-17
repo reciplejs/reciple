@@ -118,4 +118,4 @@ dist
 .pnp.*
 
 # Modules
-./modules
+modules
