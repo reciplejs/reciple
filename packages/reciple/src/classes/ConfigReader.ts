@@ -10,6 +10,18 @@ import type { ModuleManager } from './managers/ModuleManager.js';
 import type { Options as TsupOptions } from 'tsup';
 import { replaceTscAliasPaths } from 'tsc-alias';
 import type { BuildConfig } from '../helpers/types.js';
+import { loadTsConfig } from 'bundle-require';
+import type { CompilerOptions } from 'typescript';
+
+declare module "bundle-require" {
+    export function loadTsConfig(dir: string, name?: string): {
+        path: string;
+        data: {
+            compilerOptions?: CompilerOptions;
+        } & Record<string, any>;
+        files: string[];
+    };
+}
 
 declare module "@reciple/core" {
     interface Config {
@@ -119,6 +131,8 @@ export class ConfigReader {
 }
 
 export namespace ConfigReader {
+    export const resolveTsConfig = loadTsConfig;
+
     export interface Structure {
         client: Client;
         config: Config;
@@ -154,7 +168,7 @@ export namespace ConfigReader {
         'reciple.config.mjs'
     ];
 
-    export const tsupConfigForcedValues: TsupOptions = {
+    export const buildConfigForcedValues: TsupOptions = {
         clean: true,
         platform: 'node',
         format: 'esm',
@@ -164,6 +178,8 @@ export namespace ConfigReader {
             await replaceTscAliasPaths({ configFile: this.tsconfig });
         }
     }
+
+    export type CompleteBuildConfig = TsupOptions;
 
     export function normalizeTsupConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): TsupOptions {
         const entryExtension = type === 'ts' ? 'ts,tsx' : type === 'js' ? 'js,jsx' : 'ts,tsx,js,jsx';
@@ -180,7 +196,7 @@ export namespace ConfigReader {
             sourcemap: true,
             treeshake: true,
             ...overrides,
-            ...tsupConfigForcedValues
+            ...buildConfigForcedValues
         };
     }
 

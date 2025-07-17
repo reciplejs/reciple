@@ -21,7 +21,7 @@ export default class DirSubcommand extends CLISubcommand {
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { config } = await configReader.read({
+        const { config, build } = await configReader.read({
             createIfNotExists: false
         });
 
@@ -29,7 +29,11 @@ export default class DirSubcommand extends CLISubcommand {
             ? config.logger
             : this.cli.logger.clone(config.logger);
 
-        const directories = await ModuleLoader.scanForDirectories(config.modules);
+        let directories = await ModuleLoader.scanForDirectories(config.modules);
+            directories = await ModuleLoader.resolveSourceDirectories({
+                configPath: build.tsconfig,
+                directories
+            });
 
         const directory = await select({
             message: 'Select a directory',
