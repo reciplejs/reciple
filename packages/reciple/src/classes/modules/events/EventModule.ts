@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 import { BaseModule } from '../BaseModule.js';
 import { ModuleType } from '../../../helpers/constants.js';
-import type { Constructable } from 'discord.js';
+import type { Awaitable, Constructable } from 'discord.js';
 import { hasMixin } from 'ts-mixer';
 
 const base: Constructable<Omit<BaseModule, 'moduleType'>> = BaseModule;
@@ -10,9 +10,10 @@ export abstract class EventModule<Events extends EventModule.EventMap = EventMod
     public readonly moduleType: ModuleType.Event = ModuleType.Event;
     public abstract emitter: EventEmitter;
     public abstract event: Event;
-    public abstract once?: boolean;
 
-    public abstract onEvent(...args: Events[Event]): Promise<void>;
+    public once?: boolean = false;
+
+    public abstract onEvent(...args: Events[Event]): Awaitable<void>;
 
     public static from(data: EventModule.Resolvable): EventModule {
         if (data instanceof EventModule || hasMixin(data, EventModule)) return data;
@@ -38,6 +39,6 @@ export namespace EventModule {
         emitter: EventEmitter;
         event: Event;
         once?: boolean;
-        onEvent: (...args: Events[Event]) => Promise<void>;
+        onEvent: (...args: Events[Event]) => Awaitable<void>;
     }
 }

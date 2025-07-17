@@ -1,13 +1,14 @@
-import { Module } from 'reciple';
+import { ClientEventModule } from 'reciple';
 
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
-class ReadyEvent extends Module {
+class ReadyEvent extends ClientEventModule {
   static {
     __name(this, "ReadyEvent");
   }
-  async onEnable({ client }) {
-    client.on("ready", () => client.logger);
+  event = "ready";
+  async onEvent(client) {
+    this.client.logger.log("Ready!");
   }
 }
 var ready_default = new ReadyEvent();

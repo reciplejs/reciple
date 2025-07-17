@@ -1,12 +1,18 @@
-import { Module } from 'reciple';
+import { MessageCommandModule, MessageCommandBuilder } from 'reciple';
 
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
-class PingCommand extends Module {
+class PingCommand extends MessageCommandModule {
   static {
     __name(this, "PingCommand");
   }
-  async onEnable({ client }) {
+  data = new MessageCommandBuilder().setName("ping").setDescription("Pong!").setAliases("pong").toJSON();
+  /**
+   * 
+   * @param {MessageCommand.ExecuteData} data 
+   */
+  async execute(data) {
+    data.message.reply("Pong!");
   }
 }
 var ping_default = new PingCommand();

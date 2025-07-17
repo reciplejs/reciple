@@ -1,8 +1,11 @@
-import { Module } from 'reciple';
+// @ts-check
+import { ClientEventModule } from 'reciple';
 
-export class ReadyEvent extends Module {
-    async onEnable({ client }) {
-        client.on('ready', () => client.logger);
+export class ReadyEvent extends ClientEventModule {
+    event = 'ready';
+
+    async onEvent(client) {
+        this.client.logger.log('Ready!');
     }
 }
 

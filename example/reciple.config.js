@@ -25,6 +25,7 @@ export const client = new Client({
  * @type {import('reciple').Config}
  */
 export const config = {
+    token: process.env.DISCORD_TOKEN,
     commands: {
         message: {
             prefix: context => '!',
@@ -54,8 +55,8 @@ export const config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./modules/*/*", "./modules/*/*/*"],
+        directories: ["./modules/**", "./modules/*/*/*"],
         ignore: ["./modules/**/_*"],
-        filter: filepath => !!filepath
+        filter: filepath => filepath.endsWith('.js'),
     }
 };

@@ -31,7 +31,7 @@ export class CLI {
             .description(options.description)
             .version(options.build, '-v, --version', 'Output the CLI version number')
             .option('-D, --debug', 'Enable debug mode', isDebugging())
-            .option('--env', 'Load environment variables from .env file',  (v, p) => p.concat(v), ['.env'])
+            .option('--env <file>', 'Load environment variables from .env file',  (v, p) => p.concat(v), [] as string[])
             .enablePositionalOptions(true)
             .hook('preAction', this.handlePreAction.bind(this))
             .showHelpAfterError();
@@ -87,7 +87,13 @@ export class CLI {
         this.logger.debug(`Debug mode is ${this.flags.debug ? 'enabled' : 'disabled'}`);
         process.env.NODE_ENV = this.flags.debug ? 'development' : process.env.NODE_ENV;
 
-        loadEnv({ path: this.flags.env, debug: this.flags.debug });
+        loadEnv({
+            path: this.flags.env.length ? this.flags.env : [path.join(process.cwd(), '.env')],
+            debug: this.flags.debug,
+            quiet: !this.flags.debug,
+            ignore: ['MISSING_ENV_FILE']
+        });
+
         this.logger.debug(`Loaded environment variables from ${this.flags.env.join(', ')}`);
     }
 
@@ -128,6 +134,7 @@ export namespace CLI {
 
     export const root: string = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../');
     export const bin: string = path.join(CLI.root, 'dist/bin/reciple.js');
+    export const version = '[VI]{{inject}}[/VI]';
 
     export function stringifyFlags(flags: Record<string, any>, command: Command, ignored: string[] = []): string[] {
         let arr: string[] = [];
