@@ -57,7 +57,7 @@ export class ModuleLoader {
         return modules;
     }
 
-    public static async scanForDirectories(config?: Pick<ModuleLoader.Config, 'directories'> & { cwd?: string; createDirectories?: boolean; }) {
+    public static async scanForDirectories(config?: Pick<ModuleLoader.Config, 'directories'|'ignore'> & { cwd?: string; createDirectories?: boolean; }) {
         const cwd = config?.cwd ?? process.cwd();
 
         let scanned: string[] = [];
@@ -67,6 +67,7 @@ export class ModuleLoader {
             if (isDynamicPattern(directory, { cwd })) {
                 const matches = await globby(directory, {
                     cwd,
+                    ignore: config?.ignore,
                     onlyDirectories: true,
                     absolute: true
                 });
