@@ -1,5 +1,5 @@
 import { Validator } from '@reciple/core';
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import { BaseModuleValidator } from './BaseModuleValidator.js';
 import type { EventModule } from '../modules/events/EventModule.js';
 

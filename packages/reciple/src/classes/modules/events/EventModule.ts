@@ -1,4 +1,4 @@
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import { BaseModule } from '../BaseModule.js';
 import { ModuleType } from '../../../helpers/constants.js';
 import type { Awaitable, Constructable } from 'discord.js';

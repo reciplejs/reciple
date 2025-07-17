@@ -2,7 +2,7 @@ import { mix } from 'ts-mixer';
 import { BaseManager } from '../abstract/BaseManager.js';
 import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import type { Client } from '../structures/Client.js';
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import type { CommandType } from '../../helpers/constants.js';
 import type { AnyCommand, AnyCommandExecuteData } from '../../helpers/types.js';
 import { PreconditionResultManager } from './PreconditionResultManager.js';

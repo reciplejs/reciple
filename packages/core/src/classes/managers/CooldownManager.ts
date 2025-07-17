@@ -2,7 +2,7 @@ import { BaseManager } from '../abstract/BaseManager.js';
 import type { Client } from '../structures/Client.js';
 import { Cooldown } from '../structures/Cooldown.js';
 import type { BaseCooldownAdapter } from '../abstract/BaseCooldownAdapter.js';
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import { mix } from 'ts-mixer';
 import { Collection, isJSONEncodable, type ChannelResolvable, type GuildResolvable, type JSONEncodable, type UserResolvable } from 'discord.js';
 import { resolveDate } from '@reciple/utils';

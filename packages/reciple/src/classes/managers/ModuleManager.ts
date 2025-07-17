@@ -1,7 +1,7 @@
 import { mix } from 'ts-mixer';
 import { BaseModule } from '../modules/BaseModule.js';
 import { BaseManager, RecipleError, type Client } from '@reciple/core';
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import type { AnyModule } from '../../helpers/types.js';
 
 export interface ModuleManager extends BaseManager<string, AnyModule, BaseModule.Resolvable>, EventEmitter<ModuleManager.Events> {}

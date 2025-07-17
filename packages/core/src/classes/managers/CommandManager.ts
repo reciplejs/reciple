@@ -4,7 +4,7 @@ import { BaseCommand } from '../abstract/BaseCommand.js';
 import { BaseManager } from '../abstract/BaseManager.js';
 import type { Client } from '../structures/Client.js';
 import { CommandType } from '../../helpers/constants.js';
-import EventEmitter from 'node:events';
+import { EventEmitter } from 'node:events';
 import { mix } from 'ts-mixer';
 import { RecipleError } from '../structures/RecipleError.js';
 import { Utils } from '../structures/Utils.js';
