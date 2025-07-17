@@ -55,7 +55,7 @@ export const config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./modules/**", "./modules/*/*/*"],
+        directories: ["./modules/**"],
         ignore: ["./modules/**/_*"],
         filter: filepath => filepath.endsWith('.js'),
     }
