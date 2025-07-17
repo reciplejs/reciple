@@ -7,6 +7,9 @@ import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import type { ModuleLoader } from './ModuleLoader.js';
 import type { Logger, LoggerOptions } from 'prtyprnt';
 import type { ModuleManager } from './managers/ModuleManager.js';
+import type { Options as TsupOptions } from 'tsup';
+import { replaceTscAliasPaths } from 'tsc-alias';
+import type { BuildConfig } from '../helpers/types.js';
 
 declare module "@reciple/core" {
     interface Config {
@@ -26,6 +29,7 @@ declare module "@reciple/core" {
 export class ConfigReader {
     private _client: Client|null = null;
     private _config: Config|null = null;
+    private _build: BuildConfig|null = null;
 
     get client() {
         if (!this._client) throw new RecipleError('client is not yet loaded from config.');
@@ -34,6 +38,12 @@ export class ConfigReader {
 
     get config() {
         return this._config ?? {};
+    }
+
+    get build() {
+        return ConfigReader.normalizeTsupConfig({
+            overrides: this._build ?? {}
+        });
     }
 
     public constructor(public readonly filepath: string) {}
@@ -56,6 +66,7 @@ export class ConfigReader {
 
         this._client = mod.client;
         this._config = mod.config;
+        this._build = mod.build;
 
         return this;
     }
@@ -142,6 +153,36 @@ export namespace ConfigReader {
         'reciple.config.js',
         'reciple.config.mjs'
     ];
+
+    export const tsupConfigForcedValues: TsupOptions = {
+        clean: true,
+        platform: 'node',
+        format: 'esm',
+        splitting: false,
+        bundle: false,
+        async onSuccess() {
+            await replaceTscAliasPaths({ configFile: this.tsconfig });
+        }
+    }
+
+    export function normalizeTsupConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): TsupOptions {
+        const entryExtension = type === 'ts' ? 'ts,tsx' : type === 'js' ? 'js,jsx' : 'ts,tsx,js,jsx';
+
+        return {
+            entry: [`./src/**/*.{${entryExtension}}`],
+            outDir: './modules',
+            tsconfig: `./${type ?? 'ts'}config.json`,
+            external: [],
+            noExternal: [],
+            esbuildPlugins: [],
+            minify: false,
+            keepNames: true,
+            sourcemap: true,
+            treeshake: true,
+            ...overrides,
+            ...tsupConfigForcedValues
+        };
+    }
 
     export function createConfigFilename(type: 'ts'|'js', esm: boolean = false): string {
         return `reciple.config.${type === 'ts' ? esm ? 'mts' : 'ts' : esm ? 'mjs' : 'js'}`;

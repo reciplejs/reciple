@@ -1,4 +1,4 @@
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition, type Config } from 'reciple';
+import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition, type BuildConfig, type Config } from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -55,4 +55,16 @@ export const config: Config = {
         ignore: ["./modules/**/_*"],
         filter: filepath => !!filepath
     }
+};
+
+export const build: BuildConfig = {
+    entry: ['./src/**/*.{js,jsx}'],
+    outDir: './modules',
+    tsconfig: './jsconfig.json',
+    external: [],
+    noExternal: [],
+    esbuildPlugins: [],
+    minify: false,
+    keepNames: true,
+    sourcemap: true
 };

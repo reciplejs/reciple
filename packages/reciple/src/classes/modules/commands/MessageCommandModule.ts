@@ -32,5 +32,5 @@ export namespace MessageCommandModule {
         moduleType: ModuleType.Command;
     }
 
-    export type MessageCommandWithoutBuilderMethods = Omit<MessageCommand, AnyCommandBuilderMethods>;
+    export type MessageCommandWithoutBuilderMethods = Omit<MessageCommand, AnyCommandBuilderMethods|'options'|'flags'>;
 }

@@ -40,10 +40,14 @@
     "commander": "^14.0.0",
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
+    "joycon": "^3.1.1",
     "micromatch": "^4.0.8",
     "ora": "^8.2.0",
     "semver": "^7.7.2",
-    "ts-mixer": "^6.0.4"
+    "strip-json-comments": "^5.0.2",
+    "ts-mixer": "^6.0.4",
+    "tsc-alias": "^1.8.16",
+    "tsup": "^8.5.0"
   },
   "devDependencies": {
     "@types/micromatch": "^4.0.9",
@@ -51,9 +55,7 @@
     "@types/semver": "^7.7.0",
     "nodemon": "^3.1.10",
     "prtyprnt": "^1.1.0",
-    "rimraf": "^6.0.1",
-    "tsc-alias": "^1.8.16",
-    "tsup": "^8.5.0"
+    "rimraf": "^6.0.1"
   },
   "peerDependencies": {
     "discord.js": "^14.20.0"

@@ -41,7 +41,11 @@ export class ModuleLoader {
         for (const path of modulePaths) {
             try {
                 this.logger.debug(`Resolving module: ${colors.cyan(path)}`);
-                modules.push(await ModuleLoader.resolveModulePath(path));
+                const resolved = await ModuleLoader.resolveModulePath(path);
+
+                Object.assign(resolved, { client: this.client });
+                modules.push(resolved);
+
                 this.logger.debug(`Resolved module: ${colors.cyan(path)}`);
             } catch (error) {
                 this.logger.debug(`Failed to load module: ${colors.cyan(path)}`, error);

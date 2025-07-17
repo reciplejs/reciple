@@ -60,3 +60,18 @@ export const config = {
         filter: filepath => !!filepath
     }
 };
+
+/**
+ * @type {import('reciple').BuildConfig}
+ */
+export const build = {
+    entry: ['./src/**/*.{js,jsx}'],
+    outDir: './modules',
+    tsconfig: './jsconfig.json',
+    external: [],
+    noExternal: [],
+    esbuildPlugins: [],
+    minify: false,
+    keepNames: true,
+    sourcemap: true
+};
