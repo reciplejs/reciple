@@ -21,6 +21,7 @@ import { PreconditionModuleValidator } from './validation/PreconditionModule.js'
 import { PostconditionModuleValidator } from './validation/PostconditionModule.js';
 import type { Logger } from 'prtyprnt';
 
+// TODO: Load the unique functionality of each modules like events, commands, preconditions, and postconditions
 export class ModuleLoader {
     public readonly logger: Logger;
 
