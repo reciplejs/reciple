@@ -3,6 +3,7 @@ import { BaseModule } from '../modules/BaseModule.js';
 import { BaseManager, RecipleError, type Client } from '@reciple/core';
 import { EventEmitter } from 'node:events';
 import type { AnyModule } from '../../helpers/types.js';
+import { ModuleType } from '../../helpers/constants.js';
 
 export interface ModuleManager extends BaseManager<string, AnyModule, BaseModule.Resolvable>, EventEmitter<ModuleManager.Events> {}
 
@@ -12,16 +13,19 @@ export class ModuleManager {
 
     public constructor(public readonly client: Client) {}
 
-    public async enableModules({ modules }: ModuleManager.EventExecuteData = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+    public async enableModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
         const enabledModules: AnyModule[] = [];
 
         for (const module of modules ?? []) {
             this.emit('modulePreEnable', module);
 
-            await module.onEnable({ client: this.client }).catch(e => this.emitOrThrow('moduleEnableError', module, e));
+            await module.onEnable({ client: this.client }).catch(e => {
+                if (removeFromCacheOnError) this.cache.delete(module.id);
+                this.emitOrThrow('moduleEnableError', module, e);
+            });
 
             this.emit('moduleEnable', module);
-            this.cache.set(module.id, module);
+            this.add(module);
             enabledModules.push(module);
         }
 
@@ -38,7 +42,7 @@ export class ModuleManager {
             this.emit('modulePreReady', module);
 
             await module.onReady({ client: this.client }).catch(e => {
-                if (removeFromCacheOnError !== false) this.cache.delete(module.id);
+                if (removeFromCacheOnError !== false) this.remove(module);
                 this.emitOrThrow('moduleReadyError', module, e);
             });
 
@@ -57,15 +61,60 @@ export class ModuleManager {
         for (const module of modules ?? []) {
             this.emit('modulePreDisable', module);
 
-            await module.onDisable({ client: this.client }).catch(e => this.emitOrThrow('moduleDisableError', module, e));
+            await module.onDisable({ client: this.client }).catch(e => {
+                if (removeFromCache !== false) this.remove(module);
+                this.emitOrThrow('moduleDisableError', module, e);
+            });
 
             this.emit('moduleDisable', module);
-            if (removeFromCache) this.cache.delete(module.id);
+            if (removeFromCache !== false) this.remove(module);
             disabledModules.push(module);
         }
 
         this.emit('disabledModules', disabledModules);
         return disabledModules;
+    }
+
+    public add(module: AnyModule): void {
+        this.cache.set(module.id, module);
+        switch (module.moduleType) {
+            case ModuleType.Command:
+                this.client.commands?.add(module);
+                break;
+            case ModuleType.Event:
+                // TODO: Implement Event module
+                break;
+            case ModuleType.Precondition:
+                this.client.preconditions?.cache.set(module.id, module);
+                break;
+            case ModuleType.Postcondition:
+                this.client.postconditions?.cache.set(module.id, module);
+                break;
+            case ModuleType.Base:
+            default:
+                break;
+        }
+    }
+
+    public remove(module: AnyModule): void {
+        this.cache.delete(module.id);
+        switch (module.moduleType) {
+            case ModuleType.Command:
+                this.client.commands?.cache.delete(module.id);
+                break;
+            case ModuleType.Event:
+                // TODO: Implement Event module
+                break;
+            case ModuleType.Precondition:
+                this.client.preconditions?.cache.delete(module.id);
+                break;
+            case ModuleType.Postcondition:
+                this.client.postconditions?.cache.delete(module.id);
+                break;
+            case ModuleType.Base:
+            default:
+                break;
+        }
     }
 
     private emitOrThrow<K extends keyof Pick<ModuleManager.Events, 'moduleDisableError'|'moduleEnableError'|'moduleReadyError'>>(event: K, ...args: ModuleManager.Events[K]) {
