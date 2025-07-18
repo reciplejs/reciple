@@ -333,7 +333,7 @@ export namespace ModuleTemplateBuilder {
         const lines = content.split('\n');
 
         return lines
-            .filter(line => !line.trim().includes('// @expected-error'))
+            .filter(line => !line.trim().includes('// @ts-expect-error'))
             .join('\n');
     }
 }
