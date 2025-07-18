@@ -8,8 +8,8 @@ import path from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { NotAnError } from './NotAnError.js';
 import { slug } from 'github-slugger';
-import { spawn } from 'node:child_process';
-import { MessageCommandParser, RecipleError } from '@reciple/core';
+import { exec } from 'node:child_process';
+import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
 import { RuntimeEnvironment } from './RuntimeEnvironment.js';
@@ -352,6 +352,10 @@ export class TemplateBuilder {
             console.log(`  • ${colors.cyan(colors.bold(`cd ${this.relativeDirectory}`))}`);
         }
 
+        if (!this.isPackageManagerInstalled) {
+            console.log(`  • ${colors.cyan(colors.bold(this.packageManager.installAll()))}`);
+        }
+
         console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('build')))} ${colors.dim('(Build)')}`);
         console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('dev')))} ${colors.dim('(Development)')}`);
         console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('start')))} ${colors.dim('(Production)')}`);
@@ -515,10 +519,9 @@ export namespace TemplateBuilder {
         let lastOutput = '';
         let output = '';
 
-        const [commandName, ...commandArgs] = MessageCommandParser.splitstring(command);
-        const child = spawn(commandName, commandArgs, {
+        const child = exec(command, {
             cwd: options?.cwd,
-            env: options?.env,
+            env: options?.env
         });
 
         const onOutput = (data: any) => {
