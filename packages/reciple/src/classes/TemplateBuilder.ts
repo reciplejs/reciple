@@ -8,8 +8,8 @@ import path from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { NotAnError } from './NotAnError.js';
 import { slug } from 'github-slugger';
-import { exec } from 'node:child_process';
-import { RecipleError } from '@reciple/core';
+import { spawn } from 'node:child_process';
+import { MessageCommandParser, RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
 import { RuntimeEnvironment } from './RuntimeEnvironment.js';
@@ -369,15 +369,9 @@ export class TemplateBuilder {
             errorMessage: `${colors.bold(colors.red('✗'))} ${colors.red(command)}`,
             promise: TemplateBuilder.runCommand(command, {
                 cwd: this.directory,
-                ...options,
-                onOutput
+                ...options
             })
         });
-
-        function onOutput(data: string) {
-            if (options?.onOutput) options.onOutput(data);
-            if (result[1]) result[1].message(data);
-        };
 
         return result[0];
     }
@@ -521,9 +515,10 @@ export namespace TemplateBuilder {
         let lastOutput = '';
         let output = '';
 
-        const child = exec(command, {
+        const [commandName, ...commandArgs] = MessageCommandParser.splitstring(command);
+        const child = spawn(commandName, commandArgs, {
             cwd: options?.cwd,
-            env: options?.env
+            env: options?.env,
         });
 
         const onOutput = (data: any) => {

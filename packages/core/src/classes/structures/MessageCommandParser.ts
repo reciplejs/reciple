@@ -33,9 +33,7 @@ export class MessageCommandParser implements MessageCommandParser.Data {
     }
 
     public parse(command: MessageCommand): this {
-        const splitstring = split as unknown as typeof split.default;
-
-        this.args = splitstring(this.rawArgs, {
+        this.args = MessageCommandParser.splitstring(this.rawArgs, {
             brackets: true,
             quotes: true,
             separator: this.separator,
@@ -123,4 +121,6 @@ export namespace MessageCommandParser {
         strict?: boolean;
         keep?(value: string, state: SplitState): boolean;
     }
+
+    export const splitstring: (input: string, options?: SplitOptions) => string[] = split as unknown as typeof split.default;
 }
