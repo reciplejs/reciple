@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import { CLISubcommand } from '../../classes/CLISubcommand.js';
 import { ConfigReader } from '../../classes/ConfigReader.js';
-import { Logger } from 'prtyprnt';
 import { build } from 'tsup';
 
 export default class BuildSubcommand extends CLISubcommand {
@@ -21,10 +20,6 @@ export default class BuildSubcommand extends CLISubcommand {
         const { config, build: buildConfig } = await configReader.read({
             createIfNotExists: false
         });
-
-        const logger = config.logger instanceof Logger
-            ? config.logger
-            : this.cli.logger.clone(config.logger);
 
         await build(buildConfig);
     }

@@ -132,6 +132,20 @@ export class ConfigReader {
 }
 
 export namespace ConfigReader {
+    export async function getProjectType(dir: string): Promise<'ts'|'js'> {
+        let hasTsConfig = false;
+
+        try {
+            hasTsConfig = !!resolveTsConfig(dir).path;
+        } catch (err) {
+            //
+        }
+
+        const usesDotTsConfig = (await ConfigReader.findConfigFromDirectory(dir).then(f => f ?? '')).endsWith('ts');
+
+        return hasTsConfig || usesDotTsConfig ? 'ts' : 'js';
+    }
+
     export function resolveTsConfig(filepath?: string) {
         const stats = filepath ? statSync(filepath) : undefined;
 
