@@ -37,7 +37,7 @@ export class TemplateBuilder {
     }
 
     get relativeDirectory() {
-        return path.relative(process.cwd(), this.directory) || '.';
+        return path.relative(process.cwd(), this.directory) || './';
     }
 
     get packageJsonPath() {
@@ -341,9 +341,22 @@ export class TemplateBuilder {
 
         if (this.isPackageManagerInstalled) {
             await this.runCommand(this.packageManager.installAll());
+            await this.runCommand(this.packageManager.run('build'));
         }
 
-        outro(`Project created in ${colors.cyan(this.directory)}`);
+        outro(`Project created in ${colors.cyan(this.relativeDirectory)}`);
+
+        console.log(`\n${colors.bold(colors.green('✔'))} Start developing:`);
+
+        if (this.relativeDirectory !== './') {
+            console.log(`  • ${colors.cyan(colors.bold(`cd ${this.relativeDirectory}`))}`);
+        }
+
+        console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('build')))} ${colors.dim('(Build)')}`);
+        console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('dev')))} ${colors.dim('(Development)')}`);
+        console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('start')))} ${colors.dim('(Production)')}`);
+
+
         return this;
     }
 

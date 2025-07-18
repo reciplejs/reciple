@@ -159,9 +159,7 @@ export class ModuleTemplateBuilder {
 
             if (isCancel(value)) throw new NotAnError('Operation cancelled');
             if (!this.template) throw new NotAnError('No template selected');
-            this.template.content = this.content
-                .replaceAll(placeholder, value)
-                .replaceAll(`// @ts-expect-error\n`, '\n');
+            this.template.content = ModuleTemplateBuilder.removeExpectedErrorComments(this.content.replaceAll(placeholder, value));
         }
 
         return this;
@@ -233,7 +231,7 @@ export class ModuleTemplateBuilder {
 
     public async build(overwrite: boolean = false): Promise<this> {
         await writeFile(this.filepath, this.content, { flag: overwrite === false ? 'wx' : undefined });
-        outro(`Module created in ${colors.cyan(this.filepath)}`);
+        outro(`Module ${colors.green(this.template?.name!)} created in ${colors.cyan(path.relative(process.cwd(), this.filepath))}`);
         return this;
     }
 }
@@ -329,5 +327,13 @@ export namespace ModuleTemplateBuilder {
 
     export function hasPlaceholder(placeholder: Placeholder, content: string): boolean {
         return content.includes(placeholder);
+    }
+
+    export function removeExpectedErrorComments(content: string): string {
+        const lines = content.split('\n');
+
+        return lines
+            .filter(line => !line.trim().includes('// @expected-error'))
+            .join('\n');
     }
 }
