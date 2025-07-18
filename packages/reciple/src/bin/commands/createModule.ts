@@ -49,7 +49,6 @@ export default class CreateModuleSubcommand extends CLISubcommand {
             await template.setupDirectory();
             await template.setupFilename();
             await template.build();
-            // TODO: Complete setup
         } catch (error) {
             cancel(colors.red(error instanceof NotAnError ? error.message : inspect(error)));
         }
