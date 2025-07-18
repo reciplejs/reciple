@@ -1,18 +1,22 @@
 import { Command } from 'commander';
 import { CLISubcommand } from '../../classes/CLISubcommand.js';
 import { ConfigReader } from '../../classes/ConfigReader.js';
-import { ModuleLoader } from '../../classes/ModuleLoader.js';
 import { ModuleTemplateBuilder } from '../../classes/ModuleTemplateBuilder.js';
+import { cancel } from '@clack/prompts';
+import { colors } from '@reciple/utils';
+import { NotAnError } from '../../classes/NotAnError.js';
+import { inspect } from 'node:util';
 
 export default class CreateModuleSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('module')
         .description('Creates new module')
         .argument('[output]', 'The directory to create the module in')
-        .option('--template, -T <template>', 'Template source name')
+        .option('--template, -t <template>', 'Template source name')
         .option('--filename', 'The filename of the module')
         .option('-c, --config <path>', 'Path to the configuration file')
         .option('-T, --typescript', 'Use TypeScript')
-        .option('-D, --default', 'Use defaults for prompts');
+        .option('-D, --default', 'Use defaults for prompts')
+        .enablePositionalOptions(true);
 
     public parent: string = 'create';
 
@@ -29,9 +33,6 @@ export default class CreateModuleSubcommand extends CLISubcommand {
             })
         );
 
-        const { config, build } = configReader;
-
-        const tsconfig = ConfigReader.resolveTsConfig(build.tsconfig);
         const template = new ModuleTemplateBuilder({
             cli: this.cli,
             config: configReader,
@@ -40,17 +41,18 @@ export default class CreateModuleSubcommand extends CLISubcommand {
             defaultAll: flags?.default
         });
 
-        await template.setupLanguage();
-        // TODO: Complete setup
-
-        let directories = await ModuleLoader.scanForDirectories(config.modules);
-            directories = await ModuleLoader.resolveSourceDirectories({
-                directories,
-                baseUrl: tsconfig.data.compilerOptions?.baseUrl ?? '.',
-                rootDir: tsconfig.data.compilerOptions?.rootDir ?? 'src',
-                outDir: tsconfig.data.compilerOptions?.outDir ?? 'modules',
-                cwd: process.cwd()
-            });
+        try {
+            await template.init();
+            await template.setupLanguage();
+            await template.setupTemplate();
+            await template.setupPlaceholders();
+            await template.setupDirectory();
+            await template.setupFilename();
+            await template.build();
+            // TODO: Complete setup
+        } catch (error) {
+            cancel(colors.red(error instanceof NotAnError ? error.message : inspect(error)));
+        }
     }
 }
 

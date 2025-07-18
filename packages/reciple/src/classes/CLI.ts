@@ -7,6 +7,7 @@ import { Logger, type LoggerOptions } from 'prtyprnt';
 import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';
+import { spinner, type SpinnerOptions } from '@clack/prompts';
 
 export class CLI {
     public build: string;
@@ -154,5 +155,34 @@ export namespace CLI {
         }
 
         return arr;
+    }
+
+    export interface SpinnerPromiseOptions<T> {
+        indicator?: SpinnerOptions['indicator'];
+        promise: Promise<T>;
+        message?: string;
+        successMessage?: string;
+        errorMessage?: string;
+    }
+
+    export function createSpinnerPromise<T>(options: SpinnerPromiseOptions<T>): [Promise<T>, ReturnType<typeof spinner>] {
+        const loader = spinner({ indicator: options.indicator });
+
+        return [
+            new Promise<T>((resolve, reject) => {
+                loader.start(options.message);
+
+                options.promise
+                    .then((value) => {
+                        loader.stop(options.successMessage);
+                        resolve(value);
+                    })
+                    .catch((error) => {
+                        loader.stop(options.errorMessage);
+                        reject(error);
+                    });
+            }),
+            loader
+        ];
     }
 }

@@ -1,7 +1,7 @@
 import { colors, PackageJsonBuilder, PackageManager, sortRecordByKey, type PackageJson } from '@reciple/utils';
 import { ConfigReader } from './ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { confirm, intro, isCancel, outro, select, spinner, text, type SpinnerOptions } from '@clack/prompts';
+import { confirm, intro, isCancel, outro, select, text } from '@clack/prompts';
 import micromatch from 'micromatch';
 import { CLI } from './CLI.js';
 import path from 'node:path';
@@ -58,7 +58,7 @@ export class TemplateBuilder {
     }
 
     public async init(): Promise<this> {
-        intro(colors.bold(colors.black(colors.bgCyan(` ${this.cli.command.name()} v${this.cli.build} `))));
+        intro(colors.bold(colors.black(colors.bgCyan(` ${this.cli.command.name()} create - v${this.cli.build} `))));
         return this;
     }
 
@@ -208,7 +208,7 @@ export class TemplateBuilder {
             }
         }
 
-        const [template, loader] = TemplateBuilder.createSpinnerPromise({
+        const [template, loader] = CLI.createSpinnerPromise({
             promise: Promise.all([
                 TemplateBuilder.copy(source, this.directory, { ...options, rename, overwrite }),
                 TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite })
@@ -347,8 +347,8 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<TemplateBuilder.SpinnerPromiseOptions<void>, 'promise'>): Promise<TemplateBuilder.RunCommandResult> {
-        const result = TemplateBuilder.createSpinnerPromise({
+    public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<CLI.SpinnerPromiseOptions<void>, 'promise'>): Promise<TemplateBuilder.RunCommandResult> {
+        const result = CLI.createSpinnerPromise({
             indicator: 'timer',
             ...options,
             message: `$ ${colors.green(command)}`,
@@ -433,35 +433,6 @@ export namespace TemplateBuilder {
         envFile?: string;
         tokenKey?: string;
         env?: Record<string, string>;
-    }
-
-    export interface SpinnerPromiseOptions<T> {
-        indicator?: SpinnerOptions['indicator'];
-        promise: Promise<T>;
-        message?: string;
-        successMessage?: string;
-        errorMessage?: string;
-    }
-
-    export function createSpinnerPromise<T>(options: SpinnerPromiseOptions<T>): [Promise<T>, ReturnType<typeof spinner>] {
-        const loader = spinner({ indicator: options.indicator });
-
-        return [
-            new Promise<T>((resolve, reject) => {
-                loader.start(options.message);
-
-                options.promise
-                    .then((value) => {
-                        loader.stop(options.successMessage);
-                        resolve(value);
-                    })
-                    .catch((error) => {
-                        loader.stop(options.errorMessage);
-                        reject(error);
-                    });
-            }),
-            loader
-        ];
     }
 
     export interface CopyOptions {
