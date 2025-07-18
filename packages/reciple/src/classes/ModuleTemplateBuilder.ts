@@ -67,8 +67,7 @@ export class ModuleTemplateBuilder {
 
     public async build(filepath: string, overwrite: boolean = false): Promise<this> {
         await writeFile(filepath, this.content, {
-            flag: overwrite ? '' : undefined
-            // TODO: What's the flag lol
+            flag: overwrite === false ? 'wx' : undefined
         });
 
         return this;
