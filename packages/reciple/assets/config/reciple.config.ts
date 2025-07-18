@@ -16,8 +16,8 @@ export const client = new Client({
         new MessageCommandValidationPrecondition()
     ],
     postconditions: [],
-    cooldownAdapter: CooldownAdapter,
     commands: [],
+    cooldownAdapter: CooldownAdapter,
 });
 
 export const config: Config = {
