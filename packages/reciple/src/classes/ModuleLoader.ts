@@ -20,7 +20,6 @@ import { EventModuleValidator } from './validation/EventModuleValidator.js';
 import { PreconditionModuleValidator } from './validation/PreconditionModule.js';
 import { PostconditionModuleValidator } from './validation/PostconditionModule.js';
 import type { Logger } from 'prtyprnt';
-import { ConfigReader } from './ConfigReader.js';
 
 // TODO: Load the unique functionality of each modules like events, commands, preconditions, and postconditions
 export class ModuleLoader {
@@ -160,17 +159,10 @@ export class ModuleLoader {
     }
 
     public static async resolveSourceDirectories(options: ModuleLoader.ResolveSourceDirectoryOptions): Promise<string[]> {
-        const { dir, base } = options.configPath ? path.parse(options.configPath) : { dir: process.cwd() };
-        const { data } = ConfigReader.resolveTsConfig(dir, base);
+        const dir = path.isAbsolute(options.baseUrl) ? options.baseUrl : path.resolve(path.join(options.cwd ?? process.cwd(), options.baseUrl));
 
-        if (!data.compilerOptions?.rootDir) throw new Error(`No root directory found in ${options.configPath}`);
-        if (!data.compilerOptions?.outDir) throw new Error(`No out directory found in ${options.configPath}`);
-
-        const root = path.resolve(path.join(dir, data.compilerOptions?.rootDir));
-        const out = path.resolve(path.join(dir, data.compilerOptions?.outDir));
-
-        console.log(root, out);
-        console.log(options.directories);
+        const root = path.resolve(path.join(dir, options.rootDir));
+        const out = path.resolve(path.join(dir, options.outDir));
 
         return options.directories.map(directory => path.resolve(directory).replace(out, root));
     }
@@ -188,7 +180,10 @@ export namespace ModuleLoader {
 
     export interface ResolveSourceDirectoryOptions {
         directories: string[];
-        configPath?: string;
+        baseUrl: string;
+        rootDir: string;
+        outDir: string;
+        cwd?: string;
     }
 
     export async function getGlobby(): Promise<typeof import('globby')> {

@@ -12,6 +12,7 @@ import { replaceTscAliasPaths } from 'tsc-alias';
 import type { BuildConfig } from '../helpers/types.js';
 import { loadTsConfig } from 'bundle-require';
 import type { CompilerOptions } from 'typescript';
+import { statSync } from 'node:fs';
 
 declare module "bundle-require" {
     export function loadTsConfig(dir: string, name?: string): {
@@ -131,7 +132,13 @@ export class ConfigReader {
 }
 
 export namespace ConfigReader {
-    export const resolveTsConfig = loadTsConfig;
+    export function resolveTsConfig(filepath?: string) {
+        const stats = filepath ? statSync(filepath) : undefined;
+
+        const dir = path.resolve((stats?.isDirectory() || !filepath ? filepath : path.dirname(filepath)) ?? process.cwd());
+        const file = stats?.isDirectory() || !filepath ? undefined : path.basename(filepath);
+        return loadTsConfig(dir, file);
+    };
 
     export interface Structure {
         client: Client;

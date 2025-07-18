@@ -25,14 +25,19 @@ export default class DirSubcommand extends CLISubcommand {
             createIfNotExists: false
         });
 
+        const tsconfig = await ConfigReader.resolveTsConfig(build.tsconfig);
+
         const logger = config.logger instanceof Logger
             ? config.logger
             : this.cli.logger.clone(config.logger);
 
         let directories = await ModuleLoader.scanForDirectories(config.modules);
             directories = await ModuleLoader.resolveSourceDirectories({
-                configPath: build.tsconfig,
-                directories
+                directories,
+                baseUrl: tsconfig.data.compilerOptions?.baseUrl ?? '.',
+                rootDir: tsconfig.data.compilerOptions?.rootDir ?? 'src',
+                outDir: tsconfig.data.compilerOptions?.outDir ?? 'modules',
+                cwd: process.cwd()
             });
 
         const directory = await select({
