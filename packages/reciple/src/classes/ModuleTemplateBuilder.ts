@@ -121,10 +121,11 @@ export class ModuleTemplateBuilder {
                 switch (placeholder) {
                     case ModuleTemplateBuilder.Placeholder.ModuleName:
                     case ModuleTemplateBuilder.Placeholder.CommandName:
+                    case ModuleTemplateBuilder.Placeholder.EventName:
                         value = this.defaultAll
                             ? defaultValue
                             : await text({
-                                message: `What would you like to name the ${placeholder === ModuleTemplateBuilder.Placeholder.ModuleName ? 'module' : 'command'}?`,
+                                message: `What would you like to name the ${placeholderKey.replace('Name', '').toLowerCase()}?`,
                                 initialValue: defaultValue,
                                 placeholder: defaultValue,
                                 defaultValue,
@@ -146,9 +147,20 @@ export class ModuleTemplateBuilder {
 
                         value = isCancel(type) ? type : `${type}`;
                         break;
+                    case ModuleTemplateBuilder.Placeholder.EventOnce:
+                        const once = await confirm({
+                            message: `Would you like to use the event once?`,
+                            active: 'Yes',
+                            inactive: 'No',
+                            initialValue: false
+                        });
+
+                        value = isCancel(once) ? once : `${once}`;
+                        break;
+                    case ModuleTemplateBuilder.Placeholder.EventEmitter:
                     default:
                         value = await text({
-                            message: `What would you like to use for the ${placeholder}?`,
+                            message: `What would you like to use for the ${ModuleTemplateBuilder.toTextCase(placeholder)}?`,
                             initialValue: defaultValue,
                             placeholder: defaultValue,
                             defaultValue
@@ -266,13 +278,19 @@ export namespace ModuleTemplateBuilder {
     export enum Placeholder {
         ModuleName = '$MODULE_NAME$',
         CommandName = '$COMMAND_NAME$',
-        CommandContextMenuType = '$COMMAND_CONTEXT_MENU_TYPE$'
+        CommandContextMenuType = '$COMMAND_CONTEXT_MENU_TYPE$',
+        EventEmitter = '$EVENT_EMITTER$',
+        EventName = '$EVENT_NAME$',
+        EventOnce = '$EVENT_ONCE$'
     }
 
     export const PlaceholderDefaultValues: Record<Placeholder, string> = {
         [Placeholder.ModuleName]: 'MyModule',
         [Placeholder.CommandName]: 'my-command',
-        [Placeholder.CommandContextMenuType]: `${ApplicationCommandType.Message}`
+        [Placeholder.CommandContextMenuType]: `${ApplicationCommandType.Message}`,
+        [Placeholder.EventEmitter]: 'null',
+        [Placeholder.EventName]: 'my-event',
+        [Placeholder.EventOnce]: 'false'
     }
 
     export const SourceDirectory = {
@@ -335,5 +353,13 @@ export namespace ModuleTemplateBuilder {
         return lines
             .filter(line => !line.trim().includes('// @ts-expect-error'))
             .join('\n');
+    }
+
+    export function toTextCase(string: string): string {
+        return String(string)
+            .replace(/^[^A-Za-z0-9]*|[^A-Za-z0-9]*$/g, '')
+            .replace(/([a-z])([A-Z])/g, (m, a, b) => a + '_' + b.toLowerCase())
+            .replace(/[^A-Za-z0-9]+|_+/g, ' ')
+            .toLowerCase();
     }
 }
