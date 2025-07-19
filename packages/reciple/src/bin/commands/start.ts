@@ -60,37 +60,39 @@ export default class StartSubcommand extends CLISubcommand {
         logger.log(`Resolving modules...`);
 
         const modules = await client.moduleLoader.findModules();
-        const enabled = await client.modules.enableModules({ modules });
 
-        client.once('ready', async() => {
-            if (!client.isReady()) return;
+        Object.assign(client, {
+            _onBeforeLogin: async() => {
+                const enabledModules = await client.modules.enableModules({ modules });
 
-            logger.debug(`Client is ready!`);
-            process.removeListener('uncaughtException', handleProcessError);
-            process.removeListener('unhandledRejection', handleProcessError);
+                client.once('ready', async() => {
+                    if (!client.isReady()) return;
 
-            const notEnabled = modules.length - enabled.length;
-            logger.log(`Enabled ${colors.green(enabled.length)} modules.${notEnabled > 0 ? colors.red(` (${notEnabled} not enabled)`) : ''}`);
+                    logger.debug(`Client is ready!`);
+                    process.removeListener('uncaughtException', handleProcessError);
+                    process.removeListener('unhandledRejection', handleProcessError);
 
-            const ready = await client.modules.readyModules();
-            const notReady = ready.length - enabled.length;
+                    const notEnabledModules = modules.length - enabledModules.length;
+                    logger.log(`Enabled ${colors.green(enabledModules.length)} modules.${notEnabledModules > 0 ? colors.red(` (${notEnabledModules} not enabled)`) : ''}`);
 
-            logger.log(`Ready ${colors.green(ready.length)} modules.${notReady > 0 ? colors.red(` (${notReady} not ready)`) : ''}`);
-            logger.log(`Client is logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
+                    const readyModules = await client.modules.readyModules();
+                    const notReadyModules = readyModules.length - enabledModules.length;
 
-            process.stdin.resume();
+                    logger.log(`Ready ${colors.green(readyModules.length)} modules.${notReadyModules > 0 ? colors.red(` (${notReadyModules} not ready)`) : ''}`);
+                    logger.log(`Client is logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
 
-            logger.log(`Loaded ${colors.green(modules.length)} modules.`);
-            logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
-            logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);
-            logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Slash).size)} slash commands.`);
-            logger.log(`Loaded ${colors.green(client.preconditions.cache.size)} global preconditions.`);
-            logger.log(`Loaded ${colors.green(client.postconditions.cache.size)} global postconditions.`);
+                    process.stdin.resume();
 
-            Object.assign(client, {
-                _onBeforeDestoy: (client: Client) => client.modules.disableModules()
-            });
-        });
+                    logger.log(`Loaded ${colors.green(modules.length)} modules.`);
+                    logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
+                    logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);
+                    logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Slash).size)} slash commands.`);
+                    logger.log(`Loaded ${colors.green(client.preconditions.cache.size)} global preconditions.`);
+                    logger.log(`Loaded ${colors.green(client.postconditions.cache.size)} global postconditions.`);
+                });
+            },
+            _onBeforeDestoy: (client: Client) => client.modules.disableModules()
+        })
 
         logger.debug(`Logging using token: ${token}`);
         await client.login(token);

@@ -54,6 +54,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     private _postconditions: PostconditionManager|null = null;
 
     private _onBeforeDestroy: null|((client: Client) => Awaitable<void>) = null;
+    private _onBeforeLogin: null|((client: Client) => Awaitable<void>) = null;
 
     get commands() {
         return this._commands as If<Ready, CommandManager, null>;
@@ -116,6 +117,8 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
                 this._commands.cache.set(command.id, command instanceof BaseCommand ? command : Utils.createCommandInstance(command));
             }
         }
+
+        this._onBeforeLogin?.(this);
 
         this.setMaxListeners(this.getMaxListeners() + 1);
 
