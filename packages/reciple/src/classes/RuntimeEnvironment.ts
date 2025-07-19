@@ -36,6 +36,7 @@ export namespace RuntimeEnvironment {
         client.logger?.warn(`Received exit signal: ${signal}`);
 
         await client.destroy();
+        client.eventListeners.unregisterAll();
 
         const signalString = signal === 'SIGINT' ? 'keyboard interrupt' : signal === 'SIGTERM' ? 'terminate' : String(signal);
 

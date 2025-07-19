@@ -99,13 +99,10 @@ export default class StartSubcommand extends CLISubcommand {
 
                 client.eventListeners.registerProcessExitEvents(async signal => RuntimeEnvironment.handleExitSignal(client, signal));
             },
-            _onBeforeDestoy: (client: Client) => {
-                client.modules.disableModules();
-                client.eventListeners.unregisterAll();
-            }
+            _onBeforeDestoy: (client: Client) => client.modules.disableModules()
         })
 
-        logger.debug(`Logging using token: ${token}`);
+        logger.debug(`Logging using token: ${colors.yellow(token)}`);
         await client.login(token);
     }
 }
