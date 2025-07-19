@@ -101,7 +101,6 @@ export default class StartSubcommand extends CLISubcommand {
             },
             _onBeforeDestroy: async (client: Client) => {
                 await client.modules.disableModules();
-                client.eventListeners.unregisterAll();
             }
         })
 
