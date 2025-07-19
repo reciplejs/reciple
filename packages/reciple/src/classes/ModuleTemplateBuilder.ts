@@ -10,7 +10,7 @@ import { EventModule } from './modules/events/EventModule.js';
 import { RESTEventModule } from './modules/events/RESTEventModule.js';
 import { PostconditionModule } from './modules/PostconditionModule.js';
 import { PreconditionModule } from './modules/PreconditionModule.js';
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { ConfigReader } from './ConfigReader.js';
 import { confirm, intro, isCancel, outro, select, text } from '@clack/prompts';
 import { NotAnError } from './NotAnError.js';
@@ -86,7 +86,7 @@ export class ModuleTemplateBuilder {
             const templates = await ModuleTemplateBuilder.resolveModuleTemplates(this.typescript ? 'ts' : 'js');
 
             const selectedTemplate = this.defaultAll
-                ? templates.at(0)
+                ? templateName ? templates.find(template => template.name === templateName) : templates.at(0)
                 : await select({
                     message: 'Select a module template',
                     options: templates.map(template => ({
@@ -241,9 +241,10 @@ export class ModuleTemplateBuilder {
         return this;
     }
 
-    public async build(overwrite: boolean = false): Promise<this> {
+    public async build({ overwrite, silent }: ModuleTemplateBuilder.BuildOptions = {}): Promise<this> {
+        await mkdir(this.directory, { recursive: true });
         await writeFile(this.filepath, this.content, { flag: overwrite === false ? 'wx' : undefined });
-        outro(`Module ${colors.green(this.template?.name!)} created in ${colors.cyan(path.relative(process.cwd(), this.filepath))}`);
+        if (!silent) outro(`Module ${colors.green(this.template?.name!)} created in ${colors.cyan(path.relative(process.cwd(), this.filepath))}`);
         return this;
     }
 }
@@ -275,9 +276,15 @@ export namespace ModuleTemplateBuilder {
         filename?: string;
     }
 
+    export interface BuildOptions {
+        overwrite?: boolean;
+        silent?: boolean;
+    }
+
     export enum Placeholder {
         ModuleName = '$MODULE_NAME$',
         CommandName = '$COMMAND_NAME$',
+        CommandDescription = '$COMMAND_DESCRIPTION$',
         CommandContextMenuType = '$COMMAND_CONTEXT_MENU_TYPE$',
         EventEmitter = '$EVENT_EMITTER$',
         EventName = '$EVENT_NAME$',
@@ -287,6 +294,7 @@ export namespace ModuleTemplateBuilder {
     export const PlaceholderDefaultValues: Record<Placeholder, string> = {
         [Placeholder.ModuleName]: 'MyModule',
         [Placeholder.CommandName]: 'my-command',
+        [Placeholder.CommandDescription]: 'My command',
         [Placeholder.CommandContextMenuType]: `${ApplicationCommandType.Message}`,
         [Placeholder.EventEmitter]: 'null',
         [Placeholder.EventName]: 'my-event',
@@ -295,7 +303,7 @@ export namespace ModuleTemplateBuilder {
 
     export const SourceDirectory = {
         js: path.join(CLI.root, './assets/modules/javascript'),
-        ts: path.join(CLI.root, './assets/modules/typescript`')
+        ts: path.join(CLI.root, './assets/modules/typescript')
     };
 
     export const ModuleTypeClassName: Record<ModuleType, string[]> = {
@@ -313,9 +321,9 @@ export namespace ModuleTemplateBuilder {
         moduleType: ModuleType|null;
     }
 
-    export async function resolveModuleTemplates(type: 'js'|'ts'): Promise<ModuleTemplateBuilder.Data[]> {
-        const src = ModuleTemplateBuilder.SourceDirectory[type];
-        const files: string[] = await readdir(src).catch(() => []);
+    export async function resolveModuleTemplates(source: keyof typeof SourceDirectory): Promise<ModuleTemplateBuilder.Data[]> {
+        const src = ModuleTemplateBuilder.SourceDirectory[source];
+        const files: string[] = await readdir(src);
         const templates: ModuleTemplateBuilder.Data[] = [];
 
         for (const file of files) {

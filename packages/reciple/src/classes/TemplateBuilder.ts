@@ -13,6 +13,7 @@ import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../helpers/constants.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
 import { RuntimeEnvironment } from './RuntimeEnvironment.js';
+import { ModuleTemplateBuilder } from './ModuleTemplateBuilder.js';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -184,6 +185,14 @@ export class TemplateBuilder {
     public async createTemplate(options?: TemplateBuilder.CreateModulesOptions): Promise<this> {
         const source = path.join(CLI.root, './assets/templates/', this.typescript ? 'typescript' : 'javascript');
         const globals = path.join(CLI.root, './assets/global/');
+        const modulesDirectory = path.join(this.directory, 'src');
+        const moduleTemplates = await ModuleTemplateBuilder.resolveModuleTemplates(this.typescript ? 'ts' : 'js');
+        const moduleOptions = {
+            cli: this.cli,
+            config: this.config!,
+            defaultAll: true,
+            typescript: this.typescript,
+        };
 
         function rename(data: TemplateBuilder.CopyMetadata) {
             switch (data.basename) {
@@ -211,7 +220,23 @@ export class TemplateBuilder {
         const [template, loader] = CLI.createSpinnerPromise({
             promise: Promise.all([
                 TemplateBuilder.copy(source, this.directory, { ...options, rename, overwrite }),
-                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite })
+                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite }),
+                new ModuleTemplateBuilder({
+                        ...moduleOptions,
+                        directory: path.join(modulesDirectory, 'commands'),
+                        filename: `SlashCommand.${this.typescript ? 'ts' : 'js'}`,
+                        template: moduleTemplates.find(t => t.name === 'SlashCommand')
+                    })
+                    .setupPlaceholders()
+                    .then(m => m.build({ silent: true })),
+                new ModuleTemplateBuilder({
+                        ...moduleOptions,
+                        directory: path.join(modulesDirectory, 'events'),
+                        filename: `ClientEvent.${this.typescript ? 'ts' : 'js'}`,
+                        template: moduleTemplates.find(t => t.name === 'ClientEvent')
+                    })
+                    .setupPlaceholders()
+                    .then(m => m.build({ silent: true }))
             ]),
             message: 'Copying template files',
             successMessage: 'Files copied successfully',
