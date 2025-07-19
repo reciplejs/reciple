@@ -17,8 +17,8 @@ export const client = new Client({
         new MessageCommandValidationPrecondition()
     ],
     postconditions: [],
-    cooldownAdapter: CooldownAdapter,
     commands: [],
+    cooldownAdapter: CooldownAdapter,
 });
 
 /**
@@ -55,12 +55,15 @@ export const config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./modules/**"],
+        directories: ["./modules/*/*", "./modules/*/*/*"],
         ignore: ["./modules/**/_*"],
-        filter: filepath => filepath.endsWith('.js'),
+        filter: filepath => !!filepath
     }
 };
 
+/**
+ * @type {import('reciple').BuildConfig}
+ */
 export const build = {
     entry: ['./src/**/*.{js,jsx}'],
     outDir: './modules',
@@ -70,5 +73,5 @@ export const build = {
     esbuildPlugins: [],
     minify: false,
     keepNames: true,
-    sourcemap: true,
+    sourcemap: true
 };
