@@ -116,7 +116,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
             files = files.map(f => path.join(directory, f));
 
             fileLoop: for (const file of files) {
-                if (config?.filter && !(await config?.filter(file))) continue;
+                if (config?.filter ? !(await config?.filter(file)) : ModuleLoader.fileTypes.every(type => !file.endsWith(`.${type}`))) continue;
                 modules.push(file);
             }
         }
@@ -179,6 +179,12 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
 export namespace ModuleLoader {
     export let globby: typeof import('globby')|null = null;
+
+    export const fileTypes = [
+        'js',
+        'mjs',
+        'jsx'
+    ];
 
     export interface Config {
         directories?: string[];

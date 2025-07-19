@@ -9,6 +9,8 @@ export class EventListeners {
     public registeredEvents: EventListeners.RegisteredEvent[] = [];
 
     public register(event: EventListeners.RegisteredEvent): this {
+        event.onEvent = event.onEvent.bind(event);
+
         if (event.once) {
             event.emitter.once(event.event, event.onEvent);
         } else {
@@ -67,9 +69,10 @@ export namespace EventListeners {
         onEvent: (...args: any) => any;
     }
 
-    export function registerModuleEventListeners(client: Client) {
+    export function registerLoggerEventListeners(client: Client) {
         const defineModuleManagerEvent = <E extends keyof ModuleManager.Events>(event: E, onEvent: (...args: ModuleManager.Events[E]) => any): RegisteredEvent => ({ emitter: client.modules, event, onEvent });
         const defineModuleLoaderEvent = <E extends keyof ModuleLoader.Events>(event: E, onEvent: (...args: ModuleLoader.Events[E]) => any): RegisteredEvent => ({ emitter: client.moduleLoader, event, onEvent });
+        const defineClientEvent = <E extends keyof Client.Events>(event: E, onEvent: (...args: Client.Events[E]) => any): RegisteredEvent => ({ emitter: client, event, onEvent });
 
         const events: RegisteredEvent[] = [
             defineModuleManagerEvent('modulePreEnable', (module) => client.logger.log(`Enabling module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}`)),
@@ -84,8 +87,9 @@ export namespace EventListeners {
             defineModuleLoaderEvent('modulesResolving', () => client.logger.log('Resolving modules...')),
             defineModuleLoaderEvent('modulesResolved', (modules) => client.logger.log(`Resolved ${colors.green(modules.length)} modules.`)),
             defineModuleLoaderEvent('moduleResolving', (filepath) => client.logger.debug(`Resolving module ${colors.cyan(`"${filepath}"`)}...`)),
-            defineModuleLoaderEvent('moduleResolved', (module) => client.logger.debug(`Resolved module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}:`, module)),
+            defineModuleLoaderEvent('moduleResolved', (module) => client.logger.debug(`Resolved module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}`)),
             defineModuleLoaderEvent('moduleResolveError', (error) => client.logger.error(`Failed to resolve module:`, error)),
+            defineClientEvent('debug', (message) => client.logger.debug(message)),
         ];
 
         for (const event of events) {

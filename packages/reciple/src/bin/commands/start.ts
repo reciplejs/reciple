@@ -55,7 +55,9 @@ export default class StartSubcommand extends CLISubcommand {
             eventListeners: new EventListeners()
         });
 
-        EventListeners.registerModuleEventListeners(client);
+        Reflect.set(global, 'getClient', () => client);
+
+        EventListeners.registerLoggerEventListeners(client);
 
         logger.log(`Starting reciple...`);
         logger.log(colors.bold(`Version Info:`));

@@ -1,3 +1,5 @@
+import type { Client } from '@reciple/core';
+
 export * from './classes/CLI.js';
 export * from './classes/CLISubcommand.js';
 export * from './classes/ConfigReader.js';
@@ -29,3 +31,11 @@ export * from './helpers/types.js';
 
 export * from '@reciple/core';
 export * as Prtyprnt from 'prtyprnt';
+
+globalThis.getClient = () => {
+    throw new Error('Client is not yet loaded.');
+};
+
+declare global {
+    var getClient: () => Client;
+}
