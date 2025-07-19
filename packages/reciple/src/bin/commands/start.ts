@@ -7,6 +7,8 @@ import { Client, CommandType } from '@reciple/core';
 import { ModuleLoader } from '../../classes/ModuleLoader.js';
 import { ModuleManager } from '../../classes/managers/ModuleManager.js';
 import { version as DiscordJsVersion } from 'discord.js';
+import { EventListeners } from '../../classes/EventListeners.js';
+import { RuntimeEnvironment } from '../../classes/RuntimeEnvironment.js';
 
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')
@@ -48,9 +50,12 @@ export default class StartSubcommand extends CLISubcommand {
         });
 
         Object.assign(client, {
+            modules: new ModuleManager(client),
             moduleLoader: new ModuleLoader(client),
-            modules: new ModuleManager(client)
+            eventListeners: new EventListeners()
         });
+
+        EventListeners.registerModuleEventListeners(client);
 
         logger.log(`Starting reciple...`);
         logger.log(colors.bold(`Version Info:`));
@@ -90,8 +95,13 @@ export default class StartSubcommand extends CLISubcommand {
                     logger.log(`Loaded ${colors.green(client.preconditions.cache.size)} global preconditions.`);
                     logger.log(`Loaded ${colors.green(client.postconditions.cache.size)} global postconditions.`);
                 });
+
+                client.eventListeners.registerProcessExitEvents(async signal => RuntimeEnvironment.handleExitSignal(client, signal));
             },
-            _onBeforeDestoy: (client: Client) => client.modules.disableModules()
+            _onBeforeDestoy: (client: Client) => {
+                client.modules.disableModules();
+                client.eventListeners.unregisterAll();
+            }
         })
 
         logger.debug(`Logging using token: ${token}`);
@@ -103,5 +113,6 @@ export namespace StartSubcommand {
     export interface Flags {
         config?: string;
         token?: string;
+        build?: boolean;
     }
 }

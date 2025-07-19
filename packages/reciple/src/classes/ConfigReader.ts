@@ -13,6 +13,7 @@ import type { BuildConfig } from '../helpers/types.js';
 import { loadTsConfig } from 'bundle-require';
 import type { CompilerOptions } from 'typescript';
 import { statSync } from 'node:fs';
+import type { EventListeners } from './EventListeners.js';
 
 declare module "bundle-require" {
     export function loadTsConfig(dir: string, name?: string): {
@@ -34,6 +35,7 @@ declare module "@reciple/core" {
     interface Client {
         readonly modules: ModuleManager;
         readonly moduleLoader: ModuleLoader;
+        readonly eventListeners: EventListeners;
         readonly cli: CLI;
         logger: Logger;
     }

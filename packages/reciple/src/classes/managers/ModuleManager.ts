@@ -82,7 +82,7 @@ export class ModuleManager {
                 this.client.commands?.add(module);
                 break;
             case ModuleType.Event:
-                // TODO: Implement Event module
+                this.client.eventListeners.register(module);
                 break;
             case ModuleType.Precondition:
                 this.client.preconditions?.cache.set(module.id, module);
@@ -103,7 +103,7 @@ export class ModuleManager {
                 this.client.commands?.cache.delete(module.id);
                 break;
             case ModuleType.Event:
-                // TODO: Implement Event module
+                this.client.eventListeners.unregister(module);
                 break;
             case ModuleType.Precondition:
                 this.client.preconditions?.cache.delete(module.id);

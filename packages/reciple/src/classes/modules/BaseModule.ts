@@ -5,6 +5,8 @@ import { hasMixin } from 'ts-mixer';
 import type { AnyModule } from '../../helpers/types.js';
 
 export class BaseModule implements BaseModule.Data {
+    private readonly __$filepath: string = '';
+
     public readonly id: string = DiscordSnowflake.generate().toString();
     public readonly moduleType: ModuleType.Base = ModuleType.Base;
 
@@ -26,6 +28,10 @@ export class BaseModule implements BaseModule.Data {
         const ModuleInstance = class extends BaseModule {};
         Object.assign(ModuleInstance.prototype, data);
         return new ModuleInstance();
+    }
+
+    public static getFilepath(module: AnyModule): string {
+        return (module as BaseModule).__$filepath || '';
     }
 }
 

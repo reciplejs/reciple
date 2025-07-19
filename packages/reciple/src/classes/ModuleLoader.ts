@@ -1,4 +1,4 @@
-import type { Awaitable } from 'discord.js';
+import { type Awaitable } from 'discord.js';
 import path from 'node:path';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import micromatch from 'micromatch';
@@ -20,44 +20,45 @@ import { EventModuleValidator } from './validation/EventModuleValidator.js';
 import { PreconditionModuleValidator } from './validation/PreconditionModule.js';
 import { PostconditionModuleValidator } from './validation/PostconditionModule.js';
 import type { Logger } from 'prtyprnt';
+import { EventEmitter } from 'node:events';
 
-export class ModuleLoader {
+export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
     public readonly logger: Logger;
 
     public constructor(public readonly client: Client) {
+        super();
+
         this.logger = this.client.logger.clone({
             label: 'ModuleLoader'
         });
     }
 
     public async findModules(ignoreErrors: boolean = false): Promise<AnyModule[]> {
-        this.logger.debug('Scanning for modules...');
-
         const modulePaths = await ModuleLoader.scanForModules(this.client.config?.modules);
         const modules: AnyModule[] = [];
 
-        this.logger.debug(`Found ${modulePaths.length} modules`, modulePaths);
+        this.emit('modulesResolving', modulePaths);
 
         for (const path of modulePaths) {
             try {
-                this.logger.debug(`Resolving module: ${colors.cyan(path)}`);
+                this.emit('moduleResolving', path);
                 const resolved = await ModuleLoader.resolveModulePath(path);
 
-                Object.assign(resolved, { client: this.client });
+                Object.assign(resolved, { client: this.client, __$filepath: path });
                 modules.push(resolved);
 
-                this.logger.debug(`Resolved module: ${colors.cyan(path)}`);
+                this.emit('moduleResolved', resolved);
             } catch (error) {
-                this.logger.debug(`Failed to load module: ${colors.cyan(path)}`, error);
                 if (ignoreErrors) continue;
 
-                throw new RecipleError({
+                this.emitOrThrow('moduleResolveError', new RecipleError({
                     message: `Failed to load module: ${colors.cyan(path)}`,
                     cause: error
-                });
+                }));
             }
         }
 
+        this.emit('modulesResolved', modules);
         return modules;
     }
 
@@ -165,6 +166,15 @@ export class ModuleLoader {
 
         return options.directories.map(directory => path.resolve(directory).replace(out, root));
     }
+
+    private emitOrThrow<K extends keyof Pick<ModuleLoader.Events, 'moduleResolveError'>>(event: K, error: RecipleError) {
+        if (this.client.listenerCount(event) > 0) {
+            // @ts-expect-error
+            return this.emit(event, error);
+        }
+
+        throw error;
+    }
 }
 
 export namespace ModuleLoader {
@@ -175,6 +185,14 @@ export namespace ModuleLoader {
         ignore?: string[];
         filter?: (filepath: string) => Awaitable<boolean>;
         sort?: (a: string, b: string) => number;
+    }
+
+    export interface Events {
+        moduleResolveError: [error: RecipleError];
+        moduleResolved: [module: AnyModule];
+        moduleResolving: [filepath: string];
+        modulesResolved: [modules: AnyModule[]];
+        modulesResolving: [files: string[]];
     }
 
     export interface ResolveSourceDirectoryOptions {
