@@ -9,7 +9,7 @@ export class $MODULE_NAME$ extends EventModule {
     once = $EVENT_ONCE$;
 
     onEvent(...args) {
-        // Your code
+        // Write your code here
     }
 }
 

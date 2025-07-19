@@ -7,7 +7,7 @@ export class $MODULE_NAME$ extends RESTEventModule {
     once = $EVENT_ONCE$;
 
     onEvent(...args) {
-        // Your code
+        // Write your code here
     }
 }
 

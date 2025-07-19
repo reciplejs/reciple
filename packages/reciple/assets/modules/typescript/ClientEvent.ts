@@ -1,7 +1,8 @@
-// @ts-check
 import { ClientEventModule } from "reciple";
 
-export class $MODULE_NAME$ extends ClientEventModule {
+// @ts-expect-error
+export class $MODULE_NAME$ extends ClientEventModule<'$EVENT_NAME$'> {
+    // @ts-expect-error
     event = '$EVENT_NAME$';
     // @ts-expect-error
     once = $EVENT_ONCE$;
