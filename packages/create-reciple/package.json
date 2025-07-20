@@ -1,21 +1,12 @@
 {
-  "name": "reciple",
+  "name": "create-reciple",
   "version": "10.0.0",
   "license": "GPL-3.0-only",
-  "description": "The CLI for Reciple",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": "./dist/bin/reciple.js",
+  "description": "Alias for `reciple create`",
+  "bin": "./dist/index.js",
   "type": "module",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "files": [
     "dist",
-    "assets",
     "README.md"
   ],
   "scripts": {
