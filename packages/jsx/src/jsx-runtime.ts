@@ -1,5 +1,5 @@
-import { JSX } from './classes/JSX.js';
+import { JsxUtil } from './classes/JsxUtil.js';
 
-export const jsx = JSX.useElement;
-export const jsxs = JSX.useElement;
-export const Fragment = JSX.useFragment;
+export const jsx = JsxUtil.useElement;
+export const jsxs = JsxUtil.useElement;
+export const Fragment = JsxUtil.useFragment;
