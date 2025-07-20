@@ -11,7 +11,7 @@ export class MessageCommandOptionValueManager {
     public readonly message: Message;
     public readonly parser: MessageCommandParser;
 
-    public constructor(public readonly client: Client, options: MessageCommandOptionValueManager.Options) {
+    constructor(public readonly client: Client, options: MessageCommandOptionValueManager.Options) {
         for (const option of options.options) {
             this.options.set(option.name, option);
         }

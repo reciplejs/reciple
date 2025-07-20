@@ -16,7 +16,7 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
 
     private _sweeper?: NodeJS.Timeout;
 
-    public constructor(public readonly client: Client, public readonly adapter: A, public readonly options?: CooldownManager.Options) {}
+    constructor(public readonly client: Client, public readonly adapter: A, public readonly options?: CooldownManager.Options) {}
 
     public async fetch(id: string, options: { force: boolean; }): Promise<Cooldown.Data|null> {
         if (options.force !== true) {

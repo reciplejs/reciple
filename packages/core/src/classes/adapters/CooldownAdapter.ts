@@ -12,7 +12,7 @@ export class CooldownAdapter extends BaseCooldownAdapter {
         return this.client.cooldowns?.cache!;
     }
 
-    public constructor() {
+    constructor() {
         super();
     }
 

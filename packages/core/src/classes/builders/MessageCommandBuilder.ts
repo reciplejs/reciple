@@ -14,7 +14,7 @@ export class MessageCommandBuilder implements Omit<MessageCommandBuilder.Data, '
     public options: JSONEncodable<MessageCommandOption.Data>[] = [];
     public flags: JSONEncodable<MessageCommandFlag.Data>[] = [];
 
-    public constructor(options?: Partial<MessageCommandBuilder.Data>) {
+    constructor(options?: Partial<MessageCommandBuilder.Data>) {
         MessageCommandBuilderValidator.object
             .partial()
             .optional()

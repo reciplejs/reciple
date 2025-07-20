@@ -8,7 +8,7 @@ export class PreconditionResultManager<T extends CommandType, D = any> extends B
     public preconditions = new Collection<string, CommandPrecondition<D>>();
     public disabledPreconditions: string[] = [];
 
-    public constructor(client: Client, { preconditions, results, disabledPreconditions }: preconditionResultManager.Options<T, D> = {}) {
+    constructor(client: Client, { preconditions, results, disabledPreconditions }: preconditionResultManager.Options<T, D> = {}) {
         super(client, Object as unknown as Constructable<CommandPrecondition.ResultData<T, D>>);
 
         this.disabledPreconditions = disabledPreconditions ?? [];

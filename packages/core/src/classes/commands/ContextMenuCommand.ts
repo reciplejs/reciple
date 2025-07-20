@@ -12,7 +12,7 @@ export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
 
     public async execute(data: ContextMenuCommand.ExecuteData): Promise<void> {}
 
-    public constructor(data?: Partial<ContextMenuCommand.Data>) {
+    constructor(data?: Partial<ContextMenuCommand.Data>) {
         super(data);
     }
 

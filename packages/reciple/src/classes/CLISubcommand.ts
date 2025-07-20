@@ -11,7 +11,7 @@ export abstract class CLISubcommand<Flags extends Record<string, any> = Record<s
         return this.cli.getFlags(this.subcommand) ?? {} as Flags;
     }
 
-    public constructor({ cli, command }: CLISubcommand.Options) {
+    constructor({ cli, command }: CLISubcommand.Options) {
         this.cli = cli;
         this.command = command;
     }

@@ -5,7 +5,7 @@ import { hasMixin } from 'ts-mixer';
 export abstract class BaseManager<K extends string, V extends { id: string; }, R> {
     public readonly cache: Collection<K, V> = new Collection();
 
-    public constructor(public readonly client: Client, public readonly holds: Constructable<V>) {}
+    constructor(public readonly client: Client, public readonly holds: Constructable<V>) {}
 
     public resolve(resolvable: R|K): V|null;
     public resolve(resolvable: V): V;

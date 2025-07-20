@@ -25,7 +25,7 @@ import { EventEmitter } from 'node:events';
 export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
     public readonly logger: Logger;
 
-    public constructor(public readonly client: Client) {
+    constructor(public readonly client: Client) {
         super();
 
         this.logger = this.client.logger.clone({

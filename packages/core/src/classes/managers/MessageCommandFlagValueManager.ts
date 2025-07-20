@@ -11,7 +11,7 @@ export class MessageCommandFlagValueManager {
     public readonly message: Message;
     public readonly parser: MessageCommandParser;
 
-    public constructor(public readonly client: Client, options: MessageCommandFlagValueManager.Options) {
+    constructor(public readonly client: Client, options: MessageCommandFlagValueManager.Options) {
         for (const flag of options.flags) {
             this.flags.set(flag.name, flag);
         }

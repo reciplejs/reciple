@@ -14,7 +14,7 @@ export class MessageCommandFlag<T> implements MessageCommandFlag.Data<T> {
     public validate?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<boolean>;
     public resolve?: (data: MessageCommandFlag.ResolveValueOptions<T>) => Awaitable<T[]>;
 
-    public constructor(data?: Partial<MessageCommandFlag.Data<T>>) {
+    constructor(data?: Partial<MessageCommandFlag.Data<T>>) {
         this.name = data?.name ?? '';
         this.shortcut = data?.shortcut;
         this.description = data?.description ?? '';

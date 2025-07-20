@@ -80,7 +80,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
         this.options.config = config;
     }
 
-    public constructor(options: ClientOptions) {
+    constructor(options: ClientOptions) {
         super(options);
 
         this._executeCommand = this._executeCommand.bind(this);

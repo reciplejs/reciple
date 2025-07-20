@@ -23,7 +23,7 @@ export class CLI {
         return this.command.opts();
     }
 
-    public constructor(public readonly options: CLI.Options) {
+    constructor(public readonly options: CLI.Options) {
         this.build = options.build;
         this.version = String(coerce(this.build) ?? this.build);
 

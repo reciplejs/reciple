@@ -13,7 +13,7 @@ export class SlashCommand extends BaseCommand<CommandType.Slash> {
 
     public async execute(data: SlashCommand.ExecuteData): Promise<void> {}
 
-    public constructor(data?: Partial<SlashCommand.Data>) {
+    constructor(data?: Partial<SlashCommand.Data>) {
         super(data);
     }
 

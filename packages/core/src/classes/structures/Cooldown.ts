@@ -32,7 +32,7 @@ export class Cooldown implements Cooldown.Data {
         return (this.guildId ? this.client.guilds.cache.get(this.guildId) : undefined) ?? (this.channel && !this.channel.isDMBased() ? this.channel.guild : undefined);
     }
 
-    public constructor(public readonly client: Client, data: Omit<Cooldown.Data, 'id'>) {
+    constructor(public readonly client: Client, data: Omit<Cooldown.Data, 'id'>) {
         Object.assign(this, data);
     }
 

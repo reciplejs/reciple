@@ -17,7 +17,7 @@ export interface CommandManager extends BaseManager<string, AnyCommand, AnyComma
 export class CommandManager {
     public readonly holds = BaseCommand as Constructable<AnyCommand>;
 
-    public constructor(public readonly client: Client) {}
+    constructor(public readonly client: Client) {}
 
     get applicationCommands() {
         return this.cache

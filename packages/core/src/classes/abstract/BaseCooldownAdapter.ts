@@ -3,7 +3,7 @@ import type { Cooldown } from '../structures/Cooldown.js';
 import type { Client } from '../structures/Client.js';
 
 export abstract class BaseCooldownAdapter {
-    public constructor() {}
+    constructor() {}
 
     public abstract $init(client: Client<false>): Promise<void>;
 

@@ -26,7 +26,7 @@ export class MessageCommandParser implements MessageCommandParser.Data {
         return this.rawWithoutPrefix.slice(this.name.length).trim();
     }
 
-    public constructor(public readonly options: MessageCommandParser.Options) {
+    constructor(public readonly options: MessageCommandParser.Options) {
         this.raw = options.raw;
         this.separator = options.separator ?? ' ';
         this.prefix = options.prefix ?? '';

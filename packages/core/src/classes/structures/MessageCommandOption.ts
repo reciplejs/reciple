@@ -10,7 +10,7 @@ export class MessageCommandOption<T> implements MessageCommandOption.Data<T> {
     public validate?: (data: MessageCommandOption.ResolveValueOptions<T>) => Awaitable<boolean>;
     public resolve?: (data: MessageCommandOption.ResolveValueOptions<T>) => Awaitable<T>;
 
-    public constructor(data?: Partial<MessageCommandOption.Data<T>>) {
+    constructor(data?: Partial<MessageCommandOption.Data<T>>) {
         this.name = data?.name ?? '';
         this.description = data?.description ?? '';
         this.required = data?.required ?? false;

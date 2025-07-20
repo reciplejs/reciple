@@ -8,7 +8,7 @@ export class PostconditionResultManager<T extends CommandType, D = any> extends 
     public postconditions = new Collection<string, CommandPostcondition<D>>();
     public disabledPostconditions: string[] = [];
 
-    public constructor(client: Client, { postconditions, results, disabledPostconditions }: PostconditionResultManager.Options<T, D> = {}) {
+    constructor(client: Client, { postconditions, results, disabledPostconditions }: PostconditionResultManager.Options<T, D> = {}) {
         super(client, Object as unknown as Constructable<CommandPostcondition.ResultData<T, D>>);
 
         this.disabledPostconditions = disabledPostconditions ?? [];

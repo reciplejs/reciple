@@ -11,7 +11,7 @@ export interface ModuleManager extends BaseManager<string, AnyModule, BaseModule
 export class ModuleManager {
     public readonly holds = BaseModule;
 
-    public constructor(public readonly client: Client) {}
+    constructor(public readonly client: Client) {}
 
     public async enableModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
         const enabledModules: AnyModule[] = [];

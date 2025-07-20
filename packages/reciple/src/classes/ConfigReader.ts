@@ -61,7 +61,7 @@ export class ConfigReader {
         });
     }
 
-    public constructor(public readonly filepath: string) {}
+    constructor(public readonly filepath: string) {}
 
     public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>): Promise<ConfigReader> {
         if (!await ConfigReader.hasConfigFile(this.filepath) && options?.createIfNotExists !== false) return ConfigReader.create({

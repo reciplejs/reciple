@@ -28,7 +28,7 @@ export class MessageCommand extends BaseCommand<CommandType.Message> {
         return this.data.flags?.map(f => f instanceof MessageCommandFlag ? f : new MessageCommandFlag(f)) ?? [];
     }
 
-    public constructor(data?: Partial<MessageCommand.Data>) {
+    constructor(data?: Partial<MessageCommand.Data>) {
         super(data);
     }
 
