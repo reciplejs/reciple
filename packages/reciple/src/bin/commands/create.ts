@@ -8,7 +8,7 @@ import { NotAnError } from '../../classes/NotAnError.js';
 
 export default class CreateSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('create')
-        .description('Create a new Reciple project')
+        .description('Create a new reciple project')
         .argument('[output]', 'The directory to create the project in')
         .option('-c, --config <path>', 'Path to the configuration file')
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')

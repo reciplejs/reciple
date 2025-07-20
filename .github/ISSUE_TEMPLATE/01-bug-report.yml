@@ -1,5 +1,5 @@
 name: Bug Report
-description: Report an issue with Reciple or another package.
+description: Report an issue with reciple or another package.
 labels: ['Type: Bug']
 body:
   - id: package
