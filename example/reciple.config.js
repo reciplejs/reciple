@@ -69,7 +69,7 @@ export const config = {
     },
     modules: {
         directories: ["./modules/**"],
-        ignore: ["./modules/**/_*"],
+        ignore: ["./modules/**/_*", "./modules/components"],
         filter: undefined
     }
 };

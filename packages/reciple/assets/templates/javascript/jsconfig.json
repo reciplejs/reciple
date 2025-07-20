@@ -8,6 +8,8 @@
     "rootDir": "./src",
     "outDir": "./modules",
     "allowJs": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "reciple",
     "paths": {
       "@/*": ["./src/*"]
     }

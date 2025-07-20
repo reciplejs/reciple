@@ -11,6 +11,10 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/helpers/jsx-runtime.js",
+      "types": "./dist/helpers/jsx-runtime.d.ts"
     }
   },
   "files": [
