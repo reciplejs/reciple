@@ -1,7 +1,7 @@
 // @ts-check
 import { MessageCommand, MessageCommandBuilder, MessageCommandModule } from "reciple";
 
-export class PingCommand extends MessageCommandModule {
+export class MessagePingCommand extends MessageCommandModule {
     data = new MessageCommandBuilder()
         .setName('ping')
         .setDescription('Pong!')
@@ -13,8 +13,8 @@ export class PingCommand extends MessageCommandModule {
      * @param {MessageCommand.ExecuteData} data 
      */
     async execute(data) {
-        data.message.reply('Pong!');
+        await data.message.reply('Pong!');
     }
 }
 
-export default new PingCommand();
+export default new MessagePingCommand();

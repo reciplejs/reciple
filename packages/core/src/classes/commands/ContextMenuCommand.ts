@@ -10,6 +10,8 @@ import { Utils } from '../structures/Utils.js';
 export class ContextMenuCommand extends BaseCommand<CommandType.ContextMenu> {
     public readonly type: CommandType.ContextMenu = CommandType.ContextMenu;
 
+    public async execute(data: ContextMenuCommand.ExecuteData): Promise<void> {}
+
     public constructor(data?: Partial<ContextMenuCommand.Data>) {
         super(data);
     }

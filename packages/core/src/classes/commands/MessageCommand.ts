@@ -18,6 +18,8 @@ import { MessageCommandValidator } from '../validators/MessageCommandValidator.j
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
 
+    public async execute(data: MessageCommand.ExecuteData): Promise<void> {}
+
     get options() {
         return this.data.options?.map(o => o instanceof MessageCommandOption ? o : new MessageCommandOption(o)) ?? [];
     }

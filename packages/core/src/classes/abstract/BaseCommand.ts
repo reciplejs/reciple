@@ -19,7 +19,8 @@ export abstract class BaseCommand<T extends CommandType> implements BaseCommand.
     public postconditions: CommandPostcondition<any>[] = [];
     public disabledPreconditions: string[] = [];
     public disabledPostconditions: string[] = [];
-    public execute: (data: AnyCommandExecuteData<T>) => Promise<void> = async () => {};
+
+    public abstract execute(data: AnyCommandExecuteData<T>): Promise<void>;
 
     constructor(data?: Partial<BaseCommand.Data<T>>) {
         BaseCommandValidator.object
