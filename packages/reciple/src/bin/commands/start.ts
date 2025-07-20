@@ -74,6 +74,8 @@ export default class StartSubcommand extends CLISubcommand {
                 client.once('ready', async() => {
                     if (!client.isReady()) return;
 
+                    EventListeners.registerCommandsEventListeners(client);
+
                     logger.debug(`Client is ready!`);
                     process.removeListener('uncaughtException', handleProcessError);
                     process.removeListener('unhandledRejection', handleProcessError);
@@ -85,10 +87,14 @@ export default class StartSubcommand extends CLISubcommand {
                     const notReadyModules = readyModules.length - enabledModules.length;
 
                     logger.log(`Ready ${colors.green(readyModules.length)} modules.${notReadyModules > 0 ? colors.red(` (${notReadyModules} not ready)`) : ''}`);
-                    logger.log(`Client is logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
+
+                    await client.commands.registerApplicationCommands({
+                        ...config.applicationCommandsRegister,
+                        commands: client.commands.applicationCommands,
+                    });
 
                     process.stdin.resume();
-
+                    logger.log(`Client is logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
                     logger.log(`Loaded ${colors.green(modules.length)} modules.`);
                     logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
                     logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);

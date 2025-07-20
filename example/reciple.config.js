@@ -42,6 +42,19 @@ export const config = {
             throwOnExecuteError: true
         },
     },
+    applicationCommandsRegister: {
+        slashCommands: {
+            registerToGuilds: false,
+            registerGlobally: true
+        },
+        contextMenuCommands: {
+            registerToGuilds: false,
+            registerGlobally: true
+        },
+        registerToGuilds: false,
+        registerGlobally: true,
+        allowEmptyCommands: true
+    },
     cooldowns: {
         sweeperOptions: {
             interval: 1000 * 60 * 60,

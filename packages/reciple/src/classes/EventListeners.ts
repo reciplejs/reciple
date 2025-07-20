@@ -1,4 +1,4 @@
-import type { Client } from '@reciple/core';
+import { CommandType, type Client, type CommandManager } from '@reciple/core';
 import type { EventEmitter } from 'node:events';
 import type { ModuleManager } from './managers/ModuleManager.js';
 import { BaseModule } from './modules/BaseModule.js';
@@ -90,6 +90,19 @@ export namespace EventListeners {
             defineModuleLoaderEvent('moduleResolved', (module) => client.logger.debug(`Resolved module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}`)),
             defineModuleLoaderEvent('moduleResolveError', (error) => client.logger.error(`Failed to resolve module:`, error)),
             defineClientEvent('debug', (message) => client.logger.debug(message)),
+        ];
+
+        for (const event of events) {
+            client.eventListeners.register(event);
+        }
+    }
+
+    export function registerCommandsEventListeners(client: Client) {
+        const defineCommandsEvent = <E extends keyof CommandManager.Events>(event: E, onEvent: (...args: CommandManager.Events[E]) => any): RegisteredEvent => ({ emitter: client.commands!, event, onEvent });
+
+        const events: RegisteredEvent[] = [
+            defineCommandsEvent('applicationCommandsRegister', (commands, guildId) => client.logger.log(`Registered ${colors.green(commands.size)} application commands${guildId ? ` to guild ${colors.cyan(guildId)}` : ' globally'}.`)),
+            defineCommandsEvent('commandExecute', (data) => client.logger.debug(`Executed ${CommandType[data.command.type].toLowerCase()} command ${colors.cyan(`"${data.command.data.name}"`)} ${colors.magenta(`(${data.command.id})`)}`)),
         ];
 
         for (const event of events) {
