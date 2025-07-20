@@ -423,6 +423,7 @@ export namespace TemplateBuilder {
             dependencies: {
                 // TODO: Uncomment when ready
                 // '@reciple/core': packageJSON.dependencies?.['@reciple/core'],
+                '@reciple/jsx': packageJSON.dependencies?.['@reciple/jsx'],
                 // 'reciple': `^${packageJSON.version}`,
             },
             devDependencies: {

@@ -54,6 +54,7 @@
     "tsup": "^8.5.0"
   },
   "devDependencies": {
+    "@reciple/jsx": "^10.0.0",
     "@types/micromatch": "^4.0.9",
     "@types/node": "^22.16.3",
     "@types/semver": "^7.7.0",

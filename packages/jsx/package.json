@@ -1,0 +1,42 @@
+{
+  "name": "@reciple/jsx",
+  "version": "10.0.0",
+  "license": "GPL-3.0-only",
+  "description": "The JSX components for reciple",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/jsx-runtime.js",
+      "types": "./dist/jsx-runtime.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsup",
+    "check": "tsc --noEmit",
+    "prepack": "npm run build -- --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenorthsolution/reciple",
+    "directory": "packages/core"
+  },
+  "dependencies": {
+    "@reciple/utils": "^10.0.0",
+    "@sapphire/shapeshift": "^4.0.0",
+    "@sapphire/snowflake": "^3.5.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

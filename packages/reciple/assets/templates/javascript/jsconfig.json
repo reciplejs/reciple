@@ -9,7 +9,7 @@
     "outDir": "./modules",
     "allowJs": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "reciple",
+    "jsxImportSource": "@reciple/jsx",
     "paths": {
       "@/*": ["./src/*"]
     }
