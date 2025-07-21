@@ -102,7 +102,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
         let modules: string[] = [];
 
-        directoryLoop: for (const directory of directories) {
+        for (const directory of directories) {
             let files = await readdir(directory);
 
             if (config?.ignore?.length) {
