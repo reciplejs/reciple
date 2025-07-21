@@ -1,7 +1,7 @@
 import { ChannelSelectMenuBuilder, type ChannelSelectMenuComponentData } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function ChannelSelectMenu(props: ChannelSelectMenu.Props) {
+export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelectMenuBuilder {
     const builder = new ChannelSelectMenuBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);

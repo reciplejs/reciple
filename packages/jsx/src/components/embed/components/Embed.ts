@@ -1,7 +1,7 @@
 import { EmbedBuilder, type APIEmbed, type ColorResolvable } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function Embed(props: Embed.Props) {
+export function Embed(props: Embed.Props): EmbedBuilder {
     const builder = new EmbedBuilder();
 
     if (props.color !== undefined) builder.setColor(props.color);

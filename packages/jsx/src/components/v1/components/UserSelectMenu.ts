@@ -1,7 +1,7 @@
 import { UserSelectMenuBuilder, type UserSelectMenuComponentData } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function UserSelectMenu(props: UserSelectMenu.Props) {
+export function UserSelectMenu(props: UserSelectMenu.Props): UserSelectMenuBuilder {
     const builder = new UserSelectMenuBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);

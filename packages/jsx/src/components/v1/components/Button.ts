@@ -1,7 +1,7 @@
 import { ButtonBuilder, type Awaitable, type BaseButtonComponentData, type ButtonInteraction } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function Button(props: Button.Props) {
+export function Button(props: Button.Props): ButtonBuilder {
     const builder = new ButtonBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);

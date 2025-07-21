@@ -1,7 +1,7 @@
 import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type JSONEncodable, type StringSelectMenuComponentData } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function StringSelectMenu(props: StringSelectMenu.Props) {
+export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMenuBuilder {
     const builder = new StringSelectMenuBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);

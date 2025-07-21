@@ -1,7 +1,7 @@
 import { ActionRowBuilder, type MessageActionRowComponentBuilder, type ModalActionRowComponentBuilder } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function ActionRow({ id, children }: ActionRow.Props) {
+export function ActionRow({ id, children }: ActionRow.Props): ActionRowBuilder {
     const builder = new ActionRowBuilder({ id });
 
     if (children !== undefined) builder.addComponents(

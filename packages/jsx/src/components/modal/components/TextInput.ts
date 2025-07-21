@@ -1,7 +1,7 @@
 import { TextInputBuilder, type TextInputComponentData } from 'discord.js';
 import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function TextInput(props: TextInput.Props) {
+export function TextInput(props: TextInput.Props): TextInputBuilder {
     const builder = new TextInputBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);
