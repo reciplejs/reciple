@@ -4,9 +4,9 @@ import type { SingleOrArray } from '../../../helpers/types.js';
 export function EmbedField(props: EmbedField.Props) {
     return {
         name: props.name,
-        value: props.value ?? Array.isArray(props.children)
+        value: Array.isArray(props.children)
             ? props.children.join(' ')
-            : String(props.children),
+            : String(props.children ?? props.value),
         inline: props.inline
     }
 

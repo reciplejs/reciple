@@ -6,9 +6,7 @@ export function EmbedFooter(props: EmbedFooter.Props): EmbedData {
         footer: {
             text: Array.isArray(props.children)
                 ? props.children.join(' ')
-                : props.children
-                    ? String(props.children)
-                    : props.text,
+                : String(props.children ?? props.text),
             iconURL: props.iconURL
         }
     }

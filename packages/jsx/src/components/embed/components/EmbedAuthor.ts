@@ -6,9 +6,7 @@ export function EmbedAuthor(props: EmbedAuthor.Props): EmbedData {
         author: {
             name: Array.isArray(props.children)
                 ? props.children.join(' ')
-                : props.children
-                    ? String(props.children)
-                    : props.name,
+                : String(props.children ?? props.name),
             url: props.url,
             iconURL: props.iconURL
         }
