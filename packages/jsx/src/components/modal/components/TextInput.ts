@@ -1,5 +1,5 @@
 import { TextInputBuilder, type TextInputComponentData } from 'discord.js';
-import type { SingleOrArray } from '../../helpers/types.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function TextInput(props: TextInput.Props) {
     const builder = new TextInputBuilder();

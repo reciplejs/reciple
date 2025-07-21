@@ -1,5 +1,5 @@
 import { ButtonBuilder, type Awaitable, type BaseButtonComponentData, type ButtonInteraction } from 'discord.js';
-import type { SingleOrArray } from '../../helpers/types.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function Button(props: Button.Props) {
     const builder = new ButtonBuilder();

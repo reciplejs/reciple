@@ -1,5 +1,5 @@
 import { RoleSelectMenuBuilder, type RoleSelectMenuComponentData } from 'discord.js';
-import type { SingleOrArray } from '../../helpers/types.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function RoleSelectMenu(props: RoleSelectMenu.Props) {
     const builder = new RoleSelectMenuBuilder();

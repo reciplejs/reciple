@@ -1,5 +1,5 @@
 import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type JSONEncodable, type StringSelectMenuComponentData } from 'discord.js';
-import type { SingleOrArray } from '../../helpers/types.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function StringSelectMenu(props: StringSelectMenu.Props) {
     const builder = new StringSelectMenuBuilder();
@@ -21,7 +21,8 @@ export function StringSelectMenu(props: StringSelectMenu.Props) {
 }
 
 export namespace StringSelectMenu {
-    export interface Props extends Omit<StringSelectMenuComponentData, 'type'> {
+    export interface Props extends Omit<StringSelectMenuComponentData, 'type'|'options'> {
+        options?: StringSelectMenuComponentData['options'];
         children?: SingleOrArray<
             Exclude<StringSelectMenuComponentData['options'], undefined>[0]
             |JSONEncodable<APISelectMenuOption>

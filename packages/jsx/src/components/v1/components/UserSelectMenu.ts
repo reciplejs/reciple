@@ -1,7 +1,7 @@
 import { UserSelectMenuBuilder, type UserSelectMenuComponentData } from 'discord.js';
-import type { SingleOrArray } from '../../helpers/types.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
-export function UserSelectMenu(props: StringSelectMenu.Props) {
+export function UserSelectMenu(props: UserSelectMenu.Props) {
     const builder = new UserSelectMenuBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);
@@ -20,7 +20,7 @@ export function UserSelectMenu(props: StringSelectMenu.Props) {
     return builder;
 }
 
-export namespace StringSelectMenu {
+export namespace UserSelectMenu {
     export interface Props extends Omit<UserSelectMenuComponentData, 'type'> {
         children?: SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }

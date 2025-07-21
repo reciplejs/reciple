@@ -1,6 +1,6 @@
 import { ContextMenuCommand, ContextMenuCommandBuilder, ContextMenuCommandModule } from "reciple";
 import { ApplicationCommandType, ButtonStyle, InteractionContextType } from 'discord.js';
-import { ActionRow, Button } from '@reciple/jsx';
+import { ActionRow, Button, StringSelectMenu } from '@reciple/jsx/v1';
 
 export class ViewAvatarCommand extends ContextMenuCommandModule {
     data = new ContextMenuCommandBuilder()
@@ -19,6 +19,7 @@ export class ViewAvatarCommand extends ContextMenuCommandModule {
             components: [
                 <ActionRow>
                     <Button url={url} style={ButtonStyle.Link}>View Avatar</Button>
+                    <StringSelectMenu customId='eee'/>
                 </ActionRow>
             ]
         });

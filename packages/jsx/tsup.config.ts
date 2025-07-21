@@ -2,6 +2,7 @@ import { esbuildPluginVersionInjector } from 'esbuild-plugin-version-injector';
 import { createTsupConfig } from '../../tsup.config.js';
 
 export default createTsupConfig({
-    entry: ["./src/index.ts", "./src/jsx-runtime.ts"],
-    esbuildPlugins: [esbuildPluginVersionInjector()]
+    entry: ['src/**/*.{ts,tsx}'],
+    esbuildPlugins: [esbuildPluginVersionInjector()],
+    bundle: false
 });
