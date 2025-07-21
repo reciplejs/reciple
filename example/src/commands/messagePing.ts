@@ -1,4 +1,3 @@
-// @ts-check
 import { MessageCommand, MessageCommandBuilder, MessageCommandModule } from "reciple";
 
 export class MessagePingCommand extends MessageCommandModule {
@@ -8,11 +7,7 @@ export class MessagePingCommand extends MessageCommandModule {
         .setAliases('pong')
         .toJSON();
 
-    /**
-     * 
-     * @param {MessageCommand.ExecuteData} data 
-     */
-    async execute(data) {
+    async execute(data: MessageCommand.ExecuteData) {
         await data.message.reply('Pong!');
     }
 }

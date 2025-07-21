@@ -1,4 +1,3 @@
-// @ts-check
 import { SlashCommand, SlashCommandBuilder, SlashCommandModule } from "reciple";
 import { InteractionContextType } from 'discord.js';
 
@@ -9,11 +8,7 @@ export class SlashPingCommand extends SlashCommandModule {
         .setContexts([InteractionContextType.Guild])
         .toJSON();
 
-    /**
-     * 
-     * @param {SlashCommand.ExecuteData} data 
-     */
-    async execute(data) {
+    async execute(data: SlashCommand.ExecuteData) {
         await data.interaction.reply('Pong!');
     }
 }

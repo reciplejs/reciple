@@ -1,7 +1,7 @@
 {
   "extends": "@reciple/utils/tsconfig.json",
   "include": [
-    "./src/**/*{.js,.jsx}"
+    "./src/**/*.{js,jsx,ts,tsx}"
   ],
   "compilerOptions": {
     "baseUrl": "./",

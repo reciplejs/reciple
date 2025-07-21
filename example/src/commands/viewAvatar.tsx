@@ -1,6 +1,6 @@
-// @ts-check
 import { ContextMenuCommand, ContextMenuCommandBuilder, ContextMenuCommandModule } from "reciple";
-import { ApplicationCommandType, InteractionContextType } from 'discord.js';
+import { ApplicationCommandType, ButtonStyle, InteractionContextType } from 'discord.js';
+import { ActionRow, Button } from '@reciple/jsx';
 
 export class ViewAvatarCommand extends ContextMenuCommandModule {
     data = new ContextMenuCommandBuilder()
@@ -9,15 +9,18 @@ export class ViewAvatarCommand extends ContextMenuCommandModule {
         .setContexts([InteractionContextType.Guild])
         .toJSON();
 
-    /**
-     * 
-     * @param {ContextMenuCommand.ExecuteData} data 
-     */
-    async execute(data) {
+    async execute(data: ContextMenuCommand.ExecuteData) {
         if (!data.interaction.isUserContextMenuCommand()) return;
 
+        const url = data.interaction.targetUser.avatarURL() ?? data.interaction.targetUser.defaultAvatarURL;
+
         await data.interaction.reply({
-            content: data.interaction.targetUser.avatarURL() ?? data.interaction.targetUser.defaultAvatarURL
+            content: url,
+            components: [
+                <ActionRow>
+                    <Button url={url} style={ButtonStyle.Link}>View Avatar</Button>
+                </ActionRow>
+            ]
         });
     }
 }

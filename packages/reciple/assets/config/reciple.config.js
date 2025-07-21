@@ -78,7 +78,7 @@ export const config = {
  * @type {import('reciple').BuildConfig}
  */
 export const build = {
-    entry: ['./src/**/*.{js,jsx}'],
+    entry: ['./src/**/*.{js,jsx,ts,tsx}'],
     outDir: './modules',
     tsconfig: './jsconfig.json',
     external: [],

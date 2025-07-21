@@ -1,5 +1,5 @@
 
-export namespace JsxUtil {
+export namespace JSX {
     export function useFragment<T = unknown>(props: { children: any[] }): T[] {
         return Array.isArray(props.children) ? props.children.flat() : [props.children];
     }

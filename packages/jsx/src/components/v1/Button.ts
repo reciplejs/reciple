@@ -12,6 +12,12 @@ export function Button(props: Button.Props) {
     if (props.style !== undefined) builder.setStyle(props.style);
     if (props.url !== undefined) builder.setURL(props.url);
 
+    if (props.children !== undefined) builder.setLabel(
+        Array.isArray(props.children)
+            ? props.children.join(' ')
+            : String(props.children)
+    );
+
     return builder;
 }
 
@@ -20,6 +26,7 @@ export namespace Button {
         url?: string;
         customId?: string;
         skuId?: string;
+        children?: any;
         // TODO: Implement button actions
         onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
     }
