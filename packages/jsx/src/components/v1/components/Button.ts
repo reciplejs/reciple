@@ -27,7 +27,7 @@ export namespace Button {
         url?: string;
         customId?: string;
         skuId?: string;
-        children?: SingleOrArray<unknown>;
+        children?: SingleOrArray<any>;
         // TODO: Implement button actions
         onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
     }

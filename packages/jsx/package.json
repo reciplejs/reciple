@@ -15,6 +15,10 @@
       "import": "./dist/jsx-runtime.js",
       "types": "./dist/jsx-runtime.d.ts"
     },
+    "./embed": {
+      "import": "./dist/components/embed/index.js",
+      "types": "./dist/components/embed/index.d.ts"
+    },
     "./modals": {
       "import": "./dist/components/modals/index.js",
       "types": "./dist/components/modals/index.d.ts"

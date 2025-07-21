@@ -25,6 +25,6 @@ export function TextInput(props: TextInput.Props) {
 
 export namespace TextInput {
     export interface Props extends Omit<Partial<TextInputComponentData>, 'type'> {
-        children?: SingleOrArray<unknown>;
+        children?: SingleOrArray<any>;
     }
 }
