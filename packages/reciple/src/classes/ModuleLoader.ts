@@ -115,7 +115,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
             files = files.map(f => path.join(directory, f));
 
-            fileLoop: for (const file of files) {
+            for (const file of files) {
                 if (config?.filter ? !(await config?.filter(file)) : ModuleLoader.fileTypes.every(type => !file.endsWith(`.${type}`))) continue;
                 modules.push(file);
             }
