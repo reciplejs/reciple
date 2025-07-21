@@ -1,4 +1,5 @@
 import { ActionRowBuilder } from 'discord.js';
+import type { SingleOrArray } from '../../helpers/types.js';
 
 export function ActionRow({ id, children }: ActionRow.Props) {
     const builder = new ActionRowBuilder({ id });
@@ -11,7 +12,7 @@ export function ActionRow({ id, children }: ActionRow.Props) {
 export namespace ActionRow {
     export interface Props {
         id?: number;
-        children?: AnyActionRowChild|AnyActionRowChild[];
+        children?: SingleOrArray<AnyActionRowChild>;
     }
 
     export type AnyActionRowChild = any;

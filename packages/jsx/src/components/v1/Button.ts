@@ -1,4 +1,5 @@
 import { ButtonBuilder, type Awaitable, type BaseButtonComponentData, type ButtonInteraction } from 'discord.js';
+import type { SingleOrArray } from '../../helpers/types.js';
 
 export function Button(props: Button.Props) {
     const builder = new ButtonBuilder();
@@ -26,7 +27,7 @@ export namespace Button {
         url?: string;
         customId?: string;
         skuId?: string;
-        children?: any;
+        children?: SingleOrArray<unknown>;
         // TODO: Implement button actions
         onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
     }
