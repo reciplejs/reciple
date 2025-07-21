@@ -1,8 +1,8 @@
-import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type JSONEncodable, type StringSelectMenuComponentData } from 'discord.js';
+import { UserSelectMenuBuilder, type UserSelectMenuComponentData } from 'discord.js';
 import type { SingleOrArray } from '../../helpers/types.js';
 
-export function StringSelectMenu(props: StringSelectMenu.Props) {
-    const builder = new StringSelectMenuBuilder();
+export function UserSelectMenu(props: StringSelectMenu.Props) {
+    const builder = new UserSelectMenuBuilder();
 
     if (props.id !== undefined) builder.setId(props.id);
     if (props.customId !== undefined) builder.setCustomId(props.customId);
@@ -10,21 +10,18 @@ export function StringSelectMenu(props: StringSelectMenu.Props) {
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
-    if (props.options !== undefined) builder.setOptions(...props.options);
+    if (props.defaultValues !== undefined) builder.setDefaultUsers(...props.defaultValues.map(c => c.id));
 
     if (props.children !== undefined) {
         const options = Array.isArray(props.children) ? props.children : [props.children];
-        builder.addOptions(options.map(o => isJSONEncodable(o) ? o.toJSON() : o));
+        builder.addDefaultUsers(...options.map(o => o.id));
     }
 
     return builder;
 }
 
 export namespace StringSelectMenu {
-    export interface Props extends Omit<StringSelectMenuComponentData, 'type'> {
-        children?: SingleOrArray<
-            Exclude<StringSelectMenuComponentData['options'], undefined>[0]
-            |JSONEncodable<APISelectMenuOption>
-        >;
+    export interface Props extends Omit<UserSelectMenuComponentData, 'type'> {
+        children?: SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }

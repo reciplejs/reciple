@@ -1,4 +1,4 @@
-import { ChannelSelectMenuBuilder, isJSONEncodable, type APISelectMenuOption, type ChannelSelectMenuComponentData, type JSONEncodable } from 'discord.js';
+import { ChannelSelectMenuBuilder, type ChannelSelectMenuComponentData } from 'discord.js';
 import type { SingleOrArray } from '../../helpers/types.js';
 
 export function ChannelSelectMenu(props: ChannelSelectMenu.Props) {
@@ -10,14 +10,12 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props) {
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
-    if (props.options !== undefined) builder.addOptions(...props.options);
+    if (props.channelTypes !== undefined) builder.setChannelTypes(...props.channelTypes);
+    if (props.defaultValues !== undefined) builder.setDefaultChannels(...props.defaultValues.map(c => c.id));
 
     if (props.children !== undefined) {
-        const options = Array.isArray(props.children)
-            ? props.children
-            : [props.children];
-
-        builder.addOptions(options.map(o => isJSONEncodable(o) ? o.toJSON() : o));
+        const options = Array.isArray(props.children) ? props.children : [props.children];
+        builder.addDefaultChannels(...options.map(o => o.id));
     }
 
     return builder;
@@ -25,9 +23,6 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props) {
 
 export namespace ChannelSelectMenu {
     export interface Props extends Omit<ChannelSelectMenuComponentData, 'type'> {
-        children?: SingleOrArray<
-            Exclude<ChannelSelectMenuComponentData[''], undefined>[0]
-            |JSONEncodable<APISelectMenuOption>
-        >;
+        children?: SingleOrArray<Exclude<ChannelSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }
