@@ -1,5 +1,5 @@
 // @ts-check
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition } from 'reciple';
+import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandFlagValidatePrecondition, MessageCommandOptionValidatePrecondition } from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -14,7 +14,8 @@ export const client = new Client({
             matchWithin: 'global',
             deleteWhenExpired: true
         }),
-        new MessageCommandValidationPrecondition()
+        new MessageCommandOptionValidatePrecondition(),
+        new MessageCommandFlagValidatePrecondition()
     ],
     postconditions: [],
     commands: [],
@@ -69,7 +70,7 @@ export const config = {
     },
     modules: {
         directories: ["./modules/**"],
-        ignore: ["./modules/**/_*", "./modules/components"],
+        ignore: ["_*"],
         filter: undefined
     }
 };
