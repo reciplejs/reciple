@@ -1,5 +1,5 @@
 import { StringSelectMenuOptionBuilder, type SelectMenuComponentOptionData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../jsx-runtime.js';
 
 export function StringSelectMenuOption(props: StringSelectMenuOption.Props): StringSelectMenuOptionBuilder {
     const builder = new StringSelectMenuOptionBuilder();
@@ -10,17 +10,13 @@ export function StringSelectMenuOption(props: StringSelectMenuOption.Props): Str
     if (props.emoji !== undefined) builder.setEmoji(props.emoji);
     if (props.default !== undefined) builder.setDefault(props.default);
 
-    if (props.children !== undefined) builder.setDescription(
-        Array.isArray(props.children)
-            ? props.children.join(' ')
-            : String(props.children)
-    );
+    if (props.children !== undefined) builder.setDescription(JSX.useStringify(props.children, props.description));
 
     return builder;
 }
 
 export namespace StringSelectMenuOption {
     export interface Props extends SelectMenuComponentOptionData {
-        children?: SingleOrArray<any>;
+        children?: JSX.SingleOrArray<any>;
     }
 }
