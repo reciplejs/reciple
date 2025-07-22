@@ -1,4 +1,4 @@
-import * as shellQuote from 'shell-quote';
+import shellQuote from 'shell-quote';
 
 export class PackageManager {
     get commands(): Record<PackageManager.CommandType, string> {
