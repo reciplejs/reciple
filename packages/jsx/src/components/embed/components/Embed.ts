@@ -1,5 +1,5 @@
 import { EmbedBuilder, type APIEmbed, type ColorResolvable } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function Embed(props: Embed.Props): EmbedBuilder {
     const builder = new EmbedBuilder();
@@ -13,9 +13,7 @@ export function Embed(props: Embed.Props): EmbedBuilder {
             : new Date(props.timestamp)
     );
 
-    const children = Array.isArray(props.children) ? props.children : [props.children];
-
-    for (const child of children) {
+    for (const child of JSX.useSingleToArray(props.children)) {
         if (child?.author !== undefined) builder.setAuthor(child.author);
         if (child?.description !== undefined) builder.setDescription(child.description);
         if (child?.fields !== undefined) builder.addFields(...child.fields);
@@ -30,7 +28,7 @@ export function Embed(props: Embed.Props): EmbedBuilder {
 
 export namespace Embed {
     export interface Props extends Pick<APIEmbed, 'url'|'title'> {
-        children?: SingleOrArray<APIEmbed>;
+        children?: JSX.SingleOrArray<APIEmbed>;
         color?: ColorResolvable;
         timestamp?: Date|number|string|null;
     }

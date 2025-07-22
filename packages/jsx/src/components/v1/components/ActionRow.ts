@@ -1,14 +1,10 @@
 import { ActionRowBuilder, type MessageActionRowComponentBuilder, type ModalActionRowComponentBuilder } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function ActionRow({ id, children }: ActionRow.Props): ActionRowBuilder {
     const builder = new ActionRowBuilder({ id });
 
-    if (children !== undefined) builder.addComponents(
-        Array.isArray(children)
-            ? children
-            : [children]
-    );
+    if (children !== undefined) builder.addComponents(JSX.useSingleToArray(children));
 
     return builder;
 }
@@ -16,7 +12,7 @@ export function ActionRow({ id, children }: ActionRow.Props): ActionRowBuilder {
 export namespace ActionRow {
     export interface Props {
         id?: number;
-        children?: SingleOrArray<AnyActionRowComponent>;
+        children?: JSX.SingleOrArray<AnyActionRowComponent>;
     }
 
     export type AnyActionRowComponent = MessageActionRowComponentBuilder|ModalActionRowComponentBuilder;

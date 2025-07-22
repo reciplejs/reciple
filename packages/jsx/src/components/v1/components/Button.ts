@@ -1,5 +1,5 @@
 import { ButtonBuilder, type Awaitable, type BaseButtonComponentData, type ButtonInteraction } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function Button(props: Button.Props): ButtonBuilder {
     const builder = new ButtonBuilder();
@@ -8,16 +8,11 @@ export function Button(props: Button.Props): ButtonBuilder {
     if (props.customId !== undefined) builder.setCustomId(props.customId);
     if (props.disabled !== undefined) builder.setDisabled(props.disabled);
     if (props.emoji !== undefined) builder.setEmoji(props.emoji);
-    if (props.label !== undefined) builder.setLabel(props.label);
     if (props.skuId !== undefined) builder.setSKUId(props.skuId);
     if (props.style !== undefined) builder.setStyle(props.style);
     if (props.url !== undefined) builder.setURL(props.url);
 
-    if (props.children !== undefined) builder.setLabel(
-        Array.isArray(props.children)
-            ? props.children.join(' ')
-            : String(props.children)
-    );
+    builder.setLabel(JSX.useStringify(props.children, props.label));
 
     return builder;
 }
@@ -27,8 +22,8 @@ export namespace Button {
         url?: string;
         customId?: string;
         skuId?: string;
-        children?: SingleOrArray<any>;
-        // TODO: Implement button actions
+        children?: JSX.SingleOrArray<any>;
+        // TODO: Implement action for prop `onClick`
         onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
     }
 }

@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@dotenvx/dotenvx": "^1.47.5",
+    "@dotenvx/dotenvx": "^1.48.3",
     "@reciple/utils": "^10.0.0",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",
@@ -55,7 +55,7 @@
   "devDependencies": {
     "@reciple/jsx": "^10.0.0",
     "@types/micromatch": "^4.0.9",
-    "@types/node": "^22.16.3",
+    "@types/node": "^22.16.5",
     "@types/semver": "^7.7.0",
     "nodemon": "^3.1.10",
     "prtyprnt": "^1.1.0",
