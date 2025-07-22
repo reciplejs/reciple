@@ -30,6 +30,10 @@ export class PostconditionResultManager<T extends CommandType, D = any> extends 
         return this.hasErrors || this.cache.some(r => !r.success);
     }
 
+    get acknowledged() {
+        return this.cache.some(r => r.success);
+    }
+
     get errors() {
         return this.cache.filter(r => r.error).map(r => r.error as Error);
     }

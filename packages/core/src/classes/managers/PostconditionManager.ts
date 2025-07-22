@@ -49,16 +49,26 @@ export class PostconditionManager {
             results.cache.set(result.id, result);
 
             if (options.returnOnFailure && !result.success) return results;
-            if (result.error) return results;
+            if (result.error) {
+                this.emitOrThrow('postconditionError', result.error, result);
+                return results;
+            }
         }
 
         return results;
+    }
+
+    private emitOrThrow<K extends keyof PostconditionManager.Events>(event: K, ...args: PostconditionManager.Events[K]): boolean {
+        if (this.client.listenerCount(event) > 0) return this.emit(event, ...(args as never));
+        throw args[0];
     }
 }
 
 export namespace PostconditionManager {
     export interface Events {
         postconditionExecute: [result: CommandPostcondition.ResultData<CommandType, any>];
+        postconditionError: [error: unknown, result: CommandPostcondition.ResultData<CommandType, any>];
+        error: [error: unknown];
     }
 
     export interface ExecuteOptions<T extends CommandType, D> {

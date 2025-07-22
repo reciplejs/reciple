@@ -60,6 +60,11 @@ export namespace RecipleError {
             message: `${errors.length} precondition${errors.length === 1 ? '' : 's'} failed while executing.`,
             cause: errors.length === 1 ? errors[0] : errors,
         }),
+        PostconditionError: (errors: unknown[]) => ({
+            name: 'PostconditionError',
+            message: `${errors.length} postcondition${errors.length === 1 ? '' : 's'} failed while executing.`,
+            cause: errors.length === 1 ? errors[0] : errors,
+        }),
         CommandExecuteError: (command: AnyCommand, cause: unknown) => ({
             name: 'CommandExecuteError',
             message: `An error occurred while executing the command (${CommandType[command.type]}: ${command.data.name}).`,

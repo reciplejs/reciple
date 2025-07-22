@@ -67,7 +67,9 @@ export namespace Utils {
             }
 
             return data;
-        } else if (data.preconditionResults.hasFailures) {
+        }
+
+        if (data.preconditionResults.hasFailures) {
             await data.client.postconditions.execute<CommandType, unknown>({
                 data: {
                     reason: CommandPostconditionReason.PreconditionFailure,
