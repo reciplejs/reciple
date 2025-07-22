@@ -8,9 +8,8 @@
     "start": "node ../packages/reciple/dist/bin/reciple.js --env ../.env start",
     "dev": "node ../packages/reciple/dist/bin/reciple.js --env ../.env dev"
   },
-  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^22.16.3",
+    "@types/node": "^22.16.5",
     "nodemon": "^3.1.10"
   }
 }
