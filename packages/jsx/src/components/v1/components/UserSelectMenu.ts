@@ -1,5 +1,5 @@
 import { UserSelectMenuBuilder, type UserSelectMenuComponentData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function UserSelectMenu(props: UserSelectMenu.Props) {
     const builder = new UserSelectMenuBuilder();
@@ -13,8 +13,7 @@ export function UserSelectMenu(props: UserSelectMenu.Props) {
     if (props.defaultValues !== undefined) builder.setDefaultUsers(...props.defaultValues.map(c => c.id));
 
     if (props.children !== undefined) {
-        const options = Array.isArray(props.children) ? props.children : [props.children];
-        builder.addDefaultUsers(...options.map(o => o.id));
+        builder.addDefaultUsers(...JSX.useSingleToArray(props.children).map(o => o.id));
     }
 
     return builder;
@@ -22,6 +21,6 @@ export function UserSelectMenu(props: UserSelectMenu.Props) {
 
 export namespace UserSelectMenu {
     export interface Props extends Omit<UserSelectMenuComponentData, 'type'> {
-        children?: SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
+        children?: JSX.SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }

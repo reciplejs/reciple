@@ -1,5 +1,5 @@
 import { RoleSelectMenuBuilder, type RoleSelectMenuComponentData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function RoleSelectMenu(props: RoleSelectMenu.Props) {
     const builder = new RoleSelectMenuBuilder();
@@ -13,8 +13,7 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props) {
     if (props.defaultValues !== undefined) builder.setDefaultRoles(...props.defaultValues.map(r => r.id));
 
     if (props.children !== undefined) {
-        const options = Array.isArray(props.children) ? props.children : [props.children];
-        builder.addDefaultRoles(...options.map(o => o.id));
+        builder.addDefaultRoles(...JSX.useSingleToArray(props.children).map(o => o.id));
     }
 
     return builder;
@@ -22,6 +21,6 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props) {
 
 export namespace RoleSelectMenu {
     export interface Props extends Omit<RoleSelectMenuComponentData, 'type'> {
-        children?: SingleOrArray<Exclude<RoleSelectMenuComponentData['defaultValues'], undefined>[0]>;
+        children?: JSX.SingleOrArray<Exclude<RoleSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }

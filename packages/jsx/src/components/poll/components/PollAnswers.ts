@@ -1,18 +1,16 @@
 import type { PollAnswerData, PollData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function PollAnswers(props: PollAnswers.Props): Partial<PollData> {
     return {
-        answers: Array.isArray(props.children)
-            ? props.children
-            : props.children
-                ? [props.children]
-                : []
+        answers: JSX
+            .useSingleToArray(props.children)
+            .filter(d => !!d)
     };
 }
 
 export namespace PollAnswers {
     export interface Props {
-        children?: SingleOrArray<PollAnswerData>;
+        children?: JSX.SingleOrArray<PollAnswerData>;
     }
 }

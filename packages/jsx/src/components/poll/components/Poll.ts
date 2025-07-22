@@ -1,14 +1,11 @@
 import type { PollData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function Poll(props: Poll.Props): PollData {
-    const childrenData = (
-        Array.isArray(props.children)
-            ? props.children
-            : props.children
-                ? [props.children]
-                : []
-    ).reduce((o, d) => ({ ...o, ...d }), {} as PollData);
+    const childrenData = JSX
+        .useSingleToArray(props.children)
+        .filter(d => !!d)
+        .reduce((o, d) => ({ ...o, ...d }), {} as PollData);
 
     return {
         ...childrenData,
@@ -22,6 +19,6 @@ export namespace Poll {
     export interface Props extends Pick<PollData, 'layoutType'> {
         duration?: number;
         allowMultiselect?: boolean;
-        children?: SingleOrArray<PollData>;
+        children?: JSX.SingleOrArray<PollData>;
     }
 }
