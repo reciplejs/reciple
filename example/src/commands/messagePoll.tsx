@@ -10,15 +10,30 @@ export class MessagePollCommand extends MessageCommandModule {
             .setDescription('The name of the poll')
             .setRequired(true)
         )
+        .addFlag(option => option
+            .setName('duration')
+            .setShortcut('d')
+            .setDescription('The hours duration of the poll')
+            .setResolve(d => d.values?.map(d => Number(d)) ?? [24])
+            .setRequired(false)
+        )
+        .addFlag(option => option
+            .setName('allow-multiple-select')
+            .setShortcut('m')
+            .setValueType('boolean')
+            .setDescription('Allow multiple answers')
+        )
         .setAliases('p')
         .toJSON();
 
     async execute(data: MessageCommand.ExecuteData) {
         const name = data.options.getOptionValue('name', true);
+        const duration = await data.flags.getFlagResolvedValues<number>('duration', false);
+        const allowMultipleSelect = data.flags.getFlagValues('allow-multiple-select', { required: false, type: 'boolean' });
 
         await data.message.reply({
             poll: (
-                <Poll duration={24} allowMultiselect={false}>
+                <Poll duration={duration?.at(0)} allowMultiselect={allowMultipleSelect?.at(0)}>
                     <PollQuestionMedia>{name}</PollQuestionMedia>
                     <PollAnswers>
                         <PollAnswer emoji={'✅'}>Yes</PollAnswer>
