@@ -23,7 +23,7 @@ export namespace Button {
         customId?: string;
         skuId?: string;
         children?: JSX.SingleOrArray<any>;
-        // TODO: Implement button actions
+        // TODO: Implement action for prop `onClick`
         onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
     }
 }

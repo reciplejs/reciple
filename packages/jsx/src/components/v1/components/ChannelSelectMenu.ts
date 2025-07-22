@@ -23,7 +23,7 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props) {
 export namespace ChannelSelectMenu {
     export interface Props extends Omit<ChannelSelectMenuComponentData, 'type'> {
         children?: JSX.SingleOrArray<Exclude<ChannelSelectMenuComponentData['defaultValues'], undefined>[0]>;
-        // TODO: Add implementation for onSelect
+        // TODO: Implement action for prop `onSelect`
         onSelect?: (interaction: ChannelSelectMenuInteraction) => Awaitable<void>;
     }
 }

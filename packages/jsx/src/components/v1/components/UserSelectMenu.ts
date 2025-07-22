@@ -1,4 +1,4 @@
-import { UserSelectMenuBuilder, type UserSelectMenuComponentData } from 'discord.js';
+import { UserSelectMenuBuilder, type Awaitable, type UserSelectMenuComponentData, type UserSelectMenuInteraction } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function UserSelectMenu(props: UserSelectMenu.Props) {
@@ -22,5 +22,7 @@ export function UserSelectMenu(props: UserSelectMenu.Props) {
 export namespace UserSelectMenu {
     export interface Props extends Omit<UserSelectMenuComponentData, 'type'> {
         children?: JSX.SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
+        // TODO: Implement action for prop `onSelect`
+        onSelect?: (interaction: UserSelectMenuInteraction) => Awaitable<void>;
     }
 }
