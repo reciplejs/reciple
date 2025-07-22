@@ -1,10 +1,12 @@
 import type { APIEmbedField } from 'discord.js';
-import { JSX } from '../../../structures/JSX.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function EmbedField(props: EmbedField.Props): APIEmbedField {
     return {
         name: props.name,
-        value: JSX.useStringify(props.children, props.value),
+        value: props.value ?? Array.isArray(props.children)
+            ? props.children.join(' ')
+            : String(props.children),
         inline: props.inline
     }
 
@@ -13,6 +15,6 @@ export function EmbedField(props: EmbedField.Props): APIEmbedField {
 export namespace EmbedField {
     export interface Props extends Omit<APIEmbedField, 'value'> {
         value?: string;
-        children?: JSX.SingleOrArray<any>;
+        children?: SingleOrArray<any>;
     }
 }

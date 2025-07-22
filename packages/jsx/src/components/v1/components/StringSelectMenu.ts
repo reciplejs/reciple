@@ -1,5 +1,5 @@
-import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type Awaitable, type JSONEncodable, type StringSelectMenuComponentData, type StringSelectMenuInteraction } from 'discord.js';
-import { JSX } from '../../../structures/JSX.js';
+import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type JSONEncodable, type StringSelectMenuComponentData } from 'discord.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMenuBuilder {
     const builder = new StringSelectMenuBuilder();
@@ -10,9 +10,11 @@ export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMen
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
+    if (props.options !== undefined) builder.setOptions(...props.options);
 
     if (props.children !== undefined) {
-        builder.addOptions(JSX.useSingleToArray(props.children).map(o => isJSONEncodable(o) ? o.toJSON() : o));
+        const options = Array.isArray(props.children) ? props.children : [props.children];
+        builder.addOptions(options.map(o => isJSONEncodable(o) ? o.toJSON() : o));
     }
 
     return builder;
@@ -20,11 +22,10 @@ export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMen
 
 export namespace StringSelectMenu {
     export interface Props extends Omit<StringSelectMenuComponentData, 'type'|'options'> {
-        children?: JSX.SingleOrArray<
+        options?: StringSelectMenuComponentData['options'];
+        children?: SingleOrArray<
             Exclude<StringSelectMenuComponentData['options'], undefined>[0]
             |JSONEncodable<APISelectMenuOption>
         >;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: StringSelectMenuInteraction) => Awaitable<void>;
     }
 }

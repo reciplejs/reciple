@@ -102,7 +102,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
         let modules: string[] = [];
 
-        for (const directory of directories) {
+        directoryLoop: for (const directory of directories) {
             let files = await readdir(directory);
 
             if (config?.ignore?.length) {
@@ -115,7 +115,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
             files = files.map(f => path.join(directory, f));
 
-            for (const file of files) {
+            fileLoop: for (const file of files) {
                 if (config?.filter ? !(await config?.filter(file)) : ModuleLoader.fileTypes.every(type => !file.endsWith(`.${type}`))) continue;
                 modules.push(file);
             }

@@ -1,5 +1,5 @@
-import { ChannelSelectMenuBuilder, type Awaitable, type ChannelSelectMenuComponentData, type ChannelSelectMenuInteraction } from 'discord.js';
-import { JSX } from '../../../structures/JSX.js';
+import { ChannelSelectMenuBuilder, type ChannelSelectMenuComponentData } from 'discord.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelectMenuBuilder {
     const builder = new ChannelSelectMenuBuilder();
@@ -14,7 +14,8 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelect
     if (props.defaultValues !== undefined) builder.setDefaultChannels(...props.defaultValues.map(c => c.id));
 
     if (props.children !== undefined) {
-        builder.addDefaultChannels(...JSX.useSingleToArray(props.children).map(o => o.id));
+        const options = Array.isArray(props.children) ? props.children : [props.children];
+        builder.addDefaultChannels(...options.map(o => o.id));
     }
 
     return builder;
@@ -22,8 +23,6 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelect
 
 export namespace ChannelSelectMenu {
     export interface Props extends Omit<ChannelSelectMenuComponentData, 'type'> {
-        children?: JSX.SingleOrArray<Exclude<ChannelSelectMenuComponentData['defaultValues'], undefined>[0]>;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: ChannelSelectMenuInteraction) => Awaitable<void>;
+        children?: SingleOrArray<Exclude<ChannelSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }

@@ -1,5 +1,5 @@
-import { UserSelectMenuBuilder, type Awaitable, type UserSelectMenuComponentData, type UserSelectMenuInteraction } from 'discord.js';
-import { JSX } from '../../../structures/JSX.js';
+import { UserSelectMenuBuilder, type UserSelectMenuComponentData } from 'discord.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function UserSelectMenu(props: UserSelectMenu.Props): UserSelectMenuBuilder {
     const builder = new UserSelectMenuBuilder();
@@ -13,7 +13,8 @@ export function UserSelectMenu(props: UserSelectMenu.Props): UserSelectMenuBuild
     if (props.defaultValues !== undefined) builder.setDefaultUsers(...props.defaultValues.map(c => c.id));
 
     if (props.children !== undefined) {
-        builder.addDefaultUsers(...JSX.useSingleToArray(props.children).map(o => o.id));
+        const options = Array.isArray(props.children) ? props.children : [props.children];
+        builder.addDefaultUsers(...options.map(o => o.id));
     }
 
     return builder;
@@ -21,8 +22,6 @@ export function UserSelectMenu(props: UserSelectMenu.Props): UserSelectMenuBuild
 
 export namespace UserSelectMenu {
     export interface Props extends Omit<UserSelectMenuComponentData, 'type'> {
-        children?: JSX.SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: UserSelectMenuInteraction) => Awaitable<void>;
+        children?: SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }

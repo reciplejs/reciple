@@ -23,10 +23,6 @@
       "import": "./dist/components/modals/index.js",
       "types": "./dist/components/modals/index.d.ts"
     },
-    "./poll": {
-      "import": "./dist/components/poll/index.js",
-      "types": "./dist/components/poll/index.d.ts"
-    },
     "./v1": {
       "import": "./dist/components/v1/index.js",
       "types": "./dist/components/v1/index.d.ts"

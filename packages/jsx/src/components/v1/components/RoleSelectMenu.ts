@@ -1,5 +1,5 @@
-import { RoleSelectMenuBuilder, type Awaitable, type RoleSelectMenuComponentData, type RoleSelectMenuInteraction } from 'discord.js';
-import { JSX } from '../../../structures/JSX.js';
+import { RoleSelectMenuBuilder, type RoleSelectMenuComponentData } from 'discord.js';
+import type { SingleOrArray } from '../../../helpers/types.js';
 
 export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuilder {
     const builder = new RoleSelectMenuBuilder();
@@ -13,7 +13,8 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuild
     if (props.defaultValues !== undefined) builder.setDefaultRoles(...props.defaultValues.map(r => r.id));
 
     if (props.children !== undefined) {
-        builder.addDefaultRoles(...JSX.useSingleToArray(props.children).map(o => o.id));
+        const options = Array.isArray(props.children) ? props.children : [props.children];
+        builder.addDefaultRoles(...options.map(o => o.id));
     }
 
     return builder;
@@ -21,8 +22,6 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuild
 
 export namespace RoleSelectMenu {
     export interface Props extends Omit<RoleSelectMenuComponentData, 'type'> {
-        children?: JSX.SingleOrArray<Exclude<RoleSelectMenuComponentData['defaultValues'], undefined>[0]>;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: RoleSelectMenuInteraction) => Awaitable<void>;
+        children?: SingleOrArray<Exclude<RoleSelectMenuComponentData['defaultValues'], undefined>[0]>;
     }
 }

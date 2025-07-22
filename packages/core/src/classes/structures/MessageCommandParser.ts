@@ -37,7 +37,6 @@ export class MessageCommandParser implements MessageCommandParser.Data {
             brackets: true,
             quotes: true,
             separator: this.separator,
-            keep: (value, state) => value !== '\\' && (value !== '"' || state.prev() === '\\'),
             ...this.options.splitOptions,
         });
 
