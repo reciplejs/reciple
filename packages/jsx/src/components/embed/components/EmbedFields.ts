@@ -1,18 +1,16 @@
 import type { EmbedData, EmbedField } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function EmbedFields(props: EmbedFields.Props): EmbedData {
     return {
-        fields: Array.isArray(props.children)
-            ? props.children
-            : props.children
-                ? [props.children]
-                : []
+        fields: JSX
+            .useSingleToArray(props.children)
+            .filter(d => !!d)
     };
 }
 
 export namespace EmbedFields {
     export interface Props {
-        children?: SingleOrArray<EmbedField>;
+        children?: JSX.SingleOrArray<EmbedField>;
     };
 }

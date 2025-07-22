@@ -1,3 +1,5 @@
+import shellQuote from 'shell-quote';
+
 export class PackageManager {
     get commands(): Record<PackageManager.CommandType, string> {
         return PackageManager.commands[this.type];
@@ -28,7 +30,7 @@ export class PackageManager {
     }
 
     public run(script: string): string {
-        return `${this.commands.run} ${script}`;
+        return `${this.commands.run} ${shellQuote.quote([script])}`;
     }
 }
 

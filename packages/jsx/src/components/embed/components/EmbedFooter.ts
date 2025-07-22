@@ -1,14 +1,10 @@
 import type { EmbedData, EmbedFooterOptions } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function EmbedFooter(props: EmbedFooter.Props): EmbedData {
     return {
         footer: {
-            text: Array.isArray(props.children)
-                ? props.children.join(' ')
-                : props.children
-                    ? String(props.children)
-                    : props.text,
+            text: JSX.useStringify(props.children, props.text),
             iconURL: props.iconURL
         }
     }
@@ -16,6 +12,6 @@ export function EmbedFooter(props: EmbedFooter.Props): EmbedData {
 
 export namespace EmbedFooter {
     export interface Props extends EmbedFooterOptions {
-        children?: SingleOrArray<any>;
+        children?: JSX.SingleOrArray<any>;
     }
 }

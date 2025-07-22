@@ -8,15 +8,8 @@
     "start": "node ../packages/reciple/dist/bin/reciple.js --env ../.env start",
     "dev": "node ../packages/reciple/dist/bin/reciple.js --env ../.env dev"
   },
-  "dependencies": {
-    "@reciple/core": "^10.0.0",
-    "@reciple/jsx": "^10.0.0",
-    "@reciple/utils": "^10.0.0",
-    "discord.js": "^14.20.0",
-    "reciple": "^10.0.0"
-  },
   "devDependencies": {
-    "@types/node": "^22.16.3",
+    "@types/node": "^22.16.5",
     "nodemon": "^3.1.10"
   }
 }

@@ -1,16 +1,14 @@
 import type { EmbedData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function EmbedDescription(props: EmbedDescription.Props): EmbedData {
     return {
-        description: Array.isArray(props.children)
-            ? props.children.join(' ')
-            : String(props.children)
+        description: JSX.useStringify(props.children)
     };
 }
 
 export namespace EmbedDescription {
     export interface Props {
-        children?: SingleOrArray<any>;
+        children?: JSX.SingleOrArray<any>;
     };
 }

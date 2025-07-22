@@ -1,14 +1,10 @@
 import type { EmbedAuthorOptions, EmbedData } from 'discord.js';
-import type { SingleOrArray } from '../../../helpers/types.js';
+import { JSX } from '../../../structures/JSX.js';
 
 export function EmbedAuthor(props: EmbedAuthor.Props): EmbedData {
     return {
         author: {
-            name: Array.isArray(props.children)
-                ? props.children.join(' ')
-                : props.children
-                    ? String(props.children)
-                    : props.name,
+            name: JSX.useStringify(props.children, props.name),
             url: props.url,
             iconURL: props.iconURL
         }
@@ -17,6 +13,6 @@ export function EmbedAuthor(props: EmbedAuthor.Props): EmbedData {
 
 export namespace EmbedAuthor {
     export interface Props extends EmbedAuthorOptions {
-        children?: SingleOrArray<any>;
+        children?: JSX.SingleOrArray<any>;
     }
 }
