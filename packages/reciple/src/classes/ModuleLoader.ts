@@ -74,6 +74,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
                     cwd,
                     ignore: config?.ignore,
                     onlyDirectories: true,
+                    baseNameMatch: true,
                     absolute: true
                 });
 

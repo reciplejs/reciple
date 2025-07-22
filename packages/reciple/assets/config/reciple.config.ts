@@ -1,4 +1,4 @@
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandValidationPrecondition, type BuildConfig, type Config } from 'reciple';
+import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandFlagValidatePrecondition, MessageCommandOptionValidatePrecondition, type BuildConfig, type Config } from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -13,7 +13,8 @@ export const client = new Client({
             matchWithin: 'global',
             deleteWhenExpired: true
         }),
-        new MessageCommandValidationPrecondition()
+        new MessageCommandOptionValidatePrecondition(),
+        new MessageCommandFlagValidatePrecondition()
     ],
     postconditions: [],
     commands: [],
@@ -65,7 +66,7 @@ export const config: Config = {
     },
     modules: {
         directories: ["./modules/**"],
-        ignore: ["./modules/**/_*"],
+        ignore: ["_*"],
         filter: undefined
     }
 };
