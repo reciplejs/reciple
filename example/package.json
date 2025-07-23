@@ -9,7 +9,7 @@
     "dev": "node ../packages/reciple/dist/bin/reciple.js --env ../.env dev"
   },
   "devDependencies": {
-    "@types/node": "^22.16.5",
+    "@types/node": "^24.1.0",
     "nodemon": "^3.1.10"
   }
 }

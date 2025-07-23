@@ -1,4 +1,4 @@
-import { ModalBuilder, type ActionRowBuilder, type APIActionRowComponent, type APIComponentInModalActionRow, type Awaitable, type ModalActionRowComponentBuilder, type ModalComponentData, type ModalSubmitInteraction } from 'discord.js';
+import { ModalBuilder, type ActionRowBuilder, type APIActionRowComponent, type APIComponentInModalActionRow, type ModalActionRowComponentBuilder, type ModalComponentData } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function Modal(props: Modal.Props): ModalBuilder {
@@ -14,7 +14,5 @@ export function Modal(props: Modal.Props): ModalBuilder {
 export namespace Modal {
     export interface Props extends Omit<ModalComponentData, 'type'|'components'> {
         children?: JSX.SingleOrArray<ActionRowBuilder<ModalActionRowComponentBuilder>|APIActionRowComponent<APIComponentInModalActionRow>>;
-        // TODO: Implement action for prop `onSubmit`
-        onSubmit?: (interaction: ModalSubmitInteraction) => Awaitable<void>;
     }
 }

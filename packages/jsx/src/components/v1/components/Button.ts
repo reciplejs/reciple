@@ -1,4 +1,4 @@
-import { ButtonBuilder, type Awaitable, type BaseButtonComponentData, type ButtonInteraction } from 'discord.js';
+import { ButtonBuilder, type BaseButtonComponentData } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function Button(props: Button.Props): ButtonBuilder {
@@ -23,7 +23,5 @@ export namespace Button {
         customId?: string;
         skuId?: string;
         children?: JSX.SingleOrArray<any>;
-        // TODO: Implement action for prop `onClick`
-        onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
     }
 }

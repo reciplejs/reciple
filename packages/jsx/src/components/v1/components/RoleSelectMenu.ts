@@ -1,4 +1,4 @@
-import { RoleSelectMenuBuilder, type Awaitable, type RoleSelectMenuComponentData, type RoleSelectMenuInteraction } from 'discord.js';
+import { RoleSelectMenuBuilder, type RoleSelectMenuComponentData } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuilder {
@@ -22,7 +22,5 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuild
 export namespace RoleSelectMenu {
     export interface Props extends Omit<RoleSelectMenuComponentData, 'type'> {
         children?: JSX.SingleOrArray<Exclude<RoleSelectMenuComponentData['defaultValues'], undefined>[0]>;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: RoleSelectMenuInteraction) => Awaitable<void>;
     }
 }

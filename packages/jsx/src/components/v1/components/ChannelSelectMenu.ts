@@ -1,4 +1,4 @@
-import { ChannelSelectMenuBuilder, type Awaitable, type ChannelSelectMenuComponentData, type ChannelSelectMenuInteraction } from 'discord.js';
+import { ChannelSelectMenuBuilder, type ChannelSelectMenuComponentData } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelectMenuBuilder {
@@ -23,7 +23,5 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelect
 export namespace ChannelSelectMenu {
     export interface Props extends Omit<ChannelSelectMenuComponentData, 'type'> {
         children?: JSX.SingleOrArray<Exclude<ChannelSelectMenuComponentData['defaultValues'], undefined>[0]>;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: ChannelSelectMenuInteraction) => Awaitable<void>;
     }
 }

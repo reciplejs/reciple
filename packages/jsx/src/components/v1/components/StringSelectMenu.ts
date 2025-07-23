@@ -1,4 +1,4 @@
-import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type Awaitable, type JSONEncodable, type StringSelectMenuComponentData, type StringSelectMenuInteraction } from 'discord.js';
+import { isJSONEncodable, StringSelectMenuBuilder, type APISelectMenuOption, type JSONEncodable, type StringSelectMenuComponentData } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMenuBuilder {
@@ -24,7 +24,5 @@ export namespace StringSelectMenu {
             Exclude<StringSelectMenuComponentData['options'], undefined>[0]
             |JSONEncodable<APISelectMenuOption>
         >;
-        // TODO: Implement action for prop `onSelect`
-        onSelect?: (interaction: StringSelectMenuInteraction) => Awaitable<void>;
     }
 }

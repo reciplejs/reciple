@@ -15,6 +15,10 @@
       "import": "./dist/jsx-runtime.js",
       "types": "./dist/jsx-runtime.d.ts"
     },
+    "./interactive": {
+      "import": "./dist/components/interactive/index.js",
+      "types": "./dist/components/interactive/index.d.ts"
+    },
     "./embed": {
       "import": "./dist/components/embed/index.js",
       "types": "./dist/components/embed/index.d.ts"
@@ -48,9 +52,21 @@
     "directory": "packages/core"
   },
   "peerDependencies": {
+    "@reciple/core": "^10.0.0",
     "discord.js": "^14.20.0"
+  },
+  "peerDependenciesMeta": {
+    "@reciple/core": {
+      "optional": true
+    },
+    "discord.js": {
+      "optional": false
+    }
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@sapphire/snowflake": "^3.5.5"
   }
 }
