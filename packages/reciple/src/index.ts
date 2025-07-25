@@ -1,12 +1,14 @@
 import type { Client } from '@reciple/core';
 
-export * from './classes/CLI.js';
-export * from './classes/CLISubcommand.js';
-export * from './classes/ConfigReader.js';
-export * from './classes/ModuleLoader.js';
 export * from './classes/NotAnError.js';
-export * from './classes/RuntimeEnvironment.js';
-export * from './classes/TemplateBuilder.js';
+
+export * from './classes/cli/CLI.js';
+export * from './classes/cli/CLISubcommand.js';
+export * from './classes/cli/ConfigReader.js';
+export * from './classes/cli/RuntimeEnvironment.js';
+
+export * from './classes/client/EventListeners.js';
+export * from './classes/client/ModuleLoader.js';
 
 export * from './classes/managers/ModuleManager.js';
 
@@ -19,6 +21,9 @@ export * from './classes/modules/events/EventModule.js';
 export * from './classes/modules/events/RESTEventModule.js';
 export * from './classes/modules/PostconditionModule.js';
 export * from './classes/modules/PreconditionModule.js';
+
+export * from './classes/templates/ModuleTemplateBuilder.js';
+export * from './classes/templates/TemplateBuilder.js';
 
 export * from './classes/validation/BaseModuleValidator.js';
 export * from './classes/validation/CommandModuleValidator.js';

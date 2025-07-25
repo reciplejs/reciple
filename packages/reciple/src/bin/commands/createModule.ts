@@ -1,7 +1,7 @@
 import { Command } from 'commander';
-import { CLISubcommand } from '../../classes/CLISubcommand.js';
-import { ConfigReader } from '../../classes/ConfigReader.js';
-import { ModuleTemplateBuilder } from '../../classes/ModuleTemplateBuilder.js';
+import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
+import { ConfigReader } from '../../classes/cli/ConfigReader.js';
+import { ModuleTemplateBuilder } from '../../classes/templates/ModuleTemplateBuilder.js';
 import { cancel } from '@clack/prompts';
 import { colors } from '@reciple/utils';
 import { NotAnError } from '../../classes/NotAnError.js';

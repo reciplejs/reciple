@@ -1,18 +1,18 @@
 import { colors, PackageJsonBuilder, PackageManager, sortRecordByKey, type PackageJson } from '@reciple/utils';
-import { ConfigReader } from './ConfigReader.js';
+import { ConfigReader } from '../cli/ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, text } from '@clack/prompts';
 import micromatch from 'micromatch';
-import { CLI } from './CLI.js';
+import { CLI } from '../cli/CLI.js';
 import path from 'node:path';
 import { existsSync, statSync } from 'node:fs';
-import { NotAnError } from './NotAnError.js';
+import { NotAnError } from '../NotAnError.js';
 import { slug } from 'github-slugger';
 import { exec } from 'node:child_process';
 import { RecipleError } from '@reciple/core';
-import { packageJSON } from '../helpers/constants.js';
+import { packageJSON } from '../../helpers/constants.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
-import { RuntimeEnvironment } from './RuntimeEnvironment.js';
+import { RuntimeEnvironment } from '../cli/RuntimeEnvironment.js';
 import { ModuleTemplateBuilder } from './ModuleTemplateBuilder.js';
 
 export class TemplateBuilder {

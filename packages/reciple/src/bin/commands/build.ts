@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { CLISubcommand } from '../../classes/CLISubcommand.js';
-import { ConfigReader } from '../../classes/ConfigReader.js';
+import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
+import { ConfigReader } from '../../classes/cli/ConfigReader.js';
 import { build } from 'tsup';
 
 export default class BuildSubcommand extends CLISubcommand {

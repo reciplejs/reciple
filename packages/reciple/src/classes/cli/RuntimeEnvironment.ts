@@ -1,5 +1,5 @@
 import { colors, type PackageManager } from '@reciple/utils';
-import { TemplateBuilder } from './TemplateBuilder.js';
+import { TemplateBuilder } from '../templates/TemplateBuilder.js';
 import type { Client } from '@reciple/core';
 import { setTimeout } from 'node:timers/promises';
 

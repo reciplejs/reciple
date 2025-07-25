@@ -4,16 +4,16 @@ import { bundleRequire, type Options } from 'bundle-require';
 import { CLI } from './CLI.js';
 import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
-import type { ModuleLoader } from './ModuleLoader.js';
+import type { ModuleLoader } from '../client/ModuleLoader.js';
 import type { Logger, LoggerOptions } from 'prtyprnt';
-import type { ModuleManager } from './managers/ModuleManager.js';
+import type { ModuleManager } from '../managers/ModuleManager.js';
 import type { Options as TsupOptions } from 'tsup';
 import { replaceTscAliasPaths } from 'tsc-alias';
-import type { BuildConfig } from '../helpers/types.js';
+import type { BuildConfig } from '../../helpers/types.js';
 import { loadTsConfig } from 'bundle-require';
 import type { CompilerOptions } from 'typescript';
 import { statSync } from 'node:fs';
-import type { EventListeners } from './EventListeners.js';
+import type { EventListeners } from '../client/EventListeners.js';
 
 declare module "bundle-require" {
     export function loadTsConfig(dir: string, name?: string): {

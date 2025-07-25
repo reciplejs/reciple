@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { CLI } from '../classes/CLI.js';
+import { CLI } from '../classes/cli/CLI.js';
 import path from 'node:path';
 import { logger } from 'prtyprnt';
 import type { PackageJson } from '@reciple/utils';

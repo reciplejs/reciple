@@ -1,14 +1,14 @@
 import { Command } from 'commander';
-import { CLISubcommand } from '../../classes/CLISubcommand.js';
-import { ConfigReader } from '../../classes/ConfigReader.js';
+import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
+import { ConfigReader } from '../../classes/cli/ConfigReader.js';
 import { Logger } from 'prtyprnt';
 import { colors, resolveEnvProtocol } from '@reciple/utils';
 import { Client, CommandType } from '@reciple/core';
-import { ModuleLoader } from '../../classes/ModuleLoader.js';
+import { ModuleLoader } from '../../classes/client/ModuleLoader.js';
 import { ModuleManager } from '../../classes/managers/ModuleManager.js';
 import { version as DiscordJsVersion } from 'discord.js';
-import { EventListeners } from '../../classes/EventListeners.js';
-import { RuntimeEnvironment } from '../../classes/RuntimeEnvironment.js';
+import { EventListeners } from '../../classes/client/EventListeners.js';
+import { RuntimeEnvironment } from '../../classes/cli/RuntimeEnvironment.js';
 
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')

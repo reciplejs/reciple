@@ -1,7 +1,7 @@
 import { Command, Option } from 'commander';
-import { CLISubcommand } from '../../classes/CLISubcommand.js';
+import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
 import { colors, PackageManager } from '@reciple/utils';
-import { TemplateBuilder } from '../../classes/TemplateBuilder.js';
+import { TemplateBuilder } from '../../classes/templates/TemplateBuilder.js';
 import { cancel } from '@clack/prompts';
 import { inspect } from 'node:util';
 import { NotAnError } from '../../classes/NotAnError.js';
