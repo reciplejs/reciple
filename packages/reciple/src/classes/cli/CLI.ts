@@ -133,7 +133,7 @@ export namespace CLI {
         env: string[];
     }
 
-    export const root: string = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../');
+    export const root: string = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../');
     export const bin: string = path.join(CLI.root, 'dist/bin/reciple.js');
     export const version = '[VI]{{inject}}[/VI]';
 
