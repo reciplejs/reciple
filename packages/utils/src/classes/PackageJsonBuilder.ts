@@ -42,7 +42,9 @@ export class PackageJsonBuilder {
         this.data = JSON.parse(data);
 
         if (detectNewLineAndIndent !== false) {
-            this.indent = detectIndent(data);
+            const indent = detectIndent(data);
+
+            this.indent = indent.type ? indent : this.indent;
             this.newline = detectNewline(data) ?? this.newline;
         }
 
