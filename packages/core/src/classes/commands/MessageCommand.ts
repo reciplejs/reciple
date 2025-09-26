@@ -14,7 +14,6 @@ import { Utils } from '../structures/Utils.js';
 import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
 import { MessageCommandValidator } from '../validators/MessageCommandValidator.js';
 
-// TODO: Add permissions, contexts and things
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
 
