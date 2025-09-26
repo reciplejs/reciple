@@ -35,19 +35,20 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@dotenvx/dotenvx": "^1.48.3",
+    "@dotenvx/dotenvx": "^1.51.0",
     "@reciple/utils": "^10.0.0",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",
     "bundle-require": "^5.1.0",
-    "commander": "^14.0.0",
+    "commander": "^14.0.1",
+    "detect-indent": "^7.0.2",
     "github-slugger": "^2.0.0",
     "globby": "^14.1.0",
     "joycon": "^3.1.1",
     "micromatch": "^4.0.8",
-    "ora": "^8.2.0",
+    "ora": "^9.0.0",
     "semver": "^7.7.2",
-    "strip-json-comments": "^5.0.2",
+    "strip-json-comments": "^5.0.3",
     "ts-mixer": "^6.0.4",
     "tsc-alias": "^1.8.16",
     "tsup": "^8.5.0"
@@ -55,15 +56,15 @@
   "devDependencies": {
     "@reciple/jsx": "^10.0.0",
     "@types/micromatch": "^4.0.9",
-    "@types/node": "^24.1.0",
-    "@types/semver": "^7.7.0",
+    "@types/node": "^24.5.2",
+    "@types/semver": "^7.7.1",
     "nodemon": "^3.1.10",
     "prtyprnt": "^1.1.0",
     "rimraf": "^6.0.1"
   },
   "peerDependencies": {
     "@reciple/core": "^10.0.0",
-    "discord.js": "^14.20.0"
+    "discord.js": "^14.22.1"
   },
   "publishConfig": {
     "access": "public"
