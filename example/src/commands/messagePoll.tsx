@@ -1,4 +1,4 @@
-import { MessageCommand, MessageCommandBuilder, MessageCommandModule } from "reciple";
+import { MessageCommandBuilder, MessageCommandModule, type MessageCommand } from "reciple";
 import { Poll, PollAnswer, PollAnswers, PollQuestionMedia } from '@reciple/jsx/poll';
 
 export class MessagePollCommand extends MessageCommandModule {
