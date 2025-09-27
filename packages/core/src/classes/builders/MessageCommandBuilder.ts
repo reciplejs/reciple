@@ -1,4 +1,4 @@
-import { normalizeArray, type JSONEncodable, type RestOrArray } from 'discord.js';
+import { normalizeArray, type InteractionContextType, type JSONEncodable, type PermissionResolvable, PermissionsBitField, type RestOrArray } from 'discord.js';
 import type { MessageCommandOption } from '../structures/MessageCommandOption.js';
 import { MessageCommandOptionBuilder } from './MessageCommandOptionBuilder.js';
 import type { MessageCommandFlag } from '../structures/MessageCommandFlag.js';
@@ -13,6 +13,8 @@ export class MessageCommandBuilder implements Omit<MessageCommandBuilder.Data, '
     public aliases: string[] = [];
     public options: JSONEncodable<MessageCommandOption.Data>[] = [];
     public flags: JSONEncodable<MessageCommandFlag.Data>[] = [];
+    public contexts: InteractionContextType[] = [];
+    public requiredMemberPermissions?: PermissionsBitField;
 
     constructor(options?: Partial<MessageCommandBuilder.Data>) {
         MessageCommandBuilderValidator.object
@@ -60,6 +62,16 @@ export class MessageCommandBuilder implements Omit<MessageCommandBuilder.Data, '
         return this;
     }
 
+    public setContexts(...contexts: RestOrArray<InteractionContextType>): this {
+        this.contexts = Array.from(new Set(normalizeArray(contexts)));
+        return this;
+    }
+
+    public setRequiredMemberPermissions(permissions: PermissionResolvable): this {
+        this.requiredMemberPermissions = new PermissionsBitField(permissions);
+        return this;
+    }
+
     public toJSON(): MessageCommandBuilder.Data {
         return {
             name: this.name,
@@ -78,5 +90,7 @@ export namespace MessageCommandBuilder {
         aliases?: string[];
         options?: MessageCommandOption.Data[];
         flags?: MessageCommandFlag.Data[];
+        contexts?: InteractionContextType[];
+        requiredMemberPermissions?: PermissionsBitField;
     }
 }

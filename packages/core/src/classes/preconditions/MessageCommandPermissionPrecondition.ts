@@ -1,4 +1,4 @@
-import { InteractionContextType, type PermissionResolvable } from 'discord.js';
+import { InteractionContextType } from 'discord.js';
 import { CommandType } from '../../helpers/constants.js';
 import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import type { AnyCommandExecuteData } from '../../helpers/types.js';
@@ -6,7 +6,7 @@ import type { AnyCommandExecuteData } from '../../helpers/types.js';
 export class MessageCommandPermissionPrecondition extends CommandPrecondition {
     public scope: CommandType[] = [CommandType.Message];
 
-    constructor(public readonly options: MessageCommandPermissionPrecondition.Options) {
+    constructor() {
         super();
     }
 
@@ -18,22 +18,25 @@ export class MessageCommandPermissionPrecondition extends CommandPrecondition {
         const channel = message.channel;
         const user = message.author;
 
-        if (channel.isDMBased() && user.dmChannel?.id === channel.id && !this.options.contexts.includes(InteractionContextType.BotDM)) {
+        const requiredMemberPermissions = data.command.data.requiredMemberPermissions;
+        const contexts = data.command.data.contexts;
+
+        if (channel.isDMBased() && user.dmChannel?.id === channel.id && !contexts?.includes(InteractionContextType.BotDM)) {
             return false;
         }
 
-        if (channel.isDMBased() && !this.options.contexts.includes(InteractionContextType.PrivateChannel)) {
+        if (channel.isDMBased() && !contexts?.includes(InteractionContextType.PrivateChannel)) {
             return false;
         }
 
-        if (!channel.isDMBased() && !this.options.contexts.includes(InteractionContextType.Guild)) {
+        if (!channel.isDMBased() && !contexts?.includes(InteractionContextType.Guild)) {
             return false;
         }
 
         const member = guild ? (message.member ?? await guild.members.fetch(message.author.id)) : null;
 
-        if (this.options.memberPermissions && guild && member) {
-            if (!member.permissionsIn(channel.id).has(this.options.memberPermissions)) {
+        if (requiredMemberPermissions && guild && member) {
+            if (!member.permissionsIn(channel.id).has(requiredMemberPermissions)) {
                 return false;
             }
         }
@@ -42,9 +45,4 @@ export class MessageCommandPermissionPrecondition extends CommandPrecondition {
     }
 }
 
-export namespace MessageCommandPermissionPrecondition {
-    export interface Options {
-        memberPermissions: PermissionResolvable;
-        contexts: InteractionContextType[];
-    }
-}
+export namespace MessageCommandPermissionPrecondition {}
