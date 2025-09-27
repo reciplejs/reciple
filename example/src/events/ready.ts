@@ -1,7 +1,7 @@
 import { ClientEventModule, type Client } from 'reciple';
 
-export class ReadyEvent extends ClientEventModule<'ready'> {
-    event = 'ready' as const;
+export class ReadyEvent extends ClientEventModule<'clientReady'> {
+    event = 'clientReady' as const;
 
     async onEvent(client: Client<true>) {
         client.logger.log('Ready!');

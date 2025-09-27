@@ -71,7 +71,7 @@ export default class StartSubcommand extends CLISubcommand {
             _onBeforeLogin: async() => {
                 const enabledModules = await client.modules.enableModules({ modules });
 
-                client.once('ready', async() => {
+                client.once('clientReady', async() => {
                     if (!client.isReady()) return;
 
                     EventListeners.registerCommandsEventListeners(client);
