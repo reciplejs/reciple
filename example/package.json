@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node ../packages/reciple/dist/bin/reciple.js --env ../.env build",
     "start": "node ../packages/reciple/dist/bin/reciple.js --env ../.env start",
-    "dev": "node ../packages/reciple/dist/bin/reciple.js --env ../.env dev"
+    "dev": "nodemon"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

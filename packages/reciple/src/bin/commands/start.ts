@@ -9,12 +9,14 @@ import { ModuleManager } from '../../classes/managers/ModuleManager.js';
 import { version as DiscordJsVersion } from 'discord.js';
 import { EventListeners } from '../../classes/client/EventListeners.js';
 import { RuntimeEnvironment } from '../../classes/cli/RuntimeEnvironment.js';
+import { build } from 'tsup';
 
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')
         .description('Start the reciple client')
         .option('-c, --config <path>', 'Path to the configuration file')
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
+        .option('-b, --build', 'Build the modules before starting the client')
         .allowUnknownOption(true);
 
     public async execute(): Promise<void> {
@@ -25,7 +27,7 @@ export default class StartSubcommand extends CLISubcommand {
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { client, config } = await configReader.read({
+        const { client, config, build: buildConfig } = await configReader.read({
             createIfNotExists: false
         });
 
@@ -42,6 +44,8 @@ export default class StartSubcommand extends CLISubcommand {
         process.once('uncaughtException', handleProcessError);
         process.once('unhandledRejection', handleProcessError);
         process.on('warning', warn => logger.warn(warn));
+
+        if (flags.build) await build(buildConfig);
 
         Object.assign(client, {
             logger,

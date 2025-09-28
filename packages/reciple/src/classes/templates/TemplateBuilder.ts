@@ -293,7 +293,7 @@ export class TemplateBuilder {
             scripts: {
                 build: `reciple build`,
                 start: 'reciple start',
-                dev: 'reciple dev',
+                dev: 'nodemon',
             },
             dependencies: dependencyRecord.dependencies,
             devDependencies: dependencyRecord.devDependencies,
