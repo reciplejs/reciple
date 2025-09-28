@@ -94,7 +94,7 @@ export default class StartSubcommand extends CLISubcommand {
                     });
 
                     process.stdin.resume();
-                    logger.log(`Client is logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
+                    logger.log(`Logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
                     logger.log(`Loaded ${colors.green(modules.length)} modules.`);
                     logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
                     logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);

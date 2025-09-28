@@ -185,4 +185,15 @@ export namespace CLI {
             loader
         ];
     }
+
+    export const ignoredDefault = [
+        '.git',
+        '.log',
+        '.nyc_output',
+        '.sass-cache',
+        '.yarn',
+        'bower_components',
+        'coverage',
+        'node_modules'
+    ]
 }
