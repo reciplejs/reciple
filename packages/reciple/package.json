@@ -51,8 +51,7 @@
     "strip-json-comments": "^5.0.3",
     "ts-mixer": "^6.0.4",
     "tsc-alias": "^1.8.16",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.3"
+    "tsup": "^8.5.0"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.0",
