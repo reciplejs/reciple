@@ -4,7 +4,7 @@ import { JSX } from '../../../structures/JSX.js';
 export function PollQuestionMedia(props: PollQuestionMedia.Props): Partial<PollData> {
     return {
         question: {
-            text: JSX.useStringify(props.children, props.text),
+            text: props.text === null ? props.text : JSX.useStringify(props.children, props.text),
         }
     };
 }

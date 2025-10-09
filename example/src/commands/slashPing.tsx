@@ -1,15 +1,20 @@
 import { SlashCommand, SlashCommandBuilder, SlashCommandModule } from "reciple";
 import { InteractionContextType } from 'discord.js';
+import { Modal, TextDisplay } from '@reciple/jsx';
 
 export class SlashPingCommand extends SlashCommandModule {
     data = new SlashCommandBuilder()
         .setName('ping')
         .setDescription('Pong!')
-        .setContexts([InteractionContextType.Guild])
+        .setContexts([InteractionContextType.BotDM])
         .toJSON();
 
     async execute(data: SlashCommand.ExecuteData) {
-        await data.interaction.reply('Pong!');
+        await data.interaction.showModal(
+            <Modal customId='ping-modal' title='Pong!'>
+                <TextDisplay>This is a pong message</TextDisplay>
+            </Modal>
+        );
     }
 }
 

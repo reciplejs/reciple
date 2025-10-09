@@ -1,4 +1,4 @@
-import { ModalBuilder, type ActionRowBuilder, type APIActionRowComponent, type APIComponentInModalActionRow, type ModalActionRowComponentBuilder, type ModalComponentData } from 'discord.js';
+import { ComponentType, isJSONEncodable, ModalBuilder, type APIModalInteractionResponseCallbackComponent, type JSONEncodable, type ModalComponentData } from 'discord.js';
 import { JSX } from '../../../structures/JSX.js';
 
 export function Modal(props: Modal.Props): ModalBuilder {
@@ -7,12 +7,32 @@ export function Modal(props: Modal.Props): ModalBuilder {
     if (props.customId !== undefined) builder.setCustomId(props.customId);
     if (props.title !== undefined) builder.setTitle(props.title);
 
-    builder.addComponents(JSX.useSingleToArray(props.children).filter(d => !!d));
+    const children = JSX.useSingleToArray(props.children)
+        .map(c => isJSONEncodable(c) ? c.toJSON() : c)
+        .filter(d => !!d);
+
+    for (const component of children) {
+        switch (component.type) {
+            case ComponentType.ActionRow:
+                builder.addComponents(component);
+                break;
+            case ComponentType.TextDisplay:
+                builder.addTextDisplayComponents(component);
+                break;
+            case ComponentType.Label:
+                builder.addLabelComponents(component);
+                break;
+        }
+    }
+
     return builder;
 }
 
 export namespace Modal {
     export interface Props extends Omit<ModalComponentData, 'type'|'components'> {
-        children?: JSX.SingleOrArray<ActionRowBuilder<ModalActionRowComponentBuilder>|APIActionRowComponent<APIComponentInModalActionRow>>;
+        children?: JSX.SingleOrArray<
+            |APIModalInteractionResponseCallbackComponent
+            |JSONEncodable<APIModalInteractionResponseCallbackComponent>
+        >;
     }
 }
