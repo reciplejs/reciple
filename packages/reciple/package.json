@@ -47,7 +47,7 @@
     "joycon": "^3.1.1",
     "micromatch": "^4.0.8",
     "ora": "^9.0.0",
-    "semver": "^7.7.2",
+    "semver": "^7.7.3",
     "strip-json-comments": "^5.0.3",
     "ts-mixer": "^6.0.4",
     "tsc-alias": "^1.8.16",
