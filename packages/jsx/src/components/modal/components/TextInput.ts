@@ -19,7 +19,8 @@ export function TextInput(props: TextInput.Props): TextInputBuilder {
 }
 
 export namespace TextInput {
-    export interface Props extends Omit<Partial<TextInputComponentData>, 'type'> {
+    export interface Props extends Omit<TextInputComponentData, 'type'|'label'> {
         children?: JSX.SingleOrArray<any>;
+        label?: string;
     }
 }
