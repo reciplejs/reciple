@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, SlashCommandModule, type SlashCommand } from "reciple";
-import { Container, File, FileUpload, Label, Modal, Separator, TextDisplay, TextInput } from '@reciple/jsx';
-import { Colors, TextInputStyle } from 'discord.js';
+import { File, FileUpload, Label, Modal, Separator, TextDisplay, TextInput } from '@reciple/jsx';
+import { AttachmentBuilder, TextInputStyle } from 'discord.js';
 
 export class MessagePollCommand extends SlashCommandModule {
     data = new SlashCommandBuilder()
@@ -18,7 +18,7 @@ export class MessagePollCommand extends SlashCommandModule {
                     <TextInput customId='my-paragraph' style={TextInputStyle.Paragraph}/>
                 </Label>
                 <Label label='My File' description='This is an example file upload'>
-                    <FileUpload customId='my-file-upload'/>
+                    <FileUpload customId='my-file-upload' maxValues={3} required={false}/>
                 </Label>
             </Modal>
         );
@@ -26,20 +26,23 @@ export class MessagePollCommand extends SlashCommandModule {
         const response = await data.interaction.awaitModalSubmit({ time: 60000 });
         const myInput = response.fields.getTextInputValue('my-input');
         const myParagraph = response.fields.getTextInputValue('my-paragraph');
-        const files = response.fields.getUploadedFiles('my-file-upload');
+        const files = Array.from(response.fields.getUploadedFiles('my-file-upload')?.values() ?? []);
 
-        await response.reply({
+        await response.deferReply({
+            flags: ['Ephemeral']
+        });
+
+        await response.editReply({
             flags: ['IsComponentsV2'],
-            components: [
-                <Container accentColor={Colors.Aqua}>
-                    <TextDisplay># {myInput}</TextDisplay>
-                    <TextDisplay>{myParagraph}</TextDisplay>
-                    <Separator/>
-                    {files?.map(file => (
-                        <File url={file.url}/>
-                    )) ?? <TextDisplay>No files uploaded.</TextDisplay>}
-                </Container>
-            ]
+            components: <>
+                <TextDisplay># {myInput}</TextDisplay>
+                <TextDisplay>{myParagraph}</TextDisplay>
+                <Separator/>
+                {files.map((file) => <File url={`attachment://${file.name}`}/>)}
+            </>,
+            files: files.map((file) => new AttachmentBuilder(file.url, {
+                name: file.name
+            })),
         });
     }
 }

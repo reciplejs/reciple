@@ -13,7 +13,9 @@ export function TextInput(props: TextInput.Props): TextInputBuilder {
     if (props.minLength !== undefined) builder.setMinLength(props.minLength);
     if (props.maxLength !== undefined) builder.setMaxLength(props.maxLength);
 
-    builder.setLabel(JSX.useStringify(props.children, props.label));
+    const label = JSX.useStringify(props.children, props.label);
+
+    if (label) builder.setLabel(label);
 
     return builder;
 }
