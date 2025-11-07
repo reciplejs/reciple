@@ -66,6 +66,14 @@
     "@reciple/core": "^10.0.0",
     "discord.js": "^14.24.2"
   },
+  "peerDependenciesMeta": {
+    "@reciple/core": {
+      "optional": false
+    },
+    "discord.js": {
+      "optional": false
+    }
+  },
   "publishConfig": {
     "access": "public"
   }
