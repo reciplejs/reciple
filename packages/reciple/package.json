@@ -35,12 +35,12 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@dotenvx/dotenvx": "^1.51.0",
+    "@dotenvx/dotenvx": "^1.51.1",
     "@reciple/utils": "^10.0.0",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",
     "bundle-require": "^5.1.0",
-    "commander": "^14.0.1",
+    "commander": "^14.0.2",
     "detect-indent": "^7.0.2",
     "github-slugger": "^2.0.0",
     "globby": "^15.0.0",
@@ -55,16 +55,16 @@
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.0",
-    "@types/micromatch": "^4.0.9",
-    "@types/node": "^24.7.0",
+    "@types/micromatch": "^4.0.10",
+    "@types/node": "^24.10.0",
     "@types/semver": "^7.7.1",
     "nodemon": "^3.1.10",
     "prtyprnt": "^1.1.0",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.1.0"
   },
   "peerDependencies": {
     "@reciple/core": "^10.0.0",
-    "discord.js": "^14.23.2"
+    "discord.js": "^14.24.2"
   },
   "publishConfig": {
     "access": "public"
