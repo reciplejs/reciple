@@ -12,11 +12,6 @@ export function createTsupConfig(options?: Options) {
 		target: 'esnext',
 		clean: true,
 		minify: false,
-        terserOptions: {
-            mangle: false,
-            keep_classnames: true,
-            keep_fnames: true
-        },
 		splitting: false,
 		keepNames: true,
 		dts: true,
