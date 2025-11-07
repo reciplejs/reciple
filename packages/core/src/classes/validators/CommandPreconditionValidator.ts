@@ -3,7 +3,7 @@ import type { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import { Validator } from './Validator.js';
 
 export class CommandPreconditionValidator extends Validator {
-    public static id = CommandPreconditionValidator.s.string();
+    public static id = CommandPreconditionValidator.s.string().lengthGreaterThan(0);
     public static scope = CommandPreconditionValidator.s.nativeEnum(CommandType).array().optional();
     public static execute = CommandPreconditionValidator.s.instance(Function);
     public static object = CommandPreconditionValidator.s.object({

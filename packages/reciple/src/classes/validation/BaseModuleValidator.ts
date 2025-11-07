@@ -3,7 +3,7 @@ import { ModuleType } from '../../helpers/constants.js';
 import type { AnyModuleData } from '../../helpers/types.js';
 
 export class BaseModuleValidator extends Validator {
-    public static id = BaseModuleValidator.s.string();
+    public static id = BaseModuleValidator.s.string().lengthGreaterThan(0);
     public static moduleType = BaseModuleValidator.s.nativeEnum(ModuleType);
     public static onEnable = BaseModuleValidator.s.instance(Function).optional();
     public static onReady = BaseModuleValidator.s.instance(Function).optional();

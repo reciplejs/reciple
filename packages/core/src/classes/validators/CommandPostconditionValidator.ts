@@ -3,7 +3,7 @@ import type { CommandPostcondition } from '../structures/CommandPostcondition.js
 import { Validator } from './Validator.js';
 
 export class CommandPostconditionValidator extends Validator {
-    public static id = CommandPostconditionValidator.s.string();
+    public static id = CommandPostconditionValidator.s.string().lengthGreaterThan(0);
     public static scope = CommandPostconditionValidator.s.nativeEnum(CommandType).array().optional();
     public static accepts = CommandPostconditionValidator.s.nativeEnum(CommandPostconditionReason).array().optional();
     public static execute = CommandPostconditionValidator.s.instance(Function);

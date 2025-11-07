@@ -6,7 +6,7 @@ import { MessageCommandBuilderValidator } from './MessageCommandBuilderValidator
 import { Validator } from './Validator.js';
 
 export class BaseCommandValidator extends Validator {
-    public static id = BaseCommandValidator.s.string();
+    public static id = BaseCommandValidator.s.string().lengthGreaterThan(0);
     public static type = BaseCommandValidator.s.nativeEnum(CommandType);
     public static data = BaseCommandValidator.s.union([
             MessageCommandBuilderValidator.object,
