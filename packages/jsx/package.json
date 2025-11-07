@@ -44,7 +44,7 @@
     "clean": "rimraf ./dist",
     "build": "tsup",
     "check": "tsc --noEmit",
-    "prepack": "npm run build -- --minify"
+    "prepack": "npm run build"
   },
   "repository": {
     "type": "git",
