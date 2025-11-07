@@ -37,10 +37,10 @@ export * from './helpers/types.js';
 export * from '@reciple/core';
 export * as Prtyprnt from 'prtyprnt';
 
-globalThis.getClient = () => {
+globalThis.useClient = () => {
     throw new Error('Client is not yet loaded.');
 };
 
 declare global {
-    var getClient: () => Client;
+    var useClient: () => Client;
 }

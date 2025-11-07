@@ -59,7 +59,7 @@ export default class StartSubcommand extends CLISubcommand {
             eventListeners: new EventListeners()
         });
 
-        Reflect.set(global, 'getClient', () => client);
+        Reflect.set(global, 'useClient', () => client);
 
         EventListeners.registerLoggerEventListeners(client);
 
