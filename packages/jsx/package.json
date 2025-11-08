@@ -61,8 +61,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "dependencies": {
-    "@sapphire/snowflake": "^3.5.5"
   }
 }
