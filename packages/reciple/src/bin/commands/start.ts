@@ -60,6 +60,7 @@ export default class StartSubcommand extends CLISubcommand {
         });
 
         Reflect.set(global, 'useClient', () => client);
+        Reflect.set(global, 'useLogger', () => logger);
 
         EventListeners.registerLoggerEventListeners(client);
 

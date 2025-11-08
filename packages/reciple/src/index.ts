@@ -1,4 +1,5 @@
 import type { Client } from '@reciple/core';
+import { logger, type Logger } from 'prtyprnt';
 
 export * from './classes/NotAnError.js';
 
@@ -41,6 +42,9 @@ globalThis.useClient = () => {
     throw new Error('Client is not yet loaded.');
 };
 
+globalThis.useLogger = () => logger
+
 declare global {
     var useClient: () => Client;
+    var useLogger: () => Logger;
 }
