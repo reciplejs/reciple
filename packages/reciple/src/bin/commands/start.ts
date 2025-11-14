@@ -10,6 +10,7 @@ import { version as DiscordJsVersion } from 'discord.js';
 import { EventListeners } from '../../classes/client/EventListeners.js';
 import { RuntimeEnvironment } from '../../classes/cli/RuntimeEnvironment.js';
 import { build } from 'tsup';
+import { CLI } from '../../classes/cli/CLI.js';
 
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')
@@ -45,7 +46,14 @@ export default class StartSubcommand extends CLISubcommand {
         process.once('unhandledRejection', handleProcessError);
         process.on('warning', warn => logger.warn(warn));
 
-        if (flags.build) await build(buildConfig);
+        if (flags.build) await build({
+            ...buildConfig,
+            plugins: [
+                ...(buildConfig.plugins ?? []),
+                CLI.createTsupLogger(logger)
+            ],
+            silent: true
+        });
 
         Object.assign(client, {
             logger,
@@ -64,11 +72,11 @@ export default class StartSubcommand extends CLISubcommand {
 
         EventListeners.registerLoggerEventListeners(client);
 
-        logger.log(`Starting reciple...`);
+        logger.log(`⚡ Starting reciple...`);
         logger.log(colors.bold(`Version Info:`));
-        logger.log(`├─${colors.green(`reciple`)}${colors.cyan(`@${this.cli.version}`)}`);
-        logger.log(`├─${colors.green(`@reciple/client`)}${colors.cyan(`@${Client.version}`)}`);
-        logger.log(`└─${colors.green(`discord.js`)}${colors.cyan(`@${DiscordJsVersion}`)}`);
+        logger.log(`├─${colors.green(`reciple`)}\t${colors.cyan(`${this.cli.version}`)}`);
+        logger.log(`├─${colors.green(`@reciple/client`)}\t${colors.cyan(`${Client.version}`)}`);
+        logger.log(`└─${colors.green(`discord.js`)}\t${colors.cyan(`${DiscordJsVersion}`)}`);
 
         const modules = await client.moduleLoader.findModules();
 

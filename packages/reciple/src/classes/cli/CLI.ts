@@ -2,12 +2,13 @@ import { Command } from 'commander';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { coerce } from 'semver';
-import { isDebugging, recursiveDefaults } from '@reciple/utils';
-import { Logger, type LoggerOptions } from 'prtyprnt';
+import { colors, formatBytes, isDebugging, recursiveDefaults } from '@reciple/utils';
+import { logger, Logger, type LoggerOptions } from 'prtyprnt';
 import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';
 import { spinner, type SpinnerOptions } from '@clack/prompts';
+import type { BuildConfig } from '../../helpers/types.js';
 
 export class CLI {
     public build: string;
@@ -184,6 +185,20 @@ export namespace CLI {
             }),
             loader
         ];
+    }
+
+    export function createTsupLogger(_logger: Logger = logger): Exclude<BuildConfig['plugins'], undefined>[0] {
+        return {
+            name: 'reciple:log-build-completion',
+            buildStart: () => _logger.log(colors.green('🚀 Building reciple modules...')),
+            renderChunk: (code, info) => {
+                const size = formatBytes(Buffer.byteLength(code, 'utf8'));
+                _logger.log(` ├─ ${colors.cyan(size)}\t${colors.bold(path.relative(process.cwd(), info.path))}`);
+
+                return { code, map: info.map };
+            },
+            buildEnd: () => _logger.log(colors.green(`✅ Built success!`))
+        };
     }
 
     export const ignoredDefault = [
