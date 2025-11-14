@@ -19,11 +19,11 @@
     "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "esbuild-plugin-version-injector": "^1.2.1",
-    "lerna": "^9.0.0",
+    "lerna": "^9.0.1",
     "rimraf": "^6.1.0",
-    "tsup": "^8.5.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   }
 }

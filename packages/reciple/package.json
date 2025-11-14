@@ -51,14 +51,14 @@
     "strip-json-comments": "^5.0.3",
     "ts-mixer": "^6.0.4",
     "tsc-alias": "^1.8.16",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.1"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.0",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "@types/semver": "^7.7.1",
-    "nodemon": "^3.1.10",
+    "nodemon": "^3.1.11",
     "prtyprnt": "^1.1.0",
     "rimraf": "^6.1.0"
   },
