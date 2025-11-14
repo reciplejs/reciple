@@ -46,6 +46,8 @@ export default class StartSubcommand extends CLISubcommand {
         process.once('unhandledRejection', handleProcessError);
         process.on('warning', warn => logger.warn(warn));
 
+        logger.log(colors.magenta(`⚡ Initializing reciple!`));
+
         if (flags.build) await build({
             ...buildConfig,
             plugins: [
@@ -72,11 +74,10 @@ export default class StartSubcommand extends CLISubcommand {
 
         EventListeners.registerLoggerEventListeners(client);
 
-        logger.log(`⚡ Starting reciple...`);
-        logger.log(colors.bold(`Version Info:`));
-        logger.log(`├─${colors.green(`reciple`)}\t${colors.cyan(`${this.cli.version}`)}`);
-        logger.log(`├─${colors.green(`@reciple/client`)}\t${colors.cyan(`${Client.version}`)}`);
-        logger.log(`└─${colors.green(`discord.js`)}\t${colors.cyan(`${DiscordJsVersion}`)}`);
+        logger.log(colors.green(`📦 Version Info:`));
+        logger.log(` ├─ ${colors.cyan(`reciple`)}\t\t${colors.yellow(`${this.cli.version}`)}`);
+        logger.log(` ├─ ${colors.cyan(`@reciple/client`)}\t${colors.yellow(`${Client.version}`)}`);
+        logger.log(` └─ ${colors.cyan(`discord.js`)}\t${colors.yellow(`${DiscordJsVersion}`)}`);
 
         const modules = await client.moduleLoader.findModules();
 
