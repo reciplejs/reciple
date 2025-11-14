@@ -95,12 +95,12 @@ export default class StartSubcommand extends CLISubcommand {
                     process.removeListener('unhandledRejection', handleProcessError);
 
                     const notEnabledModules = modules.length - enabledModules.length;
-                    logger.log(`Enabled ${colors.green(enabledModules.length)} modules.${notEnabledModules > 0 ? colors.red(` (${notEnabledModules} not enabled)`) : ''}`);
+                    logger.log(colors.green(`✅ ${enabledModules.length} module${enabledModules.length > 1 ? 's are' : ' is'} enabled.${notEnabledModules > 0 ? colors.red(` (${notEnabledModules} not enabled)`) : ''}`));
 
                     const readyModules = await client.modules.readyModules();
                     const notReadyModules = readyModules.length - enabledModules.length;
 
-                    logger.log(`Ready ${colors.green(readyModules.length)} modules.${notReadyModules > 0 ? colors.red(` (${notReadyModules} not ready)`) : ''}`);
+                    logger.log(colors.green(`✅ ${readyModules.length} module${enabledModules.length > 1 ? 's are' : ' is'} ready.${notReadyModules > 0 ? colors.red(` (${notReadyModules} not ready)`) : ''}`));
 
                     await client.commands.registerApplicationCommands({
                         ...config.applicationCommandsRegister,
@@ -108,13 +108,13 @@ export default class StartSubcommand extends CLISubcommand {
                     });
 
                     process.stdin.resume();
-                    logger.log(`Logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
-                    logger.log(`Loaded ${colors.green(modules.length)} modules.`);
-                    logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
-                    logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);
-                    logger.log(`Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Slash).size)} slash commands.`);
-                    logger.log(`Loaded ${colors.green(client.preconditions.cache.size)} global preconditions.`);
-                    logger.log(`Loaded ${colors.green(client.postconditions.cache.size)} global postconditions.`);
+                    logger.log(`🔑 Logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
+                    logger.log(` ├─ Loaded ${colors.green(modules.length)} modules.`);
+                    logger.log(` ├─ Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
+                    logger.log(` ├─ Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);
+                    logger.log(` ├─ Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Slash).size)} slash commands.`);
+                    logger.log(` ├─ Loaded ${colors.green(client.preconditions.cache.size)} global preconditions.`);
+                    logger.log(` └─ Loaded ${colors.green(client.postconditions.cache.size)} global postconditions.`);
                 });
 
                 client.eventListeners.registerProcessExitEvents(async signal => RuntimeEnvironment.handleExitSignal(client, signal));

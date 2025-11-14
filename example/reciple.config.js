@@ -72,7 +72,12 @@ export const config = {
         directories: ["./modules/**"],
         ignore: ["_*"],
         filter: undefined
-    }
+    },
+    logger: useLogger().clone({
+        debugmode: {
+            enabled: true
+        }
+    })
 };
 
 /**
