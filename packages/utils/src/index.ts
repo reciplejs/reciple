@@ -1,6 +1,7 @@
 import kleur from 'kleur';
 import * as radash from 'radash';
 
+export * from './classes/Format.js';
 export * from './classes/PackageJsonBuilder.js';
 export * from './classes/PackageManager.js';
 export * from './helpers/constants.js';
