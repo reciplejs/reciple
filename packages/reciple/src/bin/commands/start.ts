@@ -131,6 +131,7 @@ export default class StartSubcommand extends CLISubcommand {
             }
         })
 
+        logger.debug(`Logging in...`);
         await client.login(token);
     }
 }

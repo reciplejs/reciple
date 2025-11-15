@@ -36,6 +36,6 @@ export namespace Format {
     export function plural(countOrCondition: number|boolean, singular: string, plural?: string): string {
         const isPlural = typeof countOrCondition === 'boolean' ? countOrCondition : countOrCondition > 1;
 
-        return isPlural ? singular : plural ?? `${singular}s`;
+        return isPlural ? plural ?? `${singular}s` : singular;
     }
 }
