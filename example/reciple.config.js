@@ -1,5 +1,5 @@
 // @ts-check
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandFlagValidatePrecondition, MessageCommandOptionValidatePrecondition } from 'reciple';
+import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, Prtyprnt, MessageCommandFlagValidatePrecondition, MessageCommandOptionValidatePrecondition } from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -73,10 +73,13 @@ export const config = {
         ignore: ["_*"],
         filter: undefined
     },
-    logger: useLogger().clone({
+    logger: await useLogger().clone({
         debugmode: {
             enabled: true
         }
+    }).createFileWriteStream({
+        path: './logs/latest.log',
+        mode: Prtyprnt.FileWriteStreamMode.Rename
     })
 };
 

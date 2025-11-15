@@ -193,7 +193,7 @@ export namespace CLI {
             buildStart: () => _logger.log(colors.green('🚀 Building reciple modules...')),
             renderChunk: (code, info) => {
                 const size = formatBytes(Buffer.byteLength(code, 'utf8'));
-                _logger.log(` ├─ ${colors.cyan(size)}\t${colors.bold(path.relative(process.cwd(), info.path))}`);
+                _logger.log(` ├─ ${colors.cyan(size)}\t${colors.bold(info.path)}`);
 
                 return { code, map: info.map };
             },

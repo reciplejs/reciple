@@ -124,7 +124,6 @@ export default class StartSubcommand extends CLISubcommand {
             }
         })
 
-        logger.debug(`Logging using token: ${colors.yellow(token)}`);
         await client.login(token);
     }
 }
