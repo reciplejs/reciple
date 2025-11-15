@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
 import { ConfigReader } from '../../classes/cli/ConfigReader.js';
 import { Logger } from 'prtyprnt';
-import { colors, resolveEnvProtocol } from '@reciple/utils';
+import { colors, Format, resolveEnvProtocol } from '@reciple/utils';
 import { Client, CommandType } from '@reciple/core';
 import { ModuleLoader } from '../../classes/client/ModuleLoader.js';
 import { ModuleManager } from '../../classes/managers/ModuleManager.js';
@@ -95,12 +95,12 @@ export default class StartSubcommand extends CLISubcommand {
                     process.removeListener('unhandledRejection', handleProcessError);
 
                     const notEnabledModules = modules.length - enabledModules.length;
-                    logger.log(colors.green(`✅ ${enabledModules.length} module${enabledModules.length > 1 ? 's are' : ' is'} enabled.${notEnabledModules > 0 ? colors.red(` (${notEnabledModules} not enabled)`) : ''}`));
+                    logger.log(colors.green(`✅ ${enabledModules.length} ${Format.plural(enabledModules.length, 'module')} ${Format.plural(enabledModules.length, 'is', 'are')} enabled.${notEnabledModules > 0 ? colors.red(` (${notEnabledModules} not enabled)`) : ''}`));
 
                     const readyModules = await client.modules.readyModules();
                     const notReadyModules = readyModules.length - enabledModules.length;
 
-                    logger.log(colors.green(`✅ ${readyModules.length} module${enabledModules.length > 1 ? 's are' : ' is'} ready.${notReadyModules > 0 ? colors.red(` (${notReadyModules} not ready)`) : ''}`));
+                    logger.log(colors.green(`✅ ${readyModules.length} ${Format.plural(readyModules.length, 'module')} ${Format.plural(readyModules.length, 'is', 'are')} ready.${notReadyModules > 0 ? colors.red(` (${notReadyModules} not ready)`) : ''}`));
 
                     await client.commands.registerApplicationCommands({
                         ...config.applicationCommandsRegister,
@@ -108,13 +108,20 @@ export default class StartSubcommand extends CLISubcommand {
                     });
 
                     process.stdin.resume();
+
+                    const commands = {
+                        contextMenus: client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size,
+                        message: client.commands.cache.filter(c => c.type === CommandType.Message).size,
+                        slash: client.commands.cache.filter(c => c.type === CommandType.Slash).size
+                    };
+
                     logger.log(`🔑 Logged in as ${colors.bold(colors.cyan(client.user.displayName))} ${colors.magenta(`(${client.user.id})`)}`);
-                    logger.log(` ├─ Loaded ${colors.green(modules.length)} modules.`);
-                    logger.log(` ├─ Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.ContextMenu).size)} context menu commands.`);
-                    logger.log(` ├─ Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Message).size)} message commands.`);
-                    logger.log(` ├─ Loaded ${colors.green(client.commands.cache.filter(c => c.type === CommandType.Slash).size)} slash commands.`);
-                    logger.log(` ├─ Loaded ${colors.green(client.preconditions.cache.size)} global preconditions.`);
-                    logger.log(` └─ Loaded ${colors.green(client.postconditions.cache.size)} global postconditions.`);
+                    logger.log(` ├─ Loaded ${colors.green(modules.length)} ${Format.plural(modules.length, 'module')}.`);
+                    logger.log(` ├─ Loaded ${colors.green(commands.contextMenus)} context menu ${Format.plural(commands.contextMenus, 'command')}.`);
+                    logger.log(` ├─ Loaded ${colors.green(commands.message)} message ${Format.plural(commands.message, 'command')}.`);
+                    logger.log(` ├─ Loaded ${colors.green(commands.slash)} slash ${Format.plural(commands.slash, 'command')}.`);
+                    logger.log(` ├─ Loaded ${colors.green(client.preconditions.cache.size)} global ${Format.plural(client.preconditions.cache.size, 'precondition')}.`);
+                    logger.log(` └─ Loaded ${colors.green(client.postconditions.cache.size)} global ${Format.plural(client.postconditions.cache.size, 'postcondition')}.`);
                 });
 
                 client.eventListeners.registerProcessExitEvents(async signal => RuntimeEnvironment.handleExitSignal(client, signal));

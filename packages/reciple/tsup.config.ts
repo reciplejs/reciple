@@ -4,5 +4,5 @@ import { createTsupConfig } from '../../tsup.config.js';
 export default createTsupConfig({
     entry: ['src/**/*.{ts,tsx}'],
     esbuildPlugins: [esbuildPluginVersionInjector()],
-    bundle: false
+    bundle: false,
 });

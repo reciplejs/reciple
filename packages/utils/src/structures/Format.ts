@@ -1,7 +1,3 @@
-export class Format {
-    protected constructor() {}
-}
-
 export namespace Format {
     export function bytes(bytes: number, decimals = 2): string {
         if (bytes === 0) return '0 B';
@@ -31,5 +27,15 @@ export namespace Format {
         if (milliseconds > 0) parts.push(`${milliseconds}ms`);
 
         return parts.join(' ') || '0ms';
+    }
+
+
+    export function plural(count: number, singular: string, plural?: string): string
+    export function plural(isPlural: boolean, singular: string, plural?: string): string
+    export function plural(countOrCondition: number|boolean, singular: string, plural?: string): string
+    export function plural(countOrCondition: number|boolean, singular: string, plural?: string): string {
+        const isPlural = typeof countOrCondition === 'boolean' ? countOrCondition : countOrCondition > 1;
+
+        return isPlural ? singular : plural ?? `${singular}s`;
     }
 }

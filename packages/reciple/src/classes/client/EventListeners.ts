@@ -2,7 +2,7 @@ import { CommandType, type Client, type CommandManager } from '@reciple/core';
 import type { EventEmitter } from 'node:events';
 import type { ModuleManager } from '../managers/ModuleManager.js';
 import { BaseModule } from '../modules/BaseModule.js';
-import { colors } from '@reciple/utils';
+import { colors, Format } from '@reciple/utils';
 import type { ModuleLoader } from './ModuleLoader.js';
 
 export class EventListeners {
@@ -85,7 +85,7 @@ export namespace EventListeners {
             defineModuleManagerEvent('moduleReadyError', (module, error) => client.logger.error(`Failed to ready module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}:`, error)),
             defineModuleManagerEvent('moduleDisableError', (module, error) => client.logger.error(`Failed to disable module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}:`, error)),
             defineModuleLoaderEvent('modulesResolving', () => client.logger.log(colors.green('🔍 Resolving modules...'))),
-            defineModuleLoaderEvent('modulesResolved', (modules) => client.logger.log(colors.green(`✅ Resolved ${modules.length} modules.`))),
+            defineModuleLoaderEvent('modulesResolved', (modules) => client.logger.log(colors.green(`✅ Resolved ${modules.length} ${Format.plural(modules.length, 'module')}.`))),
             defineModuleLoaderEvent('moduleResolving', (filepath) => client.logger.debug(`Resolving module ${colors.cyan(`"${filepath}"`)}...`)),
             defineModuleLoaderEvent('moduleResolved', (module) => client.logger.debug(`Resolved module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}`)),
             defineModuleLoaderEvent('moduleResolveError', (error) => client.logger.error(`Failed to resolve module:`, error)),
@@ -101,7 +101,7 @@ export namespace EventListeners {
         const defineCommandsEvent = <E extends keyof CommandManager.Events>(event: E, onEvent: (...args: CommandManager.Events[E]) => any): RegisteredEvent => ({ emitter: client.commands!, event, onEvent });
 
         const events: RegisteredEvent[] = [
-            defineCommandsEvent('applicationCommandsRegister', (commands, guildId) => client.logger.log(colors.green(`📩 Registered ${colors.cyan(commands.size)} application commands${guildId ? ` to guild ${colors.magenta(guildId)}` : colors.magenta(' globally')}.`))),
+            defineCommandsEvent('applicationCommandsRegister', (commands, guildId) => client.logger.log(colors.green(`📩 Registered ${colors.cyan(commands.size)} application ${Format.plural(commands.size, 'command')}${guildId ? ` to guild ${colors.magenta(guildId)}` : colors.magenta(' globally')}.`))),
             defineCommandsEvent('commandExecute', (data) => client.logger.debug(`Executed ${CommandType[data.command.type].toLowerCase()} command ${colors.cyan(`"${data.command.data.name}"`)} ${colors.magenta(`(${data.command.id})`)}`)),
         ];
 
