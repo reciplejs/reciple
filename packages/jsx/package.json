@@ -52,7 +52,7 @@
     "directory": "packages/jsx"
   },
   "peerDependencies": {
-    "discord.js": "^14.24.2"
+    "discord.js": "^14.25.1"
   },
   "peerDependenciesMeta": {
     "discord.js": {
