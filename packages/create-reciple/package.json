@@ -3,7 +3,7 @@
   "version": "10.0.0",
   "license": "GPL-3.0-only",
   "description": "Alias for `reciple create`",
-  "bin": "./dist/index.js",
+  "bin": "./dist/index.mjs",
   "type": "module",
   "files": [
     "dist",
@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "clean": "rimraf ./dist",
-    "build": "tsup",
+    "build": "tsdown --config-loader unrun",
     "check": "tsc --noEmit",
     "prepack": "npm run build"
   },

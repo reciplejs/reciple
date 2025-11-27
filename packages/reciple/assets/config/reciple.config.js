@@ -84,8 +84,6 @@ export const build = {
     tsconfig: './jsconfig.json',
     external: [],
     noExternal: [],
-    esbuildPlugins: [],
     minify: false,
-    keepNames: true,
     sourcemap: true
 };

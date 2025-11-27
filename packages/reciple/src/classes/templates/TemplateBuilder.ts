@@ -209,8 +209,8 @@ export class TemplateBuilder {
                     return false;
                 case 'tsconfig.json':
                 case 'jsconfig.json':
-                case 'tsup.config.js':
-                case 'tsup.config.ts':
+                case 'tsdown.config.js':
+                case 'tsdown.config.ts':
                     return true;
                 default:
                     return (typeof options?.overwrite === 'boolean' ? options.overwrite : options?.overwrite?.(data)) ?? true;

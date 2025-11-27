@@ -4,8 +4,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "node ../packages/reciple/dist/bin/reciple.js --env ../.env build",
-    "start": "node ../packages/reciple/dist/bin/reciple.js --env ../.env start",
+    "build": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env build",
+    "start": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start",
     "dev": "nodemon"
+  },
+  "dependencies": {
+    "@reciple/core": "file:../packages/core",
+    "reciple": "file:../packages/reciple"
   }
 }

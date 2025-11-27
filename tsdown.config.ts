@@ -1,7 +1,6 @@
-import type { Options } from 'tsup';
-import { defineConfig } from 'tsup';
+import { defineConfig, type UserConfig } from 'tsdown';
 
-export function createTsupConfig(options?: Options) {
+export function createTsdownConfig(options?: UserConfig) {
 	return defineConfig({
 		entry: ['src/index.ts'],
 		external: [],
@@ -12,11 +11,8 @@ export function createTsupConfig(options?: Options) {
 		target: 'esnext',
 		clean: true,
 		minify: false,
-		splitting: false,
-		keepNames: true,
 		dts: true,
 		sourcemap: true,
-		esbuildPlugins: [],
 		treeshake: true,
 		outDir: './dist',
         tsconfig: 'tsconfig.json',

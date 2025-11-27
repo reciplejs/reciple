@@ -20,10 +20,12 @@
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "esbuild-plugin-version-injector": "^1.2.1",
     "lerna": "^9.0.1",
     "rimraf": "^6.1.2",
-    "tsup": "^8.5.1",
+    "rolldown": "^1.0.0-beta.52",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "tsdown": "^0.16.7"
   }
 }

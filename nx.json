@@ -11,8 +11,8 @@
       "inputs": [
         "{projectRoot}/src/**/*",
         "{projectRoot}/*.json",
-        "{projectRoot}/tsup.config.ts",
-        "{workspaceRoot}/tsup.config.ts"
+        "{projectRoot}/tsdown.config.ts",
+        "{workspaceRoot}/tsdown.config.ts"
       ],
       "cache": true
     },

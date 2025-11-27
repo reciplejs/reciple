@@ -8,7 +8,7 @@ import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';
 import { spinner, type SpinnerOptions } from '@clack/prompts';
-import type { BuildConfig } from '../../helpers/types.js';
+import type { RolldownPlugin } from 'rolldown';
 
 export class CLI {
     public build: string;
@@ -61,7 +61,7 @@ export class CLI {
 
         const files = (await readdir(this.options.subcommandsDir))
             .map(f => path.join(this.options.subcommandsDir, f))
-            .filter(f => f.endsWith('.js'));
+            .filter(f => f.endsWith('.mjs'));
 
         const hasParent: CLISubcommand[] = [];
 
@@ -187,7 +187,7 @@ export namespace CLI {
         ];
     }
 
-    export function createTsupLogger(_logger: Logger = logger): Exclude<BuildConfig['plugins'], undefined>[0] {
+    export function createTsdownLogger(_logger: Logger = logger): RolldownPlugin {
         let startedAt: number;
 
         return {
@@ -198,9 +198,9 @@ export namespace CLI {
             },
             renderChunk: (code, info) => {
                 const size = Format.bytes(Buffer.byteLength(code, 'utf8'));
-                _logger.log(` ├─ ${colors.cyan(size)}\t${colors.bold(info.path)}`);
+                _logger.log(` ├─ ${colors.cyan(size)}\t${colors.bold(info.fileName)}`);
 
-                return { code, map: info.map };
+                return { code };
             },
             buildEnd: () => {
                 const time = Format.duration(Date.now() - startedAt);

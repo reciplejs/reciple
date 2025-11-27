@@ -1,29 +1,16 @@
 import { Client, RecipleError, type Config } from '@reciple/core';
 import { colors } from '@reciple/utils';
-import { bundleRequire, type Options } from 'bundle-require';
 import { CLI } from './CLI.js';
 import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import type { ModuleLoader } from '../client/ModuleLoader.js';
 import type { Logger, LoggerOptions } from 'prtyprnt';
 import type { ModuleManager } from '../managers/ModuleManager.js';
-import type { Options as TsupOptions } from 'tsup';
-import { replaceTscAliasPaths } from 'tsc-alias';
 import type { BuildConfig } from '../../helpers/types.js';
-import { loadTsConfig } from 'bundle-require';
-import type { CompilerOptions } from 'typescript';
-import { statSync } from 'node:fs';
 import type { EventListeners } from '../client/EventListeners.js';
-
-declare module "bundle-require" {
-    export function loadTsConfig(dir: string, name?: string): {
-        path: string;
-        data: {
-            compilerOptions?: CompilerOptions;
-        } & Record<string, any>;
-        files: string[];
-    };
-}
+import type { UserConfig } from 'tsdown';
+import { unrun, type Options } from 'unrun';
+import * as find from 'empathic/find';
 
 declare module "@reciple/core" {
     interface Config {
@@ -56,7 +43,7 @@ export class ConfigReader {
     }
 
     get build() {
-        return ConfigReader.normalizeTsupConfig({
+        return ConfigReader.normalizeTsdownConfig({
             overrides: this._build ?? {}
         });
     }
@@ -69,25 +56,25 @@ export class ConfigReader {
             readOptions: options
         });
 
-        const { mod } = await bundleRequire({
-            format: 'esm',
-            ...options,
-            filepath: this.filepath
-        });
+        const { module } = await unrun<Config>({ ...options, path: this.filepath });
 
-        if (!mod || !mod.client || !(mod.client instanceof Client)) {
+        if (!module || !module.client || !(module.client instanceof Client)) {
             throw new RecipleError(`exported client is not an instance of ${colors.cyan('Client')} from ${colors.green('"@reciple/core"')}.`);
         }
 
-        this._client = mod.client;
-        this._config = mod.config;
-        this._build = mod.build;
+        this._client = module.client;
+        this._config = module.config;
+        this._build = module.build;
 
         return this;
     }
 
     public async create(options?: Omit<ConfigReader.CreateOptions, 'filepath'>): Promise<ConfigReader> {
         return ConfigReader.create({ ...options, filepath: this.filepath });
+    }
+
+    public async exists(): Promise<boolean> {
+        return await ConfigReader.hasConfigFile(this.filepath);
     }
 
     public static async create(options: ConfigReader.CreateOptions): Promise<ConfigReader> {
@@ -111,10 +98,6 @@ export class ConfigReader {
         return reader;
     }
 
-    public async exists(): Promise<boolean> {
-        return await ConfigReader.hasConfigFile(this.filepath);
-    }
-
     public static async hasConfigFile(filepath: string): Promise<boolean> {
         const stats = await stat(filepath).catch(() => undefined);
         return !!stats;
@@ -135,25 +118,16 @@ export class ConfigReader {
 
 export namespace ConfigReader {
     export async function getProjectType(dir: string): Promise<'ts'|'js'> {
-        let hasTsConfig = false;
-
-        try {
-            hasTsConfig = !!resolveTsConfig(dir).path;
-        } catch (err) {
-            //
-        }
-
+        const hasTsConfig = !!findTsconfig({ dir });
         const usesDotTsConfig = (await ConfigReader.findConfigFromDirectory(dir).then(f => f ?? '')).endsWith('ts');
 
         return hasTsConfig || usesDotTsConfig ? 'ts' : 'js';
     }
 
-    export function resolveTsConfig(filepath?: string) {
-        const stats = filepath ? statSync(filepath) : undefined;
-
-        const dir = path.resolve((stats?.isDirectory() || !filepath ? filepath : path.dirname(filepath)) ?? process.cwd());
-        const file = stats?.isDirectory() || !filepath ? undefined : path.basename(filepath);
-        return loadTsConfig(dir, file);
+    export function findTsconfig(options?: { dir?: string; name?: string; }): string|null {
+        return find.up(options?.name ?? 'tsconfig.json', {
+            cwd: options?.dir ?? process.cwd(),
+        }) ?? null;
     };
 
     export interface Structure {
@@ -191,20 +165,14 @@ export namespace ConfigReader {
         'reciple.config.mjs'
     ];
 
-    export const buildConfigForcedValues: TsupOptions = {
+    export const buildConfigForcedValues: UserConfig = {
         clean: true,
         platform: 'node',
         format: 'esm',
-        splitting: false,
-        bundle: false,
-        async onSuccess() {
-            await replaceTscAliasPaths({ configFile: this.tsconfig });
-        }
+        bundle: false
     }
 
-    export type CompleteBuildConfig = TsupOptions;
-
-    export function normalizeTsupConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): TsupOptions {
+    export function normalizeTsdownConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): UserConfig {
         const entryExtension = type === 'ts' ? 'ts,tsx' : type === 'js' ? 'js,jsx' : 'ts,tsx,js,jsx';
 
         return {
@@ -213,9 +181,7 @@ export namespace ConfigReader {
             tsconfig: `./${type ?? 'ts'}config.json`,
             external: [],
             noExternal: [],
-            esbuildPlugins: [],
             minify: false,
-            keepNames: true,
             sourcemap: true,
             treeshake: true,
             ...overrides,

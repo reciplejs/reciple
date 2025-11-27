@@ -181,7 +181,7 @@ export class ModuleTemplateBuilder {
         let directory = options?.directory;
 
         if (!directory) {
-            const tsconfig = ConfigReader.resolveTsConfig(this.config.build.tsconfig);
+            const tsconfig = ConfigReader.findTsconfig(this.config.build.tsconfig);
             const cwd = process.cwd();
 
             let directories = await ModuleLoader.scanForDirectories(this.config.config.modules);

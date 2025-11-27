@@ -1,5 +1,6 @@
 import { MessageCommandBuilder, MessageCommandModule, type MessageCommand } from "reciple";
 import { Poll, PollAnswer, PollAnswers, PollQuestionMedia } from '@reciple/jsx/poll';
+import '@/commands/modal';
 
 export class MessagePollCommand extends MessageCommandModule {
     data = new MessageCommandBuilder()

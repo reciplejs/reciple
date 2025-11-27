@@ -6,7 +6,7 @@ import type { PostconditionModule } from '../classes/modules/PostconditionModule
 import type { PreconditionModule } from '../classes/modules/PreconditionModule.js';
 import type { SlashCommandModule } from '../classes/modules/commands/SlashCommandModule.js';
 import type { CommandType } from '@reciple/core';
-import type { Options as TsupOptions } from 'tsup';
+import type { UserConfig } from 'tsdown';
 
 export type AnyCommandBuilderMethods = 'setCommand'
     |'setCommand'
@@ -49,4 +49,4 @@ export type AnyCommandModuleData<T extends CommandType = CommandType> = T extend
             ? ContextMenuCommandModule.Data
             : MessageCommandModule.Data|SlashCommandModule.Data|ContextMenuCommandModule.Data;
 
-export type BuildConfig = Omit<Partial<TsupOptions>, 'clean'|'platform'|'format'|'splitting'|'bundle'|'onSuccess'>;
+export type BuildConfig = Omit<UserConfig, 'hooks'>;

@@ -1,8 +1,7 @@
 import { Command } from 'commander';
 import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
 import { ConfigReader } from '../../classes/cli/ConfigReader.js';
-import { build } from 'tsup';
-import { CLI } from '../../classes/cli/CLI.js';
+import { build } from 'tsdown';
 
 export default class BuildSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('build')
@@ -24,11 +23,8 @@ export default class BuildSubcommand extends CLISubcommand {
 
         await build({
             ...buildConfig,
-            plugins: [
-                ...(buildConfig.plugins ?? []),
-                CLI.createTsupLogger()
-            ],
             silent: true
+            // TODO: Add tsdown logger plugin
         });
     }
 }
