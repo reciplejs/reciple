@@ -136,7 +136,7 @@ export namespace CLI {
 
     export const root: string = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../');
     export const bin: string = path.join(CLI.root, 'dist/bin/reciple.js');
-    export const version = '[VI]{{inject}}[/VI]';
+    export const version = process.env.__VERSION__;
 
     export function stringifyFlags(flags: Record<string, any>, command: Command, ignored: string[] = []): string[] {
         let arr: string[] = [];

@@ -180,5 +180,5 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 export namespace Client {
     export interface Events extends ClientEvents {}
 
-    export const version = '[VI]{{inject}}[/VI]';
+    export const version = process.env.__VERSION__;
 }
