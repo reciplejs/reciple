@@ -202,7 +202,10 @@ export namespace CLI {
 
                 return { code };
             },
-            buildEnd: () => {
+            buildEnd: error => {
+                if (error) _logger.error(error)
+            },
+            closeBundle: () => {
                 const time = Format.duration(Date.now() - startedAt);
                 _logger.log(colors.green(`✅ Build success in `) + colors.yellow(`${time}`));
             }

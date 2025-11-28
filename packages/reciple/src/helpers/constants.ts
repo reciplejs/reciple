@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises';
 import { CLI } from '../classes/cli/CLI.js';
 import path from 'node:path';
 import { logger } from 'prtyprnt';
@@ -7,7 +6,7 @@ import type { PackageJson } from '@reciple/utils';
 /**
  * @private
  */
-export const packageJSON: PackageJson = JSON.parse(await readFile(path.join(CLI.root, './package.json'), 'utf-8'));
+export const packageJSON = await import('../../package.json', { with: { type: 'json' } }).then(m => m.default as PackageJson);
 
 export const cli = new CLI({
     name: packageJSON.name ?? 'reciple',

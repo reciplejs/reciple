@@ -10,6 +10,7 @@ import { version as DiscordJsVersion } from 'discord.js';
 import { EventListeners } from '../../classes/client/EventListeners.js';
 import { RuntimeEnvironment } from '../../classes/cli/RuntimeEnvironment.js';
 import { build } from 'tsdown';
+import { CLI } from '../../classes/cli/CLI.js';
 
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')
@@ -49,6 +50,9 @@ export default class StartSubcommand extends CLISubcommand {
 
         if (flags.build) await build({
             ...buildConfig,
+            plugins: [
+                CLI.createTsdownLogger(logger)
+            ],
             silent: true
             // TODO: Add tsdown logger plugin
         });

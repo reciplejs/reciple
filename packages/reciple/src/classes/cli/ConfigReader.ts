@@ -169,7 +169,8 @@ export namespace ConfigReader {
         clean: true,
         platform: 'node',
         format: 'esm',
-        bundle: false
+        unbundle: true,
+        skipNodeModulesBundle: true,
     }
 
     export function normalizeTsdownConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): UserConfig {

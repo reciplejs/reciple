@@ -49,4 +49,4 @@ export type AnyCommandModuleData<T extends CommandType = CommandType> = T extend
             ? ContextMenuCommandModule.Data
             : MessageCommandModule.Data|SlashCommandModule.Data|ContextMenuCommandModule.Data;
 
-export type BuildConfig = Omit<UserConfig, 'hooks'>;
+export type BuildConfig = Omit<UserConfig, 'hooks'|'watch'|'skipNodeModulesBundle'|'clean'|'platform'|'format'|'unbundle'|'skipNodeModulesBundle'>;

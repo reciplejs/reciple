@@ -3,7 +3,7 @@ import { defineConfig, type UserConfig } from 'tsdown';
 export function createTsdownConfig(options?: UserConfig) {
 	return defineConfig({
 		entry: ['src/index.ts'],
-		external: [],
+		external: ['reciple', /^@reciple\//],
 		noExternal: [],
 		platform: 'node',
 		format: ['esm'],

@@ -5,11 +5,12 @@
   "private": true,
   "scripts": {
     "build": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env build",
-    "start": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start",
+    "start": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start --build",
     "dev": "nodemon"
   },
-  "dependencies": {
-    "@reciple/core": "file:../packages/core",
-    "reciple": "file:../packages/reciple"
+  "devDependencies": {
+    "@reciple/core": "^10.0.0",
+    "@reciple/jsx": "^10.0.0",
+    "reciple": "^10.0.0"
   }
 }

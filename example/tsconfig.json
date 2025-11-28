@@ -1,7 +1,7 @@
 {
   "extends": "@reciple/utils/tsconfig.json",
   "exclude": [
-    "./reciple.config.js"
+    "reciple.config.js"
   ],
   "include": [
     "./src/**/*.{ts,tsx,js,jsx}"
