@@ -13,7 +13,7 @@ export class ViewAvatarCommand extends ContextMenuCommandModule {
     async execute(data: ContextMenuCommand.ExecuteData) {
         if (!data.interaction.isUserContextMenuCommand()) return;
 
-        const url = data.interaction.targetUser.avatarURL() ?? data.interaction.targetUser.defaultAvatarURL;
+        const url = data.interaction.targetUser.displayAvatarURL();
         const messageData: BaseMessageOptions = {
             content: url,
             embeds: [
