@@ -1,7 +1,7 @@
 {
   "name": "@reciple/jsx",
   "version": "10.0.0",
-  "license": "GPL-3.0-only",
+  "license": "LGPL-3.0-only",
   "description": "The JSX component wrappers of Discord.js builders",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",

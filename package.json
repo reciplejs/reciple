@@ -1,6 +1,6 @@
 {
   "name": "@reciple/monorepo",
-  "license": "GPL-3.0-only",
+  "license": "LLGPL-3.0-only",
   "private": true,
   "type": "module",
   "workspaces": [
