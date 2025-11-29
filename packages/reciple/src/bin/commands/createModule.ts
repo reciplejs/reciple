@@ -26,7 +26,7 @@ export default class CreateModuleSubcommand extends CLISubcommand {
         const configReader = await (
             new ConfigReader(
                 flags.config
-                ?? await ConfigReader.findConfigFromDirectory(process.cwd())
+                ?? await ConfigReader.findConfig(process.cwd())
                 ?? ConfigReader.createConfigFilename('js')
             ).read({
                 createIfNotExists: false

@@ -35,11 +35,11 @@ export function resolveDate(resolvable: DateResolvable): Date {
     throw new TypeError(`Expected a Date, number, or string, but received ${typeof resolvable}`);
 }
 
+export function isDateResolvable(value: unknown): value is DateResolvable {
+    return value instanceof Date || typeof value === 'number' || typeof value === 'string';
+}
+
 export function resolveEnvProtocol(string: string, env: NodeJS.ProcessEnv = process.env): string|undefined {
     if (!string.toLocaleLowerCase().startsWith('env:')) return;
     return env?.[string.slice(4)];
-}
-
-export function isDateResolvable(value: unknown): value is DateResolvable {
-    return value instanceof Date || typeof value === 'number' || typeof value === 'string';
 }

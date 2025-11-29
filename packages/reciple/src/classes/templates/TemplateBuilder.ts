@@ -142,7 +142,7 @@ export class TemplateBuilder {
         let filepath = options?.filepath;
 
         if (!filepath) {
-            filepath = await ConfigReader.findConfigFromDirectory(
+            filepath = await ConfigReader.findConfig(
                     this.directory,
                     this.typescript
                         ? 'ts'
@@ -156,7 +156,7 @@ export class TemplateBuilder {
                 );
         }
 
-        const exists = await ConfigReader.hasConfigFile(filepath);
+        const exists = await ConfigReader.hasFile(filepath);
 
         if (exists) {
             const overwrite = this.defaultAll
@@ -209,8 +209,6 @@ export class TemplateBuilder {
                     return false;
                 case 'tsconfig.json':
                 case 'jsconfig.json':
-                case 'tsdown.config.js':
-                case 'tsdown.config.ts':
                     return true;
                 default:
                     return (typeof options?.overwrite === 'boolean' ? options.overwrite : options?.overwrite?.(data)) ?? true;

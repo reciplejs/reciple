@@ -14,7 +14,7 @@ export default class BuildSubcommand extends CLISubcommand {
 
         const configReader = new ConfigReader(
             flags.config
-            ?? await ConfigReader.findConfigFromDirectory(process.cwd())
+            ?? await ConfigReader.findConfig(process.cwd())
             ?? ConfigReader.createConfigFilename('js')
         );
 
@@ -22,13 +22,18 @@ export default class BuildSubcommand extends CLISubcommand {
             createIfNotExists: false
         });
 
+        let plugins = buildConfig.plugins
+            ? Array.isArray(buildConfig.plugins)
+                ? buildConfig.plugins
+                : [buildConfig.plugins]
+            : [];
+
+        plugins.push(CLI.createTsdownLogger());
+
         await build({
             ...buildConfig,
-            plugins: [
-                CLI.createTsdownLogger()
-            ],
-            silent: true
-            // TODO: Add tsdown logger plugin
+            logLevel: 'silent',
+            plugins,
         });
     }
 }

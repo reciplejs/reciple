@@ -51,7 +51,7 @@ export class ConfigReader {
     constructor(public readonly filepath: string) {}
 
     public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>): Promise<ConfigReader> {
-        if (!await ConfigReader.hasConfigFile(this.filepath) && options?.createIfNotExists !== false) return ConfigReader.create({
+        if (!await ConfigReader.hasFile(this.filepath) && options?.createIfNotExists !== false) return ConfigReader.create({
             filepath: this.filepath,
             readOptions: options
         });
@@ -74,14 +74,13 @@ export class ConfigReader {
     }
 
     public async exists(): Promise<boolean> {
-        return await ConfigReader.hasConfigFile(this.filepath);
+        return await ConfigReader.hasFile(this.filepath);
     }
 
     public static async create(options: ConfigReader.CreateOptions): Promise<ConfigReader> {
-        const extention = path.extname(options.filepath).slice(1);
-        const type = options.type ?? (this.isJavascriptFileExtension(extention) ? 'js' : this.isTypescriptFileExtension(extention) ? 'ts' : 'js');
+        const type = options.type ?? ConfigReader.getLangTypeFromFilename(options.filepath) ?? 'js';
 
-        if (await ConfigReader.hasConfigFile(options.filepath) && !options.overwrite) {
+        if (await ConfigReader.hasFile(options.filepath) && !options.overwrite) {
             if (options.throwOnConflict !== false) throw new RecipleError(`config file already exists at ${colors.green(options.filepath)}`);
 
             const reader = new ConfigReader(options.filepath);
@@ -90,7 +89,7 @@ export class ConfigReader {
         }
 
         await mkdir(path.dirname(options.filepath), { recursive: true });
-        await writeFile(options.filepath, await this.getDefaultConfigContent(type));
+        await writeFile(options.filepath, await this.getDefaultContent(type));
 
         const reader = new ConfigReader(options.filepath);
 
@@ -98,18 +97,19 @@ export class ConfigReader {
         return reader;
     }
 
-    public static async hasConfigFile(filepath: string): Promise<boolean> {
-        const stats = await stat(filepath).catch(() => undefined);
-        return !!stats;
+    public static async hasFile(filepath: string): Promise<boolean> {
+        return stat(filepath)
+            .then(s => s.isFile())
+            .catch(() => false);
     }
 
-    public static async findConfigFromDirectory(directory: string, type?: 'ts'|'js'): Promise<string|null> {
-        const validFiles = ConfigReader.defaultConfigFiles.filter(f => type ? ConfigReader.FileTypes[type].includes(f) : true);
+    public static async findConfig(directory: string, type?: 'ts'|'js'): Promise<string|null> {
+        const validFiles = ConfigReader.defaultConfigFilenames.filter(f => type ? ConfigReader.FileTypes[type].includes(f) : true);
         const files = (await readdir(directory)).find(f => validFiles.includes(f));
         return files ? path.join(directory, files) : null;
     }
 
-    public static async getDefaultConfigContent(type: 'ts'|'js' = 'js'): Promise<string> {
+    public static async getDefaultContent(type: 'ts'|'js' = 'js'): Promise<string> {
         const filepath = ConfigReader.defaultConfigFilePaths[type];
         const content = await readFile(filepath, 'utf-8');
         return content;
@@ -117,9 +117,9 @@ export class ConfigReader {
 }
 
 export namespace ConfigReader {
-    export async function getProjectType(dir: string): Promise<'ts'|'js'> {
+    export async function getProjectLang(dir: string): Promise<'ts'|'js'> {
         const hasTsConfig = !!findTsconfig({ dir });
-        const usesDotTsConfig = (await ConfigReader.findConfigFromDirectory(dir).then(f => f ?? '')).endsWith('ts');
+        const usesDotTsConfig = (await ConfigReader.findConfig(dir).then(f => f ?? '')).endsWith('ts');
 
         return hasTsConfig || usesDotTsConfig ? 'ts' : 'js';
     }
@@ -137,7 +137,7 @@ export namespace ConfigReader {
 
     export interface ReadOptions extends Options {
         createIfNotExists?: boolean;
-        createOptions?: Omit<CreateOptions, 'readOptions'>;
+        createOptions?: Omit<CreateOptions, 'path'>;
     }
 
     export interface CreateOptions {
@@ -145,7 +145,7 @@ export namespace ConfigReader {
         overwrite?: boolean;
         throwOnConflict?: boolean;
         type?: 'ts' | 'js';
-        readOptions?: Omit<ReadOptions, 'filepath'>;
+        readOptions?: Omit<ReadOptions, ''>;
     }
 
     export const FileTypes = {
@@ -158,35 +158,31 @@ export namespace ConfigReader {
         js: path.join(CLI.root, 'assets/config', `reciple.config.js`)
     };
 
-    export const defaultConfigFiles = [
+    export const defaultConfigFilenames = [
         'reciple.config.ts',
         'reciple.config.mts',
         'reciple.config.js',
         'reciple.config.mjs'
     ];
 
-    export const buildConfigForcedValues: UserConfig = {
-        clean: true,
-        platform: 'node',
-        format: 'esm',
-        unbundle: true,
-        skipNodeModulesBundle: true,
-    }
-
     export function normalizeTsdownConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): UserConfig {
-        const entryExtension = type === 'ts' ? 'ts,tsx' : type === 'js' ? 'js,jsx' : 'ts,tsx,js,jsx';
-
         return {
-            entry: [`./src/**/*.{${entryExtension}}`],
+            entry: [`./src/**/*.{ts,tsx,js,jsx}`],
             outDir: './modules',
             tsconfig: `./${type ?? 'ts'}config.json`,
             external: [],
             noExternal: [],
-            minify: false,
             sourcemap: true,
             treeshake: true,
+            clean: true,
             ...overrides,
-            ...buildConfigForcedValues
+            ...{
+                watch: false,
+                platform: 'node',
+                format: 'esm',
+                unbundle: true,
+                skipNodeModulesBundle: true
+            }
         };
     }
 
@@ -194,11 +190,11 @@ export namespace ConfigReader {
         return `reciple.config.${type === 'ts' ? esm ? 'mts' : 'ts' : esm ? 'mjs' : 'js'}`;
     }
 
-    export function isTypescriptFileExtension(extention: string): boolean {
-        return FileTypes.ts.includes(extention);
-    }
+    export function getLangTypeFromFilename(filename: string): 'ts'|'js'|null {
+        const extention = path.extname(filename).slice(1);
 
-    export function isJavascriptFileExtension(extention: string): boolean {
-        return FileTypes.js.includes(extention);
+        if (FileTypes.ts.includes(extention)) return 'ts';
+        if (FileTypes.js.includes(extention)) return 'js';
+        return null;
     }
 }

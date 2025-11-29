@@ -61,7 +61,7 @@ export class ModuleTemplateBuilder {
         this.typescript = options?.typescript ?? this.typescript;
 
         if (!this.typescript) {
-            const isTypeScriptDefault = (await ConfigReader.getProjectType(this.directory)) === 'ts';
+            const isTypeScriptDefault = (await ConfigReader.getProjectLang(this.directory)) === 'ts';
             const isTypeScript = this.defaultAll
                 ? isTypeScriptDefault
                 : await confirm({

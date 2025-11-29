@@ -24,7 +24,7 @@ export default class StartSubcommand extends CLISubcommand {
         const flags = this.subcommand.opts<StartSubcommand.Flags>();
         const configReader = new ConfigReader(
             flags.config
-            ?? await ConfigReader.findConfigFromDirectory(process.cwd())
+            ?? await ConfigReader.findConfig(process.cwd())
             ?? ConfigReader.createConfigFilename('js')
         );
 
@@ -48,14 +48,21 @@ export default class StartSubcommand extends CLISubcommand {
 
         logger.log(colors.magenta(`⚡ Initializing reciple!`));
 
-        if (flags.build) await build({
-            ...buildConfig,
-            plugins: [
-                CLI.createTsdownLogger(logger)
-            ],
-            silent: true
-            // TODO: Add tsdown logger plugin
-        });
+        if (flags.build) {
+            let plugins = buildConfig.plugins
+                ? Array.isArray(buildConfig.plugins)
+                    ? buildConfig.plugins
+                    : [buildConfig.plugins]
+                : [];
+
+            plugins.push(CLI.createTsdownLogger());
+
+            await build({
+                ...buildConfig,
+                logLevel: 'silent',
+                plugins,
+            });
+        }
 
         Object.assign(client, {
             logger,
