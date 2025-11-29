@@ -4,7 +4,7 @@
     "reciple.config.js"
   ],
   "include": [
-    "./src/**/*.{ts,tsx,js,jsx}"
+    "./src/**/*"
   ],
   "compilerOptions": {
     "baseUrl": "./",
