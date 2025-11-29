@@ -7,6 +7,7 @@ export class $MODULE_NAME$ extends EventModule {
     // @ts-expect-error
     once = $EVENT_ONCE$;
 
+    // @ts-expect-error
     onEvent(...args) {
         // Write your code here
     }

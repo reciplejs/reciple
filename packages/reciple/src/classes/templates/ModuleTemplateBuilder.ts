@@ -18,6 +18,7 @@ import { ApplicationCommandType } from 'discord.js';
 import { ModuleLoader } from '../client/ModuleLoader.js';
 import { existsSync } from 'node:fs';
 import { colors } from '@reciple/utils';
+import { readTSConfig } from 'pkg-types';
 
 export class ModuleTemplateBuilder {
     public _directory?: string;
@@ -181,15 +182,17 @@ export class ModuleTemplateBuilder {
         let directory = options?.directory;
 
         if (!directory) {
-            const tsconfig = ConfigReader.findTsconfig(this.config.build.tsconfig);
             const cwd = process.cwd();
+            const tsconfig = this.config.build.tsconfig
+                ? await readTSConfig(typeof this.config.build.tsconfig == 'string' ? this.config.build.tsconfig : cwd, { try: true })
+                : undefined;
 
             let directories = await ModuleLoader.scanForDirectories(this.config.config.modules);
                 directories = await ModuleLoader.resolveSourceDirectories({
                     directories,
-                    baseUrl: tsconfig.data.compilerOptions?.baseUrl ?? '.',
-                    rootDir: tsconfig.data.compilerOptions?.rootDir ?? 'src',
-                    outDir: tsconfig.data.compilerOptions?.outDir ?? 'modules',
+                    baseUrl: tsconfig?.compilerOptions?.baseUrl ?? '.',
+                    rootDir: tsconfig?.compilerOptions?.rootDir ?? 'src',
+                    outDir: tsconfig?.compilerOptions?.outDir ?? 'modules',
                     cwd
                 });
 

@@ -1,72 +1,39 @@
 import type { Indent } from 'detect-indent';
-import detectIndent from 'detect-indent';
-import { detectNewline } from 'detect-newline';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { rm, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { readPackageJSON, resolvePackageJSON, writePackageJSON, type PackageJson } from 'pkg-types';
 import { assign } from 'radash';
-import type { PackageJson } from 'type-fest';
 
 export class PackageJsonBuilder {
-    public indent: Indent = { type: 'space', amount: 2, indent: '  ' };
-    public newline: '\n'|'\r\n' = '\n';
-    public data: PackageJson.PackageJsonStandard = PackageJsonBuilder.defaultData;
+    public data: PackageJson = PackageJsonBuilder.defaultData;
 
-    constructor(data?: Partial<PackageJson.PackageJsonStandard>) {
+    constructor(data?: Partial<PackageJson>) {
         Object.assign(this.data, data);
     }
 
-    public toJSON(): PackageJson.PackageJsonStandard {
+    public toJSON(): PackageJson {
         return this.data;
     }
 
-    public toString(): string {
-        return JSON.stringify(this.data, null, this.indent.indent).replace(/\r\n|\n/g, this.newline);
-    }
-
-    public async write(filepath: string, overwrite?: boolean): Promise<string> {
-        const content = this.toString();
-
+    public async write(filepath: string, overwrite?: boolean): Promise<void> {
         const stats = await stat(filepath).catch(() => undefined);
-        if (stats && !overwrite) {
-            throw new Error(`File already exists: ${filepath}`);
-        }
+        if (stats && !overwrite) throw new Error('Package.json file already exists');
 
-        await mkdir(path.dirname(filepath), { recursive: true });
-        await writeFile(filepath, content);
-
-        return content;
+        await rm(filepath).catch(() => undefined);
+        await writePackageJSON(filepath, this.data);
     }
 
-    public async read(filepath: string, detectNewLineAndIndent?: boolean): Promise<this> {
-        const data = await readFile(filepath, 'utf-8');
-        this.data = JSON.parse(data);
-
-        if (detectNewLineAndIndent !== false) {
-            const indent = detectIndent(data);
-
-            this.indent = indent.type ? indent : this.indent;
-            this.newline = detectNewline(data) ?? this.newline;
-        }
-
+    public async read(filepath: string): Promise<this> {
+        this.data = await readPackageJSON(filepath);
         return this;
     }
 
-    public setIndent(indent: Indent): this {
-        this.indent = indent;
-        return this;
-    }
-
-    public setNewline(newline: '\n'|'\r\n'): this {
-        this.newline = newline;
-        return this;
-    }
-
-    public merge(data: Partial<PackageJson.PackageJsonStandard>): this {
+    public merge(data: Partial<PackageJson>): this {
         this.data = assign(this.data, data);
         return this;
     }
 
-    public remove(key: keyof PackageJson.PackageJsonStandard): this {
+    public remove(key: keyof PackageJson): this {
         delete this.data[key];
         return this;
     }
@@ -105,28 +72,26 @@ export class PackageJsonBuilder {
         return this;
     }
 
-    public static async read(filepath: string, createIfNotExists?: boolean|Partial<PackageJson.PackageJsonStandard>): Promise<PackageJsonBuilder> {
-        const stats = await stat(filepath).catch(() => undefined);
-        if (!stats) {
-            if (createIfNotExists === false) throw new Error('Invalid package.json file');
+    public static async read(filepath: string, createIfNotExists?: boolean|Partial<PackageJson>): Promise<PackageJsonBuilder> {
+        const file = await resolvePackageJSON(filepath).catch(() => null);
 
-            const builder = new PackageJsonBuilder(typeof createIfNotExists !== 'object' ? {} : createIfNotExists);
-            await builder.write(filepath);
+        if (!file && createIfNotExists) {
+            const stats = await stat(filepath).catch(() => null);
+            const data = typeof createIfNotExists === 'object' ? createIfNotExists : undefined;
+            const builder = new PackageJsonBuilder(data);
+
+            await builder.write(stats?.isDirectory() ? path.join(filepath, 'package.json') : filepath);
             return builder;
         }
 
-        const content = await readFile(filepath, 'utf8');
-        const builder = new PackageJsonBuilder(JSON.parse(content));
+        if (!file) throw new Error('Package.json file not found');
 
-        builder.setIndent(detectIndent(content));
-        builder.setNewline(detectNewline(content) ?? '\n');
-
-        return builder;
+        return new PackageJsonBuilder(await readPackageJSON(file));
     }
 }
 
 export namespace PackageJsonBuilder {
-    export const defaultData: PackageJson.PackageJsonStandard = {
+    export const defaultData: PackageJson = {
         name: undefined,
         version: undefined,
         type: undefined,

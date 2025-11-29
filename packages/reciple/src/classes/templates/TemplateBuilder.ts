@@ -1,4 +1,4 @@
-import { colors, PackageJsonBuilder, PackageManager, sortRecordByKey, type PackageJson } from '@reciple/utils';
+import { colors, PackageJsonBuilder } from '@reciple/utils';
 import { ConfigReader } from '../cli/ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, text } from '@clack/prompts';
@@ -8,16 +8,13 @@ import path from 'node:path';
 import { existsSync, statSync } from 'node:fs';
 import { NotAnError } from '../NotAnError.js';
 import { slug } from 'github-slugger';
-import { exec } from 'node:child_process';
-import { RecipleError } from '@reciple/core';
 import { packageJSON } from '../../helpers/constants.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
-import { RuntimeEnvironment } from '../cli/RuntimeEnvironment.js';
 import { ModuleTemplateBuilder } from './ModuleTemplateBuilder.js';
+import { detectPackageManager, installDependencies, installDependenciesCommand, runScript, runScriptCommand, type PackageManagerName } from 'nypm';
 
 export class TemplateBuilder {
     private _directory?: string;
-    private _packageManager?: PackageManager;
 
     public cli: CLI;
     public typescript?: boolean;
@@ -27,14 +24,10 @@ export class TemplateBuilder {
     public config?: ConfigReader;
     public packageJson?: PackageJsonBuilder;
 
-    public isPackageManagerInstalled = false;
+    public packageManager?: PackageManagerName;
 
     get directory() {
         return this._directory ?? process.cwd();
-    }
-
-    get packageManager() {
-        return this._packageManager ?? new PackageManager(PackageManager.getNPMUserAgent() ?? undefined);
     }
 
     get relativeDirectory() {
@@ -53,8 +46,8 @@ export class TemplateBuilder {
         this.cli = options.cli;
         this._directory = options.directory;
         this.typescript = options.typescript;
-        this._packageManager = options.packageManager;
         this.defaultAll = options.defaultAll ?? false;
+        this.packageManager = options.packageManager;
         this.token = options.token;
     }
 
@@ -245,43 +238,31 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async createPackageManager(options?: TemplateBuilder.CreatePackageManagerOptions) {
-        this._packageManager = options?.packageManager instanceof PackageManager
-            ? options.packageManager
-            : options?.packageManager && new PackageManager(options?.packageManager);
+    public async setPackageManager(options?: TemplateBuilder.SetPackageManagerOptions) {
+        this.packageManager = options?.packageManager ?? this.packageManager;
 
-        if (!this._packageManager) {
-            const defaultNpmUserAgent = PackageManager.getNPMUserAgent() ?? 'npm';
-            const npmUserAgent: PackageManager.Type|symbol = this.defaultAll
-                ? defaultNpmUserAgent
+        if (!this.packageManager) {
+            const defaultPackageManager = await detectPackageManager(this.directory).then(pm => pm?.name ?? 'npm');
+            const packageManager: PackageManagerName|symbol = this.defaultAll
+                ? defaultPackageManager
                 : await select({
                     message: 'Select package manager',
                     options: [
-                        { value: defaultNpmUserAgent, label: defaultNpmUserAgent },
+                        { value: defaultPackageManager, label: defaultPackageManager },
                         ...[
                             { value: 'npm', label: 'npm' },
                             { value: 'yarn', label: 'yarn' },
                             { value: 'pnpm', label: 'pnpm' },
                             { value: 'bun', label: 'bun' },
                             { value: 'deno', label: 'deno' }
-                        ].filter(o => o.value !== defaultNpmUserAgent) as { value: PackageManager.Type; label: string; }[]
+                        ].filter(o => o.value !== defaultPackageManager) as { value: PackageManagerName; label: string; }[]
                     ],
-                    initialValue: defaultNpmUserAgent
+                    initialValue: defaultPackageManager
                 });
 
-            if (isCancel(npmUserAgent)) throw new NotAnError('Operation cancelled');
-            this._packageManager = new PackageManager(npmUserAgent);
-
-            switch (npmUserAgent) {
-                case 'npm':
-                case 'yarn':
-                case 'pnpm':
-                case 'bun':
-                case 'deno':
-            }
+            if (isCancel(packageManager)) throw new NotAnError('Operation cancelled');
+            this.packageManager = packageManager;
         }
-
-        const dependencyRecord = TemplateBuilder.createDependencyRecord(this.typescript ? 'ts' : 'js');
 
         this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath);
         this.packageJson.merge({
@@ -293,27 +274,9 @@ export class TemplateBuilder {
                 start: 'reciple start',
                 dev: 'nodemon',
             },
-            dependencies: dependencyRecord.dependencies,
-            devDependencies: dependencyRecord.devDependencies,
+            ...TemplateBuilder.createDependencyRecord(this.typescript ? 'ts' : 'js'),
             private: true
         });
-
-        return this;
-    }
-
-    public async checkInstalledPackageManager(): Promise<this> {
-        this.isPackageManagerInstalled = await RuntimeEnvironment.isInstalled(this.packageManager.type);
-        if (this.isPackageManagerInstalled) return this;
-
-        const skip = await confirm({
-            message: `Package manager ${colors.bold(colors.cyan(this.packageManager.type))} is not installed, would you like to continue?`,
-            initialValue: false,
-            active: 'Yes',
-            inactive: 'No'
-        });
-
-        if (isCancel(skip)) throw new NotAnError('Operation cancelled');
-        if (!skip) throw new NotAnError(`Package manager ${colors.bold(colors.cyan(this.packageManager.type))} is not installed`);
 
         return this;
     }
@@ -359,13 +322,32 @@ export class TemplateBuilder {
         return this;
     }
 
-    public async build(): Promise<this> {
+    public async build(options?: TemplateBuilder.BuildOptions): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
 
-        if (this.isPackageManagerInstalled) {
-            await this.runCommand(this.packageManager.installAll());
-            await this.runCommand(this.packageManager.run('build'));
-        }
+        if (!options?.skipInstallDependencies) await CLI.createSpinnerPromise({
+            promise: installDependencies({
+                cwd: this.directory,
+                packageManager: this.packageManager,
+                silent: true
+            }),
+            indicator: 'timer',
+            errorMessage: `${colors.bold(colors.red('✗'))} Failed to install dependencies`,
+            successMessage: `${colors.bold(colors.green('✔'))} Dependencies installed successfully`,
+            message: `${colors.bold(colors.dim('$'))} Installing dependencies`
+        })[0];
+
+        if (!options?.skipBuild) await CLI.createSpinnerPromise({
+            promise: runScript('build', {
+                cwd: this.directory,
+                packageManager: this.packageManager,
+                silent: true
+            }),
+            indicator: 'timer',
+            errorMessage: `${colors.bold(colors.red('✗'))} Failed to build project`,
+            successMessage: `${colors.bold(colors.green('✔'))} Project built successfully`,
+            message: `${colors.bold(colors.dim('$'))} Building project`
+        })[0];
 
         outro(`Project created in ${colors.cyan(this.relativeDirectory)}`);
 
@@ -375,32 +357,16 @@ export class TemplateBuilder {
             console.log(`  • ${colors.cyan(colors.bold(`cd ${this.relativeDirectory}`))}`);
         }
 
-        if (!this.isPackageManagerInstalled) {
-            console.log(`  • ${colors.cyan(colors.bold(this.packageManager.installAll()))}`);
+        if (options?.skipInstallDependencies) {
+            console.log(`  • ${colors.cyan(colors.bold(installDependenciesCommand(this.packageManager ?? 'npm')))}`);
         }
 
-        console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('build')))} ${colors.dim('(Build)')}`);
-        console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('dev')))} ${colors.dim('(Development)')}`);
-        console.log(`  • ${colors.cyan(colors.bold(this.packageManager.run('start')))} ${colors.dim('(Production)')}`);
+        console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'build')))} ${colors.dim('(Build)')}`);
+        console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'dev')))} ${colors.dim('(Development)')}`);
+        console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'start')))} ${colors.dim('(Production)')}`);
 
 
         return this;
-    }
-
-    public async runCommand(command: string, options?: TemplateBuilder.RunCommandOptions & Omit<CLI.SpinnerPromiseOptions<void>, 'promise'>): Promise<TemplateBuilder.RunCommandResult> {
-        const result = CLI.createSpinnerPromise({
-            indicator: 'timer',
-            ...options,
-            message: `$ ${colors.green(command)}`,
-            successMessage: `${colors.bold(colors.green('✓'))} ${colors.green(command)}`,
-            errorMessage: `${colors.bold(colors.red('✗'))} ${colors.red(command)}`,
-            promise: TemplateBuilder.runCommand(command, {
-                cwd: this.directory,
-                ...options
-            })
-        });
-
-        return result[0];
     }
 }
 
@@ -409,39 +375,39 @@ export namespace TemplateBuilder {
         cli: CLI;
         directory?: string;
         typescript?: boolean;
-        packageManager?: PackageManager;
+        packageManager?: PackageManagerName;
         defaultAll?: boolean;
         token?: string;
     }
 
     export const ignoredDirectoryFiles = ['.*', 'LICENSE'];
 
-    export const dependencies: Record<'ts'|'js'|'both', Partial<Record<'dependencies'|'devDependencies', PackageJson.Dependency>>> = {
+    export const dependencies: Record<'ts'|'js'|'both', Partial<Record<'dependencies'|'devDependencies', Record<string, string>>>> = {
         both: {
             dependencies: {
                 // TODO: Uncomment when ready
                 // '@reciple/core': packageJSON.dependencies?.['@reciple/core'],
-                '@reciple/jsx': packageJSON.dependencies?.['@reciple/jsx'],
+                '@reciple/jsx': packageJSON.dependencies?.['@reciple/jsx']!,
                 // 'reciple': `^${packageJSON.version}`,
             },
             devDependencies: {
-                '@types/node': packageJSON.devDependencies?.['@types/node'],
-                nodemon: packageJSON.devDependencies?.nodemon
+                '@types/node': packageJSON.devDependencies?.['@types/node']!,
+                nodemon: packageJSON.devDependencies?.nodemon!
             }
         },
         ts: {},
         js: {}
     };
 
-    export function createDependencyRecord(type: 'ts'|'js'): Partial<Record<'dependencies'|'devDependencies', PackageJson.Dependency>> {
+    export function createDependencyRecord(type: 'ts'|'js'): Partial<Record<'dependencies'|'devDependencies', Record<string, string>>> {
         const record = type === 'ts'
             ? dependencies.ts
             : type === 'js'
                 ? dependencies.js
                 : {};
 
-        record.dependencies = sortRecordByKey({ ...record.dependencies, ...dependencies.both.dependencies });
-        record.devDependencies = sortRecordByKey({ ...record.devDependencies, ...dependencies.both.devDependencies });
+        record.dependencies = { ...record.dependencies, ...dependencies.both.dependencies };
+        record.devDependencies = { ...record.devDependencies, ...dependencies.both.devDependencies };
 
         return record;
     }
@@ -460,14 +426,19 @@ export namespace TemplateBuilder {
 
     export interface CreateModulesOptions extends Partial<CopyOptions> {}
 
-    export interface CreatePackageManagerOptions {
-        packageManager?: PackageManager|PackageManager.Type;
+    export interface SetPackageManagerOptions {
+        packageManager?: PackageManagerName;
     }
 
     export interface CreateEnvFileOptions {
         envFile?: string;
         tokenKey?: string;
         env?: Record<string, string>;
+    }
+
+    export interface BuildOptions {
+        skipInstallDependencies?: boolean;
+        skipBuild?: boolean;
     }
 
     export interface CopyOptions {
@@ -526,49 +497,5 @@ export namespace TemplateBuilder {
 
         await mkdir(path.dirname(to), { recursive: true });
         await copyFile(from, to);
-    }
-
-    export interface RunCommandOptions {
-        cwd?: string;
-        env?: NodeJS.ProcessEnv;
-        onOutput?: (data: string) => void;
-    }
-
-    export interface RunCommandResult {
-        output: string;
-        lastOutput: string;
-    }
-
-    export function runCommand(command: string, options?: RunCommandOptions): Promise<RunCommandResult> {
-        let lastOutput = '';
-        let output = '';
-
-        const child = exec(command, {
-            cwd: options?.cwd,
-            env: options?.env
-        });
-
-        const onOutput = (data: any) => {
-            lastOutput = String(data).trim();
-            output += `\n${lastOutput}`;
-
-            return options?.onOutput?.(lastOutput);
-        }
-
-        return new Promise((resolve, reject) => {
-            const onExit = (code: number|null) => code === 0
-                ? resolve({ output, lastOutput })
-                : reject(new RecipleError({
-                    message: `Command exited "${command}" with code ${colors.red(code?.toString() ?? 'unknown')}`,
-                    name: 'CommandError',
-                    cause: output
-                }));
-
-            child.on('exit', onExit);
-            child.on('error', error => reject(error));
-
-            child.stdout?.on('data', onOutput);
-            child.stderr?.on('data', onOutput);
-        });
     }
 }

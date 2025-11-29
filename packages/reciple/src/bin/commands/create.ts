@@ -1,10 +1,11 @@
 import { Command, Option } from 'commander';
 import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
-import { colors, PackageManager } from '@reciple/utils';
+import { colors } from '@reciple/utils';
 import { TemplateBuilder } from '../../classes/templates/TemplateBuilder.js';
 import { cancel } from '@clack/prompts';
 import { inspect } from 'node:util';
 import { NotAnError } from '../../classes/NotAnError.js';
+import type { PackageManagerName } from 'nypm';
 
 export default class CreateSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('create')
@@ -14,9 +15,11 @@ export default class CreateSubcommand extends CLISubcommand {
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
         .option('-T, --typescript', 'Use TypeScript')
         .addOption(new Option('-p, --package-manager <name>', 'The name of the package manager to use')
-            .choices(PackageManager.all)
+            .choices(['npm', 'yarn', 'pnpm', 'bun', 'deno'])
         )
         .option('-D, --default', 'Use defaults for prompts')
+        .option('--install', 'Install dependencies during setup', true)
+        .option('--build', 'Build the project after creation', true)
         .allowUnknownOption(true);
 
     public async execute(): Promise<void> {
@@ -25,9 +28,9 @@ export default class CreateSubcommand extends CLISubcommand {
             cli: this.cli,
             directory: this.subcommand.args[0],
             typescript: flags?.typescript,
-            packageManager: flags?.packageManager && new PackageManager(flags.packageManager),
+            packageManager: flags?.packageManager,
             defaultAll: flags?.default,
-            token: flags?.token
+            token: flags?.token,
         });
 
         try {
@@ -35,11 +38,10 @@ export default class CreateSubcommand extends CLISubcommand {
             await template.createDirectory();
             await template.setupLanguage();
             await template.createConfig();
-            await template.createPackageManager();
-            await template.checkInstalledPackageManager();
+            await template.setPackageManager();
             await template.createTemplate();
             await template.createEnvFile({ envFile: this.cli.flags.env[0] });
-            await template.build();
+            await template.build({ skipInstallDependencies: !flags?.install, skipBuild: !flags?.build });
         } catch (error) {
             cancel(colors.red(error instanceof NotAnError ? error.message : inspect(error)));
         }
@@ -52,6 +54,8 @@ export namespace CreateSubcommand {
         token?: string;
         default?: boolean;
         typescript?: boolean;
-        packageManager?: PackageManager.Type;
+        packageManager?: PackageManagerName;
+        install: boolean;
+        build: boolean;
     }
 }

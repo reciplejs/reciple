@@ -10,7 +10,7 @@ import type { BuildConfig } from '../../helpers/types.js';
 import type { EventListeners } from '../client/EventListeners.js';
 import type { UserConfig } from 'tsdown';
 import { unrun, type Options } from 'unrun';
-import * as find from 'empathic/find';
+import { resolveTSConfig } from 'pkg-types';
 
 declare module "@reciple/core" {
     interface Config {
@@ -118,17 +118,11 @@ export class ConfigReader {
 
 export namespace ConfigReader {
     export async function getProjectLang(dir: string): Promise<'ts'|'js'> {
-        const hasTsConfig = !!findTsconfig({ dir });
-        const usesDotTsConfig = (await ConfigReader.findConfig(dir).then(f => f ?? '')).endsWith('ts');
+        const hasTsConfig = !!await resolveTSConfig(dir, { try: true });
+        const configLangIsTypescript = (await ConfigReader.findConfig(dir).then(f => f ?? '')).endsWith('ts');
 
-        return hasTsConfig || usesDotTsConfig ? 'ts' : 'js';
+        return hasTsConfig || configLangIsTypescript ? 'ts' : 'js';
     }
-
-    export function findTsconfig(options?: { dir?: string; name?: string; }): string|null {
-        return find.up(options?.name ?? 'tsconfig.json', {
-            cwd: options?.dir ?? process.cwd(),
-        }) ?? null;
-    };
 
     export interface Structure {
         client: Client;

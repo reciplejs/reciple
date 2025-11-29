@@ -1,5 +1,4 @@
-import { colors, type PackageManager } from '@reciple/utils';
-import { TemplateBuilder } from '../templates/TemplateBuilder.js';
+import { colors } from '@reciple/utils';
 import type { Client } from '@reciple/core';
 import { setTimeout } from 'node:timers/promises';
 
@@ -16,12 +15,6 @@ export namespace RuntimeEnvironment {
         if (process.versions.node) return 'node';
 
         return null;
-    }
-
-    export async function isInstalled(environment: Type|PackageManager.Type): Promise<boolean> {
-        return TemplateBuilder.runCommand(`${environment} -v`)
-            .then(() => true)
-            .catch(() => false);
     }
 
     export async function sleep(time: number): Promise<void> {
