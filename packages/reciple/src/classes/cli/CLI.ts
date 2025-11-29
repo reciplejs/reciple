@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { coerce } from 'semver';
 import { colors, Format, isDebugging, recursiveDefaults } from '@reciple/utils';
-import { logger, Logger, type LoggerOptions } from 'prtyprnt';
+import { logger, Logger, LogLevel } from 'prtyprnt';
 import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';
@@ -40,11 +40,10 @@ export class CLI {
 
         this.logger = options.logger instanceof Logger ? options.logger : new Logger(options.logger);
 
-        this.logger.debugmode = {
-            ...this.logger.debugmode,
-            enabled: () => this.flags.debug,
-            writeToFile: true
-        };
+        if (this.flags.debug) {
+            this.logger.logLevel = LogLevel.Debug;
+            this.logger.writeLevel = LogLevel.Debug;
+        }
     }
 
     public async parse(argv?: string[]): Promise<this> {
@@ -126,7 +125,7 @@ export namespace CLI {
         description: string;
         build: string;
         subcommandsDir: string;
-        logger?: Logger|LoggerOptions;
+        logger?: Logger|Logger.Options;
     }
 
     export interface Flags {

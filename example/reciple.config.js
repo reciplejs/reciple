@@ -73,11 +73,7 @@ export const config = {
         ignore: ["_*"],
         filter: undefined
     },
-    logger: await useLogger().clone({
-        debugmode: {
-            enabled: true
-        }
-    }).createFileWriteStream({
+    logger: await useLogger().clone().createFileWriteStream({
         path: './logs/latest.log',
         mode: Prtyprnt.FileWriteStreamMode.Rename
     })

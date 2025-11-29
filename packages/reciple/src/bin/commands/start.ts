@@ -32,7 +32,7 @@ export default class StartSubcommand extends CLISubcommand {
             createIfNotExists: false
         });
 
-        const logger = config.logger instanceof Logger ? config.logger : this.cli.logger.clone(config.logger);
+        const logger = config.logger instanceof Logger ? this.cli.logger = config.logger : this.cli.logger.clone(config.logger);
 
         let token = flags.token || config.token || '';
             token = resolveEnvProtocol(token) || token;

@@ -86,7 +86,7 @@ export namespace EventListeners {
             defineModuleManagerEvent('moduleDisableError', (module, error) => client.logger.error(`Failed to disable module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}:`, error)),
             defineModuleLoaderEvent('modulesResolving', () => client.logger.log(colors.green('🔍 Resolving modules...'))),
             defineModuleLoaderEvent('modulesResolved', (modules) => client.logger.log(colors.green(`✅ Resolved ${modules.length} ${Format.plural(modules.length, 'module')}.`))),
-            defineModuleLoaderEvent('moduleResolving', (filepath) => client.logger.debug(`Resolving module ${colors.cyan(`"${filepath}"`)}...`)),
+            defineModuleLoaderEvent('moduleResolving', (filepath) => client.logger.debug(`Resolving module ${colors.cyan(`"${filepath}"`)}`)),
             defineModuleLoaderEvent('moduleResolved', (module) => client.logger.debug(`Resolved module ${colors.cyan(`"${BaseModule.getFilepath(module) || module.id}"`)}`)),
             defineModuleLoaderEvent('moduleResolveError', (error) => client.logger.error(`Failed to resolve module:`, error)),
             defineClientEvent('debug', (message) => client.logger.debug(message)),
