@@ -4,7 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "modules/**"],
-      "inputs": ["src/**", "*.json", "tsdown.config.ts"],
+      "outputLogs": "new-only",
       "cache": true
     },
     "check": {
