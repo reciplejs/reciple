@@ -4,7 +4,7 @@ import { CLI } from './CLI.js';
 import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import type { ModuleLoader } from '../client/ModuleLoader.js';
-import type { Logger, LoggerOptions } from 'prtyprnt';
+import type { Logger } from 'prtyprnt';
 import type { ModuleManager } from '../managers/ModuleManager.js';
 import type { BuildConfig } from '../../helpers/types.js';
 import type { EventListeners } from '../client/EventListeners.js';
@@ -16,7 +16,7 @@ declare module "@reciple/core" {
     interface Config {
         token?: string;
         modules?: ModuleLoader.Config;
-        logger?: Logger|LoggerOptions;
+        logger?: Logger|Logger.Options;
     }
 
     interface Client {
@@ -170,13 +170,11 @@ export namespace ConfigReader {
             treeshake: true,
             clean: true,
             ...overrides,
-            ...{
-                watch: false,
-                platform: 'node',
-                format: 'esm',
-                unbundle: true,
-                skipNodeModulesBundle: true
-            }
+            watch: false,
+            platform: 'node',
+            format: 'esm',
+            unbundle: true,
+            skipNodeModulesBundle: true
         };
     }
 

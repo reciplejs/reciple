@@ -22,7 +22,7 @@ export function createTsdownConfig(options?: UserConfig) {
         tsconfig: 'tsconfig.json',
         plugins: [
             replacePlugin({
-                'process.env.__VERSION__': `"packageJSON.version"`
+                'process.env.__VERSION__': `"${packageJSON.version}"`
             })
         ],
         ...options
