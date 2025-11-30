@@ -9,24 +9,24 @@
   ],
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
-    "build": "lerna run build",
-    "check": "lerna run check",
+    "build": "turbo run build",
+    "check": "turbo run check",
     "test": "npm run dev -w example",
-    "publish-dev": "lerna run build && lerna publish prerelease",
-    "publish-latest": "lerna run build && lerna publish",
-    "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
+    "publish-dev": "turbo run build && turbo publish prerelease",
+    "publish-latest": "turbo run build && turbo publish",
+    "docs": "rimraf -g ./packages/*/docs/docs.json && turbo run docs",
     "test-create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
     "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "lerna": "^9.0.3",
-    "nx": "^22.1.3",
     "rimraf": "^6.1.2",
     "rolldown": "^1.0.0-beta.52",
+    "turbo": "^2.6.1",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "tsdown": "^0.16.8"
-  }
+  },
+  "packageManager": "npm@11.1.0"
 }
