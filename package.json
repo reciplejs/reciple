@@ -19,6 +19,7 @@
     "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.8",
     "@types/node": "^24.10.1",
     "rimraf": "^6.1.2",
     "rolldown": "^1.0.0-beta.52",
