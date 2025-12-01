@@ -1,6 +1,6 @@
 {
   "name": "reciple",
-  "version": "10.0.0",
+  "version": "10.0.1-dev.0",
   "license": "LGPL-3.0-only",
   "description": "The CLI for reciple",
   "module": "./dist/index.mjs",
@@ -36,7 +36,7 @@
   "dependencies": {
     "@clack/prompts": "^0.11.0",
     "@dotenvx/dotenvx": "^1.51.1",
-    "@reciple/utils": "^10.0.0",
+    "@reciple/utils": "^10.0.1-dev.0",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",
     "commander": "^14.0.2",
@@ -54,7 +54,7 @@
     "unrun": "^0.2.14"
   },
   "devDependencies": {
-    "@reciple/jsx": "^10.0.0",
+    "@reciple/jsx": "^10.0.1-dev.0",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^24.10.1",
     "@types/semver": "^7.7.1",
