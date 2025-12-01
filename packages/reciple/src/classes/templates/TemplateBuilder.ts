@@ -433,7 +433,8 @@ export namespace TemplateBuilder {
             },
             devDependencies: {
                 '@types/node': packageJSON.devDependencies?.['@types/node']!,
-                nodemon: packageJSON.devDependencies?.nodemon!
+                nodemon: packageJSON.devDependencies?.nodemon!,
+                typescript: packageJSON.devDependencies?.['typescript']!,
             }
         },
         ts: {},
