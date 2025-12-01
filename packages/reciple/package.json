@@ -63,7 +63,7 @@
     "rolldown": "^1.0.0-beta.52"
   },
   "peerDependencies": {
-    "@reciple/core": "^10.0.0",
+    "@reciple/core": "^10.0.0 || >=10.0.0-dev.0",
     "discord.js": "^14.25.1"
   },
   "peerDependenciesMeta": {
