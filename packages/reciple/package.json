@@ -40,18 +40,14 @@
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",
     "commander": "^14.0.2",
-    "detect-indent": "^7.0.2",
     "github-slugger": "^2.0.0",
     "globby": "^16.0.0",
-    "load-tsconfig": "^0.2.5",
     "micromatch": "^4.0.8",
-    "ora": "^9.0.0",
     "pkg-types": "^2.3.0",
     "prtyprnt": "^2.0.2",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
     "tsdown": "^0.17.0-beta.4",
-    "unconfig": "^7.4.1",
     "unrun": "^0.2.15"
   },
   "devDependencies": {

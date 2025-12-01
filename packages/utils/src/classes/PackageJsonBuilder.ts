@@ -1,4 +1,3 @@
-import type { Indent } from 'detect-indent';
 import { rm, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { readPackageJSON, resolvePackageJSON, writePackageJSON, type PackageJson } from 'pkg-types';
@@ -107,7 +106,4 @@ export namespace PackageJsonBuilder {
     };
 }
 
-export type {
-    Indent,
-    PackageJson
-};
+export type { PackageJson };
