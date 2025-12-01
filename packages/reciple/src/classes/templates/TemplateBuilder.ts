@@ -1,7 +1,7 @@
 import { colors, PackageJsonBuilder } from '@reciple/utils';
 import { ConfigReader } from '../cli/ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { confirm, intro, isCancel, outro, select, text } from '@clack/prompts';
+import { confirm, intro, isCancel, outro, select, text, log } from '@clack/prompts';
 import micromatch from 'micromatch';
 import { CLI } from '../cli/CLI.js';
 import path from 'node:path';
@@ -25,6 +25,7 @@ export class TemplateBuilder {
     public packageJson?: PackageJsonBuilder;
 
     public packageManager?: PackageManagerName;
+    public dependenciesInstalled: boolean = false;
 
     get directory() {
         return this._directory ?? process.cwd();
@@ -178,14 +179,6 @@ export class TemplateBuilder {
     public async createTemplate(options?: TemplateBuilder.CreateModulesOptions): Promise<this> {
         const source = path.join(CLI.root, './assets/templates/', this.typescript ? 'typescript' : 'javascript');
         const globals = path.join(CLI.root, './assets/global/');
-        const modulesDirectory = path.join(this.directory, 'src');
-        const moduleTemplates = await ModuleTemplateBuilder.resolveModuleTemplates(this.typescript ? 'ts' : 'js');
-        const moduleOptions: ModuleTemplateBuilder.Options = {
-            cli: this.cli,
-            config: await ConfigReader.getDefault(this.typescript ? 'ts' : 'js'),
-            defaultAll: true,
-            typescript: this.typescript,
-        };
 
         function rename(data: TemplateBuilder.CopyMetadata) {
             switch (data.basename) {
@@ -211,7 +204,71 @@ export class TemplateBuilder {
         const [template, loader] = CLI.createSpinnerPromise({
             promise: Promise.all([
                 TemplateBuilder.copy(source, this.directory, { ...options, rename, overwrite }),
-                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite }),
+                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite })
+            ]),
+            message: 'Copying template files',
+            successMessage: 'Files copied successfully',
+            errorMessage: 'Failed to copy files'
+        });
+
+        await template;
+        return this;
+    }
+
+    public async installDependencies(options?: TemplateBuilder.InstallDependenciesOptions): Promise<this> {
+        if (options?.value !== false) {
+            if (options?.value === undefined) {
+                const install = this.defaultAll
+                    ? true
+                    : await confirm({
+                        message: `Would you like to install dependencies?`,
+                        active: 'Yes',
+                        inactive: 'No',
+                        initialValue: true
+                    });
+
+                if (isCancel(install)) throw new NotAnError('Operation cancelled');
+                if (!install) return this;
+            }
+
+            await CLI.createSpinnerPromise({
+                promise: installDependencies({
+                    cwd: this.directory,
+                    packageManager: this.packageManager,
+                    silent: true
+                }),
+                indicator: 'timer',
+                errorMessage: `${colors.bold(colors.red('✗'))} Failed to install dependencies`,
+                successMessage: `${colors.bold(colors.green('✔'))} Dependencies installed successfully`,
+                message: `${colors.bold(colors.dim('$'))} Installing dependencies`
+            })[0];
+
+            this.dependenciesInstalled = true;
+        }
+
+        return this;
+    }
+
+    public async createModules(): Promise<this> {
+        const modulesDirectory = path.join(this.directory, 'src');
+        const moduleTemplates = await ModuleTemplateBuilder.resolveModuleTemplates(this.typescript ? 'ts' : 'js');
+
+        await mkdir(modulesDirectory, { recursive: true });
+
+        if (!this.dependenciesInstalled) {
+            log.warn('Dependencies not installed. Skipping module creation.');
+            return this;
+        }
+
+        const moduleOptions: ModuleTemplateBuilder.Options = {
+            cli: this.cli,
+            config: await this.config?.read()!,
+            defaultAll: true,
+            typescript: this.typescript,
+        };
+
+        const [template, loader] = CLI.createSpinnerPromise({
+            promise: Promise.all([
                 new ModuleTemplateBuilder({
                         ...moduleOptions,
                         directory: path.join(modulesDirectory, 'commands'),
@@ -229,9 +286,9 @@ export class TemplateBuilder {
                     .setupPlaceholders()
                     .then(m => m.build({ silent: true }))
             ]),
-            message: 'Copying template files',
-            successMessage: 'Files copied successfully',
-            errorMessage: 'Failed to copy files'
+            message: 'Creating module templates',
+            successMessage: 'Module templates created successfully',
+            errorMessage: 'Failed to create module templates'
         });
 
         await template;
@@ -325,18 +382,6 @@ export class TemplateBuilder {
     public async build(options?: TemplateBuilder.BuildOptions): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
 
-        if (options?.skipInstall) await CLI.createSpinnerPromise({
-            promise: installDependencies({
-                cwd: this.directory,
-                packageManager: this.packageManager,
-                silent: true
-            }),
-            indicator: 'timer',
-            errorMessage: `${colors.bold(colors.red('✗'))} Failed to install dependencies`,
-            successMessage: `${colors.bold(colors.green('✔'))} Dependencies installed successfully`,
-            message: `${colors.bold(colors.dim('$'))} Installing dependencies`
-        })[0];
-
         if (!options?.skipBuild) await CLI.createSpinnerPromise({
             promise: runScript('build', {
                 cwd: this.directory,
@@ -426,6 +471,10 @@ export namespace TemplateBuilder {
         packageManager?: PackageManagerName;
     }
 
+    export interface InstallDependenciesOptions {
+        value?: boolean;
+    }
+
     export interface CreateEnvFileOptions {
         envFile?: string;
         tokenKey?: string;
@@ -433,7 +482,6 @@ export namespace TemplateBuilder {
     }
 
     export interface BuildOptions {
-        skipInstall?: boolean;
         skipBuild?: boolean;
     }
 
