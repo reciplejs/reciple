@@ -385,10 +385,9 @@ export namespace TemplateBuilder {
     export const dependencies: Record<'ts'|'js'|'both', Partial<Record<'dependencies'|'devDependencies', Record<string, string>>>> = {
         both: {
             dependencies: {
-                // TODO: Uncomment when ready
-                // '@reciple/core': packageJSON.dependencies?.['@reciple/core'],
+                '@reciple/core': packageJSON.dependencies?.['@reciple/core']!,
                 '@reciple/jsx': packageJSON.dependencies?.['@reciple/jsx']!,
-                // 'reciple': `^${packageJSON.version}`,
+                'reciple': `^${packageJSON.version}`,
             },
             devDependencies: {
                 '@types/node': packageJSON.devDependencies?.['@types/node']!,
