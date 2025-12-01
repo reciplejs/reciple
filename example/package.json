@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.2-dev.0",
+  "version": "0.0.2-dev.1",
   "type": "module",
   "private": true,
   "scripts": {
@@ -11,6 +11,6 @@
   "devDependencies": {
     "@reciple/core": "^10.0.1-dev.0",
     "@reciple/jsx": "^10.0.1-dev.0",
-    "reciple": "^10.0.1-dev.0"
+    "reciple": "^10.0.1-dev.1"
   }
 }
