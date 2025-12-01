@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-import { fork } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { CLI } from 'reciple';
 
-fork(CLI.bin, ['create', ...process.argv.slice(2)], {
+spawn(process.execPath, [CLI.bin, 'create', ...process.argv.slice(2)], {
+    cwd: process.cwd(),
+    env: process.env,
     stdio: 'inherit'
 });
