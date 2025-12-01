@@ -47,12 +47,12 @@
     "micromatch": "^4.0.8",
     "ora": "^9.0.0",
     "pkg-types": "^2.3.0",
-    "prtyprnt": "^2.0.1",
+    "prtyprnt": "^2.0.2",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
-    "tsdown": "^0.16.8",
+    "tsdown": "^0.17.0-beta.4",
     "unconfig": "^7.4.1",
-    "unrun": "^0.2.14"
+    "unrun": "^0.2.15"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.1-dev.0",
