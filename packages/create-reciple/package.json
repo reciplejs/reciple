@@ -1,6 +1,6 @@
 {
   "name": "create-reciple",
-  "version": "10.0.1-dev.7",
+  "version": "10.0.1-dev.8",
   "license": "LGPL-3.0-only",
   "description": "Alias for `reciple create`",
   "bin": "./dist/index.mjs",
@@ -21,7 +21,7 @@
     "directory": "packages/create-reciple"
   },
   "dependencies": {
-    "reciple": "^10.0.1-dev.6"
+    "reciple": "^10.0.1-dev.7"
   },
   "publishConfig": {
     "access": "public"
