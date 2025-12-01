@@ -12,8 +12,8 @@
     "build": "lerna run build",
     "check": "lerna run check",
     "test": "npm run dev -w example",
-    "publish-dev": "lerna run build && lerna publish prerelease",
-    "publish-latest": "lerna run build && lerna publish",
+    "publish-dev": "lerna publish prerelease",
+    "publish-latest": "lerna publish",
     "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
     "test-create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
     "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
