@@ -47,6 +47,7 @@
     "micromatch": "^4.0.8",
     "ora": "^9.0.0",
     "pkg-types": "^2.3.0",
+    "prtyprnt": "^2.0.1",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
     "tsdown": "^0.16.8",
@@ -59,7 +60,6 @@
     "@types/node": "^24.10.1",
     "@types/semver": "^7.7.1",
     "nodemon": "^3.1.11",
-    "prtyprnt": "^2.0.1",
     "rolldown": "^1.0.0-beta.52"
   },
   "peerDependencies": {
