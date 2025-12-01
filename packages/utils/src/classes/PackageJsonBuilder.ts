@@ -83,7 +83,7 @@ export class PackageJsonBuilder {
             return builder;
         }
 
-        if (!file) throw new Error('Package.json file not found');
+        if (!file) throw new Error('package.json file not found');
 
         return new PackageJsonBuilder(await readPackageJSON(file));
     }
