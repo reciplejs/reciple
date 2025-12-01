@@ -93,7 +93,6 @@ export class ConfigReader {
 
         const reader = new ConfigReader(options.filepath);
 
-        await reader.read(options.readOptions);
         return reader;
     }
 
@@ -113,6 +112,11 @@ export class ConfigReader {
         const filepath = ConfigReader.defaultConfigFilePaths[type];
         const content = await readFile(filepath, 'utf-8');
         return content;
+    }
+
+    public static async getDefault(type: 'ts'|'js' = 'js'): Promise<ConfigReader> {
+        const filepath = ConfigReader.defaultConfigFilePaths[type];
+        return new ConfigReader(filepath).read();
     }
 }
 

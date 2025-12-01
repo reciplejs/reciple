@@ -180,9 +180,9 @@ export class TemplateBuilder {
         const globals = path.join(CLI.root, './assets/global/');
         const modulesDirectory = path.join(this.directory, 'src');
         const moduleTemplates = await ModuleTemplateBuilder.resolveModuleTemplates(this.typescript ? 'ts' : 'js');
-        const moduleOptions = {
+        const moduleOptions: ModuleTemplateBuilder.Options = {
             cli: this.cli,
-            config: this.config!,
+            config: await ConfigReader.getDefault(this.typescript ? 'ts' : 'js'),
             defaultAll: true,
             typescript: this.typescript,
         };
@@ -325,7 +325,7 @@ export class TemplateBuilder {
     public async build(options?: TemplateBuilder.BuildOptions): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
 
-        if (!options?.skipInstallDependencies) await CLI.createSpinnerPromise({
+        if (options?.skipInstall) await CLI.createSpinnerPromise({
             promise: installDependencies({
                 cwd: this.directory,
                 packageManager: this.packageManager,
@@ -357,10 +357,7 @@ export class TemplateBuilder {
             console.log(`  • ${colors.cyan(colors.bold(`cd ${this.relativeDirectory}`))}`);
         }
 
-        if (options?.skipInstallDependencies) {
-            console.log(`  • ${colors.cyan(colors.bold(installDependenciesCommand(this.packageManager ?? 'npm')))}`);
-        }
-
+        console.log(`  • ${colors.cyan(colors.bold(installDependenciesCommand(this.packageManager ?? 'npm')))} ${colors.dim('(Install dependencies)')}`);
         console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'build')))} ${colors.dim('(Build)')}`);
         console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'dev')))} ${colors.dim('(Development)')}`);
         console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'start')))} ${colors.dim('(Production)')}`);
@@ -436,7 +433,7 @@ export namespace TemplateBuilder {
     }
 
     export interface BuildOptions {
-        skipInstallDependencies?: boolean;
+        skipInstall?: boolean;
         skipBuild?: boolean;
     }
 
