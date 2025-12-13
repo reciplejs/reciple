@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@dotenvx/dotenvx": "^1.51.1",
+    "@dotenvx/dotenvx": "^1.51.2",
     "@reciple/utils": "^10.0.1-dev.2",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",
@@ -47,16 +47,16 @@
     "prtyprnt": "^2.0.2",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
-    "tsdown": "^0.17.0-beta.4",
-    "unrun": "^0.2.15"
+    "tsdown": "^0.17.3",
+    "unrun": "^0.2.19"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.1-dev.0",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.3",
     "@types/semver": "^7.7.1",
     "nodemon": "^3.1.11",
-    "rolldown": "^1.0.0-beta.52",
+    "rolldown": "^1.0.0-beta.54",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
