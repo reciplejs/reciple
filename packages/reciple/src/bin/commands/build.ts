@@ -14,13 +14,11 @@ export default class BuildSubcommand extends CLISubcommand {
 
         const configReader = new ConfigReader(
             flags.config
-            ?? await ConfigReader.findConfig(process.cwd())
+            ?? await ConfigReader.find()
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { build: buildConfig } = await configReader.read({
-            createIfNotExists: false
-        });
+        const { build: buildConfig } = await configReader.read();
 
         let plugins = buildConfig.plugins
             ? Array.isArray(buildConfig.plugins)

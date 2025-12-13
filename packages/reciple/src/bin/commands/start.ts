@@ -24,13 +24,11 @@ export default class StartSubcommand extends CLISubcommand {
         const flags = this.subcommand.opts<StartSubcommand.Flags>();
         const configReader = new ConfigReader(
             flags.config
-            ?? await ConfigReader.findConfig(process.cwd())
+            ?? await ConfigReader.find()
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { client, config, build: buildConfig } = await configReader.read({
-            createIfNotExists: false
-        });
+        const { client, config, build: buildConfig } = await configReader.read();
 
         const logger = config.logger instanceof Logger ? this.cli.logger = config.logger : this.cli.logger.clone(config.logger);
 

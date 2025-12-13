@@ -174,24 +174,23 @@ export class TemplateBuilder {
     }
 
     public async createConfig(options?: TemplateBuilder.CreateConfigOptions): Promise<this> {
-        let filepath = options?.filepath;
+        let filepath = options?.path;
 
         if (!filepath) {
-            filepath = await ConfigReader.findConfig(
-                    this.directory,
-                    this.typescript
-                        ? 'ts'
-                        : this.typescript === false
-                            ? 'js'
-                            : undefined
-                )
-                ?? path.join(
+            filepath = await ConfigReader.find({
+                cwd: this.directory,
+                lang: this.typescript
+                    ? 'ts'
+                    : this.typescript === false
+                        ? 'js'
+                        : undefined
+            }) ?? path.join(
                     this.directory,
                     ConfigReader.createConfigFilename(this.typescript ? 'ts' : 'js')
                 );
         }
 
-        const exists = await ConfigReader.hasFile(filepath);
+        const exists = await ConfigReader.exists(filepath);
 
         if (exists) {
             const overwrite = this.defaultAll
@@ -209,7 +208,7 @@ export class TemplateBuilder {
 
         this.config = await ConfigReader.create({
             ...options,
-            filepath,
+            path: filepath,
             type: this.typescript ? 'ts' : 'js',
             overwrite: true
         });

@@ -23,15 +23,11 @@ export default class CreateModuleSubcommand extends CLISubcommand {
     public async execute(): Promise<void> {
         const flags = this.subcommand.opts<CreateModuleSubcommand.Flags>();
 
-        const configReader = await (
-            new ConfigReader(
-                flags.config
-                ?? await ConfigReader.findConfig(process.cwd())
-                ?? ConfigReader.createConfigFilename('js')
-            ).read({
-                createIfNotExists: false
-            })
-        );
+        const configReader = await new ConfigReader(
+            flags.config
+            ?? await ConfigReader.find()
+            ?? ConfigReader.createConfigFilename('js')
+        ).read();
 
         const template = new ModuleTemplateBuilder({
             cli: this.cli,

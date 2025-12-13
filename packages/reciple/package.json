@@ -43,6 +43,7 @@
     "github-slugger": "^2.0.0",
     "globby": "^16.0.0",
     "micromatch": "^4.0.8",
+    "nypm": "^0.6.2",
     "pkg-types": "^2.3.0",
     "prtyprnt": "^2.0.2",
     "semver": "^7.7.3",

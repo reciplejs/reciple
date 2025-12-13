@@ -1,16 +1,16 @@
-import { Client, RecipleError, type Config } from '@reciple/core';
-import { colors } from '@reciple/utils';
+import type { ModuleLoader } from '../client/ModuleLoader.js';
+import type { ModuleManager } from '../managers/ModuleManager.js';
+import type { EventListeners } from '../client/EventListeners.js';
+import type { Logger } from 'prtyprnt';
 import { CLI } from './CLI.js';
+import { Client, RecipleError, type Config } from '@reciple/core';
+import type { BuildConfig } from '../../helpers/types.js';
+import type { UserConfig as TsdownConfig } from 'tsdown';
 import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
-import type { ModuleLoader } from '../client/ModuleLoader.js';
-import type { Logger } from 'prtyprnt';
-import type { ModuleManager } from '../managers/ModuleManager.js';
-import type { BuildConfig } from '../../helpers/types.js';
-import type { EventListeners } from '../client/EventListeners.js';
-import type { UserConfig } from 'tsdown';
-import { unrun, type Options } from 'unrun';
 import { resolveTSConfig } from 'pkg-types';
+import { unrun, type Options as UnrunOptions } from 'unrun';
+import { colors } from '@reciple/utils';
 
 declare module "@reciple/core" {
     interface Config {
@@ -50,13 +50,11 @@ export class ConfigReader {
 
     constructor(public readonly filepath: string) {}
 
-    public async read(options?: Omit<ConfigReader.ReadOptions, 'filepath'>): Promise<ConfigReader> {
-        if (!await ConfigReader.hasFile(this.filepath) && options?.createIfNotExists !== false) return ConfigReader.create({
-            filepath: this.filepath,
-            readOptions: options
+    public async read(options?: Omit<UnrunOptions, 'path'>): Promise<ConfigReader> {
+        const { module } = await unrun<Config>({
+            ...options,
+            path: this.filepath
         });
-
-        const { module } = await unrun<Config>({ ...options, path: this.filepath });
 
         if (!module || !module.client || !(module.client instanceof Client)) {
             throw new RecipleError(`exported client is not an instance of ${colors.cyan('Client')} from ${colors.green('"@reciple/core"')}.`);
@@ -69,96 +67,94 @@ export class ConfigReader {
         return this;
     }
 
-    public async create(options?: Omit<ConfigReader.CreateOptions, 'filepath'>): Promise<ConfigReader> {
-        return ConfigReader.create({ ...options, filepath: this.filepath });
+    public async create(options: Omit<ConfigReader.CreateOptions, 'path'>): Promise<ConfigReader> {
+        const exists = await ConfigReader.exists(this.filepath);
+
+        if (exists && options.throwIfExists === true) {
+            throw new RecipleError(`Config file already exists at ${colors.green(path.relative(process.cwd(), this.filepath))}.`);
+        }
+
+        if (!exists || exists && options.overwrite !== false) {
+            await mkdir(path.dirname(this.filepath), { recursive: true });
+            await writeFile(this.filepath, await ConfigReader.getDefaultContent(options.type));
+        }
+
+        return this.read(options.readOptions);
     }
 
-    public async exists(): Promise<boolean> {
-        return await ConfigReader.hasFile(this.filepath);
+    public static async exists(file: string): Promise<boolean> {
+        return await stat(file).then(s => s.isFile()).catch(() => false);
     }
 
     public static async create(options: ConfigReader.CreateOptions): Promise<ConfigReader> {
-        const type = options.type ?? ConfigReader.getLangTypeFromFilename(options.filepath) ?? 'js';
+        return new ConfigReader(options.path).create(options);
+    }
 
-        if (await ConfigReader.hasFile(options.filepath) && !options.overwrite) {
-            if (options.throwOnConflict !== false) throw new RecipleError(`config file already exists at ${colors.green(options.filepath)}`);
+    public static async find(options?: ConfigReader.FindOptions): Promise<string|null> {
+        const filenames = ConfigReader.configFilenames.filter(f => !options?.lang || f.endsWith(options.lang));
+        const cwd = options?.cwd ?? process.cwd();
+        const directories = [cwd];
 
-            const reader = new ConfigReader(options.filepath);
-            await reader.read(options.readOptions);
-            return reader;
+        directories.push(...(options?.directories ?? [path.join(cwd, '.config')]));
+
+        for (const directory of directories) {
+            if (!(await stat(directory)).isDirectory()) continue;
+
+            const file = (await readdir(directory)).find(f => filenames.includes(f));
+            if (file) return path.join(directory, file);
         }
 
-        await mkdir(path.dirname(options.filepath), { recursive: true });
-        await writeFile(options.filepath, await this.getDefaultContent(type));
-
-        const reader = new ConfigReader(options.filepath);
-
-        return reader;
-    }
-
-    public static async hasFile(filepath: string): Promise<boolean> {
-        return stat(filepath)
-            .then(s => s.isFile())
-            .catch(() => false);
-    }
-
-    public static async findConfig(directory: string, type?: 'ts'|'js'): Promise<string|null> {
-        const validFiles = ConfigReader.defaultConfigFilenames.filter(f => type ? ConfigReader.FileTypes[type].includes(f) : true);
-        const files = (await readdir(directory)).find(f => validFiles.includes(f));
-        return files ? path.join(directory, files) : null;
-    }
-
-    public static async getDefaultContent(type: 'ts'|'js' = 'js'): Promise<string> {
-        const filepath = ConfigReader.defaultConfigFilePaths[type];
-        const content = await readFile(filepath, 'utf-8');
-        return content;
+        return null;
     }
 }
 
 export namespace ConfigReader {
-    export async function getProjectLang(dir: string): Promise<'ts'|'js'> {
-        const hasTsConfig = !!await resolveTSConfig(dir, { try: true });
-        const configLangIsTypescript = (await ConfigReader.findConfig(dir).then(f => f ?? '')).endsWith('ts');
+    export interface CreateOptions {
+        path: string;
+        overwrite?: boolean;
+        throwIfExists?: boolean;
+        type: LangType;
+        readOptions?: Omit<UnrunOptions, 'path'>;
+    }
+
+    export interface FindOptions {
+        cwd?: string;
+        lang?: LangType;
+        directories?: string[];
+    }
+
+    export async function getProjectLang(cwd: string): Promise<LangType> {
+        const hasTsConfig = !!await resolveTSConfig(cwd, { try: true });
+        const configLangIsTypescript = !!(await ConfigReader.find({ cwd, lang: 'ts' }));
 
         return hasTsConfig || configLangIsTypescript ? 'ts' : 'js';
     }
 
-    export interface Structure {
-        client: Client;
-        config: Config;
-    }
+    export type LangType = 'ts'|'js';
 
-    export interface ReadOptions extends Options {
-        createIfNotExists?: boolean;
-        createOptions?: Omit<CreateOptions, 'path'>;
-    }
-
-    export interface CreateOptions {
-        filepath: string;
-        overwrite?: boolean;
-        throwOnConflict?: boolean;
-        type?: 'ts' | 'js';
-        readOptions?: Omit<ReadOptions, ''>;
-    }
-
-    export const FileTypes = {
-        ts: ['ts', 'mts', 'tsx'],
-        js: ['js', 'mjs', 'jsx']
-    };
-
-    export const defaultConfigFilePaths = {
+    export const defaultConfigPath = {
         ts: path.join(CLI.root, 'assets/config', `reciple.config.ts`),
         js: path.join(CLI.root, 'assets/config', `reciple.config.js`)
     };
 
-    export const defaultConfigFilenames = [
+    export async function getDefaultContent(type: LangType): Promise<string> {
+        const filepath = ConfigReader.defaultConfigPath[type];
+        const content = await readFile(filepath, 'utf-8');
+        return content;
+    }
+
+    export const configFilenames = [
         'reciple.config.ts',
         'reciple.config.mts',
         'reciple.config.js',
         'reciple.config.mjs'
     ];
 
-    export function normalizeTsdownConfig({ type, overrides }: { type?: 'ts' | 'js', overrides?: BuildConfig; } = {}): UserConfig {
+    export function createConfigFilename(type: LangType, esm: boolean = false): string {
+        return `reciple.config.${esm ? 'm' : ''}${type}`;
+    }
+
+    export function normalizeTsdownConfig({ type, overrides }: { type?: LangType; overrides?: BuildConfig; } = {}): TsdownConfig {
         return {
             entry: [`./src/**/*.{ts,tsx,js,jsx}`],
             outDir: './modules',
@@ -175,17 +171,5 @@ export namespace ConfigReader {
             unbundle: true,
             skipNodeModulesBundle: true
         };
-    }
-
-    export function createConfigFilename(type: 'ts'|'js', esm: boolean = false): string {
-        return `reciple.config.${type === 'ts' ? esm ? 'mts' : 'ts' : esm ? 'mjs' : 'js'}`;
-    }
-
-    export function getLangTypeFromFilename(filename: string): 'ts'|'js'|null {
-        const extention = path.extname(filename).slice(1);
-
-        if (FileTypes.ts.includes(extention)) return 'ts';
-        if (FileTypes.js.includes(extention)) return 'js';
-        return null;
     }
 }
