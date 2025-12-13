@@ -1,6 +1,6 @@
 {
   "name": "@reciple/utils",
-  "version": "10.0.1-dev.2",
+  "version": "10.0.1-dev.3",
   "license": "LGPL-3.0-only",
   "description": "Utils for reciple",
   "module": "./dist/index.mjs",
