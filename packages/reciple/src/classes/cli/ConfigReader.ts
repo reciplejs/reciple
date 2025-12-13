@@ -98,7 +98,9 @@ export class ConfigReader {
         directories.push(...(options?.directories ?? [path.join(cwd, '.config')]));
 
         for (const directory of directories) {
-            if (!(await stat(directory)).isDirectory()) continue;
+            const stats = await stat(directory).catch(() => undefined);
+
+            if (!stats?.isDirectory()) continue;
 
             const file = (await readdir(directory)).find(f => filenames.includes(f));
             if (file) return path.join(directory, file);

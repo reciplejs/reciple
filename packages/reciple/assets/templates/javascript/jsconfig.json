@@ -2,6 +2,10 @@
   "include": [
     "./src/**/*"
   ],
+  "exclude": [
+    "reciple.config.js",
+    "./config/**/*"
+  ],
   "compilerOptions": {
     "baseUrl": "./",
     "rootDir": "./src",

@@ -19,7 +19,9 @@ export default class CreateSubcommand extends CLISubcommand {
         )
         .option('-D, --default', 'Use defaults for prompts')
         .option('--install', 'Install dependencies during setup', true)
+        .option('--no-install', 'Do not install dependencies during setup')
         .option('--build', 'Build the project after creation', true)
+        .option('--no-build', 'Do not build the project after creation')
         .allowUnknownOption(true);
 
     public async execute(): Promise<void> {
@@ -42,6 +44,7 @@ export default class CreateSubcommand extends CLISubcommand {
             await template.createTemplate();
             await template.setPackageManager();
             await template.installDependencies({ value: flags?.install });
+            await template.createModules();
             await template.build({ skipBuild: !flags?.build });
         } catch (error) {
             cancel(colors.red(error instanceof NotAnError ? error.message : inspect(error)));

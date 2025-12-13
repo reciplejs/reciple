@@ -381,7 +381,7 @@ export class TemplateBuilder {
     public async build(options?: TemplateBuilder.BuildOptions): Promise<this> {
         await this.packageJson?.write(this.packageJsonPath, true);
 
-        if (!options?.skipBuild) await CLI.createSpinnerPromise({
+        if (!options?.skipBuild && this.dependenciesInstalled) await CLI.createSpinnerPromise({
             promise: runScript('build', {
                 cwd: this.directory,
                 packageManager: this.packageManager,
