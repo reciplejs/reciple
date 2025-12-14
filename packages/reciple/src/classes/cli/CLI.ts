@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { coerce } from 'semver';
 import { colors, Format, isDebugging, recursiveDefaults } from '@reciple/utils';
-import { logger, Logger, LogLevel } from 'prtyprnt';
+import { logger, Logger, LogLevel } from '@prtty/print';
 import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';

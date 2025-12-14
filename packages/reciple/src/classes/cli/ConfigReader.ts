@@ -1,7 +1,7 @@
 import type { ModuleLoader } from '../client/ModuleLoader.js';
 import type { ModuleManager } from '../managers/ModuleManager.js';
 import type { EventListeners } from '../client/EventListeners.js';
-import type { Logger } from 'prtyprnt';
+import type { Logger } from '@prtty/print';
 import { CLI } from './CLI.js';
 import { Client, RecipleError, type Config } from '@reciple/core';
 import type { BuildConfig } from '../../helpers/types.js';

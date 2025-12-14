@@ -1,6 +1,6 @@
 import { CLI } from '../classes/cli/CLI.js';
 import path from 'node:path';
-import { logger } from 'prtyprnt';
+import { logger } from '@prtty/print';
 import type { PackageJson } from '@reciple/utils';
 
 /**

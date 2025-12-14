@@ -30,9 +30,9 @@
     "directory": "packages/utils"
   },
   "dependencies": {
+    "@prtty/prtty": "^1.1.0",
     "@types/shell-quote": "^1.7.5",
     "detect-newline": "^4.0.1",
-    "kleur": "^4.1.5",
     "pkg-types": "^2.3.0",
     "radash": "^12.1.1",
     "shell-quote": "^1.8.3"

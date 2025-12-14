@@ -101,7 +101,7 @@ export namespace EventListeners {
         const defineCommandsEvent = <E extends keyof CommandManager.Events>(event: E, onEvent: (...args: CommandManager.Events[E]) => any): RegisteredEvent => ({ emitter: client.commands!, event, onEvent });
 
         const events: RegisteredEvent[] = [
-            defineCommandsEvent('applicationCommandsRegister', (commands, guildId) => client.logger.log(colors.green(`📩 Registered ${colors.cyan(commands.size)} application ${Format.plural(commands.size, 'command')}${guildId ? ` to guild ${colors.magenta(guildId)}` : colors.magenta(' globally')}.`))),
+            defineCommandsEvent('applicationCommandsRegister', (commands, guildId) => client.logger.log(colors.green(`📩 Registered ${colors.cyan(commands.size.toLocaleString())} application ${Format.plural(commands.size, 'command')}${guildId ? ` to guild ${colors.magenta(guildId)}` : colors.magenta(' globally')}.`))),
             defineCommandsEvent('commandExecute', (data) => client.logger.debug(`Executed ${CommandType[data.command.type].toLowerCase()} command ${colors.cyan(`"${data.command.data.name}"`)} ${colors.magenta(`(${data.command.id})`)}`)),
         ];
 

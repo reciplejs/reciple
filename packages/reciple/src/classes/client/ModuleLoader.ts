@@ -19,7 +19,7 @@ import { CommandModuleValidator } from '../validation/CommandModuleValidator.js'
 import { EventModuleValidator } from '../validation/EventModuleValidator.js';
 import { PreconditionModuleValidator } from '../validation/PreconditionModule.js';
 import { PostconditionModuleValidator } from '../validation/PostconditionModule.js';
-import type { Logger } from 'prtyprnt';
+import type { Logger } from '@prtty/print';
 import { EventEmitter } from 'node:events';
 
 export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {

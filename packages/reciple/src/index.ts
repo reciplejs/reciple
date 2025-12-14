@@ -1,5 +1,5 @@
 import type { Client } from '@reciple/core';
-import { logger, type Logger } from 'prtyprnt';
+import { logger, type Logger } from '@prtty/print';
 
 export * from './classes/NotAnError.js';
 
@@ -36,7 +36,7 @@ export * from './helpers/constants.js';
 export * from './helpers/types.js';
 
 export * from '@reciple/core';
-export * as Prtyprnt from 'prtyprnt';
+export * as PrttyPrint from '@prtty/print';
 
 globalThis.useClient = () => {
     throw new Error('Client is not yet loaded.');
