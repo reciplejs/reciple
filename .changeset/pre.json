@@ -3,11 +3,11 @@
   "tag": "next",
   "initialVersions": {
     "example": "0.0.2-dev.11",
-    "@reciple/core": "10.0.1-dev.4",
-    "create-reciple": "10.0.1-dev.12",
-    "@reciple/jsx": "10.0.1-dev.0",
-    "reciple": "10.0.1-dev.11",
-    "@reciple/utils": "10.0.1-dev.4"
+    "@reciple/core": "10.0.1-next.4",
+    "create-reciple": "10.0.1-next.12",
+    "@reciple/jsx": "10.0.1-next.0",
+    "reciple": "10.0.1-next.11",
+    "@reciple/utils": "10.0.1-next.4"
   },
   "changesets": [
     "funny-hairs-bake",
