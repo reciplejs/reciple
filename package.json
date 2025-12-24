@@ -23,7 +23,7 @@
     "lerna": "^9.0.3",
     "nx": "^22.3.3",
     "rimraf": "^6.1.2",
-    "rolldown": "^1.0.0-beta.54",
+    "rolldown": "^1.0.0-beta.57",
     "tsdown": "^0.18.2",
     "typescript": "^5.9.3"
   }
