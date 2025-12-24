@@ -42,19 +42,19 @@
     "@sapphire/snowflake": "^3.5.5",
     "commander": "^14.0.2",
     "github-slugger": "^2.0.0",
-    "globby": "^16.0.0",
+    "globby": "^16.1.0",
     "micromatch": "^4.0.8",
     "nypm": "^0.6.2",
     "pkg-types": "^2.3.0",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
-    "tsdown": "^0.17.3",
-    "unrun": "^0.2.19"
+    "tsdown": "^0.18.2",
+    "unrun": "^0.2.20"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.1-dev.0",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.10.3",
+    "@types/node": "^24.10.4",
     "@types/semver": "^7.7.1",
     "nodemon": "^3.1.11",
     "rolldown": "^1.0.0-beta.54",
