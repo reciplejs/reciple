@@ -79,7 +79,7 @@ export class ConfigReader {
             await writeFile(this.filepath, await ConfigReader.getDefaultContent(options.type));
         }
 
-        return this.read(options.readOptions);
+        return options.readOptions !== false ? this.read(options.readOptions) : this;
     }
 
     public static async exists(file: string): Promise<boolean> {
@@ -116,7 +116,7 @@ export namespace ConfigReader {
         overwrite?: boolean;
         throwIfExists?: boolean;
         type: LangType;
-        readOptions?: Omit<UnrunOptions, 'path'>;
+        readOptions?: Omit<UnrunOptions, 'path'>|false;
     }
 
     export interface FindOptions {

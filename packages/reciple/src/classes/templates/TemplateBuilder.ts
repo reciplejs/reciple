@@ -210,7 +210,8 @@ export class TemplateBuilder {
             ...options,
             path: filepath,
             type: this.typescript ? 'ts' : 'js',
-            overwrite: true
+            overwrite: true,
+            readOptions: false
         });
 
         return this;
