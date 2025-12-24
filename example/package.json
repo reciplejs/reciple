@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.0.2-dev.10",
+  "version": "0.0.2-dev.11",
   "type": "module",
   "private": true,
   "scripts": {
@@ -9,8 +9,8 @@
     "dev": "nodemon"
   },
   "devDependencies": {
-    "@reciple/core": "^10.0.1-dev.3",
+    "@reciple/core": "^10.0.1-dev.4",
     "@reciple/jsx": "^10.0.1-dev.0",
-    "reciple": "^10.0.1-dev.10"
+    "reciple": "^10.0.1-dev.11"
   }
 }
