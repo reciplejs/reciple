@@ -7,6 +7,7 @@
     "src",
     "reciple.config.js",
     "reciple.config.ts",
+    "package.json",
     ".env"
   ],
   "exec": "reciple start --build"

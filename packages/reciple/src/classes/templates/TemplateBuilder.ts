@@ -286,7 +286,7 @@ export class TemplateBuilder {
         this.packageJson = await PackageJsonBuilder.read(this.packageJsonPath, true);
         this.packageJson.merge({
             name: this.name,
-            version: '0.0.1',
+            private: true,
             type: 'module',
             scripts: {
                 build: `reciple build`,
@@ -294,7 +294,6 @@ export class TemplateBuilder {
                 dev: 'nodemon',
             },
             ...TemplateBuilder.createDependencyRecord(this.typescript ? 'ts' : 'js'),
-            private: true
         });
 
         return this;

@@ -2,7 +2,7 @@
 import { spawn } from 'node:child_process';
 import { CLI } from 'reciple';
 
-spawn(process.execPath, [CLI.bin, 'create', ...process.argv.slice(2)], {
+spawn(process.execPath || 'node', [CLI.bin, 'create', ...process.argv.slice(2)], {
     cwd: process.cwd(),
     env: process.env,
     stdio: 'inherit'
