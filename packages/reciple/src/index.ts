@@ -36,13 +36,12 @@ export * from './helpers/constants.js';
 export * from './helpers/types.js';
 
 export * from '@reciple/core';
-export * as PrttyPrint from '@prtty/print';
 
 globalThis.useClient = () => {
     throw new Error('Client is not yet loaded.');
 };
 
-globalThis.useLogger = () => logger
+globalThis.useLogger = () => logger;
 
 declare global {
     var useClient: () => Client;
