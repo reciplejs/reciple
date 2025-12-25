@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { BaseModule, CommandType, type AnyCommand, type Config, type MessageCommand } from 'reciple';
+import { BaseModule, CommandType, type AnyCommandData, type Config, type MessageCommand } from 'reciple';
 
 export class RegistryCache extends BaseModule implements RegistryCache.Options {
     public cacheDir: string = path.join(process.cwd(), '.cache/reciple-registry/');
     public maxCacheAgeMs?: number;
+    public cacheEnabledEnv: string = 'RECIPLE_REGISTRY_CACHE';
     public cached: boolean = false;
 
     private readonly logger = useLogger().clone({ label: 'RegistryCache' });
@@ -14,16 +15,16 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
         return path.join(this.cacheDir, this.client.application?.id ?? 'cache.json');
     }
 
-    public async onEnable(): Promise<void> {
-        if (!this.client.config || !RegistryCache.checkClientIfEnabled(this.client.config)) return;
-    }
-
     public async onReady(): Promise<void> {
-        const cached = await this.isCached();
+        if (!this.isEnabled()) return;
 
-        this.logger.warn(`Application commands are ${this.cached ? '' : 'not '}cached. ${this.cached ? 'Skipping' : 'Proceeding with'} registration.`);
+        this.logger.debug('Looking for a application commands cache entry...');
+        const cachedEntry = await this.readCacheEntry();
 
-        if (cached) {
+        this.logger.debug('Creating current application commands cache entry...');
+        const currentEntry = await this.createCacheEntry();
+
+        if (cachedEntry && this.isCacheHit(cachedEntry, currentEntry)) {
             this.client.config!.applicationCommandsRegister = {
                 ...this.client.config!.applicationCommandsRegister,
                 registerGlobally: false,
@@ -33,17 +34,11 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
             this.cached = true;
         }
 
+        this.client.modules.on('readyModules', async () => {
+            this.logger.warn(`Application commands are ${this.cached ? '' : 'not '}cached. ${this.cached ? 'Skipping' : 'Proceeding with'} registration.`);
+        });
+
         await this.writeCacheEntry();
-    }
-
-    public async isCached(): Promise<boolean> {
-        this.logger.debug('Looking for a application commands cache entry...');
-        const cached = await this.readCacheEntry();
-        if (!cached) return false;
-
-        this.logger.debug('Application commands cache entry found. Verifying cache validity...');
-        const current = await this.createCacheEntry();
-        return this.isCacheHit(cached, current);
     }
 
     public async readCacheEntry(): Promise<RegistryCache.CacheEntry|null> {
@@ -65,27 +60,51 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
     }
 
     public async createCacheEntry(): Promise<RegistryCache.CacheEntry> {
-        const commands = Array.from(this.client.commands?.cache.filter(cmd => cmd.type !== CommandType.Message).values() ?? []);
+        const commands = Array.from(this.client.commands?.cache.filter(cmd => cmd.type !== CommandType.Message).map(cmd => cmd.toJSON()).values() ?? []);
+
+        for (const command of commands) {
+            Object.assign(command, { id: "[cache_value]" });
+        }
+
         const commandsHash = RegistryCache.createCommandsHash(commands);
-        const configHash = RegistryCache.createConfigHash(this.client.config ?? {});
+        const configHash = RegistryCache.createConfigHash(this.client.config?.applicationCommandsRegister ?? {});
 
         return {
-            commandsHash,
-            configHash,
             createdAt: Date.now(),
+            commandsHash,
+            configHash
         };
     }
 
     public isCacheHit(cached: RegistryCache.CacheEntry, current: RegistryCache.CacheEntry): boolean {
+        this.logger.debug('Comparing cache entry with current application commands and configuration...');
         if (this.maxCacheAgeMs) {
             const age = Date.now() - cached.createdAt;
-            if (age > this.maxCacheAgeMs) return false;
+            if (age > this.maxCacheAgeMs) {
+                this.logger.debug(`Cache entry is too old (age: ${age}ms, max age: ${this.maxCacheAgeMs}ms).`);
+                return false;
+            }
         }
 
-        if (cached.commandsHash !== current.commandsHash) return false;
-        if (cached.configHash !== current.configHash) return false;
+        if (cached.commandsHash !== current.commandsHash) {
+            this.logger.debug(`Cache entry commands hash doesn't match (cached: ${cached.commandsHash}, current: ${current.commandsHash}).`);
+            return false;
+        }
+        if (cached.configHash !== current.configHash) {
+            this.logger.debug(`Cache entry config hash doesn't match (cached: ${cached.configHash}, current: ${current.configHash}).`);
+            return false;
+        }
 
+        this.logger.debug('Cache entry matches current application commands and configuration.');
         return true;
+    }
+
+    private isEnabled(): boolean {
+        if (process.env[this.cacheEnabledEnv] !== 'false' && process.env[this.cacheEnabledEnv] !== '0') {
+            return RegistryCache.checkClientIfEnabled(this.client.config ?? {});
+        }
+
+        return false;
     }
 }
 
@@ -99,6 +118,10 @@ export namespace RegistryCache {
          * @default 86400000 // 24 hours in milliseconds
          */
         maxCacheAgeMs?: number;
+        /**
+         * @default 'RECIPLE_REGISTRY_CACHE'
+         */
+        cacheEnabledEnv?: string;
     }
 
     export interface CacheEntry {
@@ -116,7 +139,7 @@ export namespace RegistryCache {
             );
     }
 
-    export function createCommandsHash(commands: Exclude<AnyCommand, MessageCommand>[]): string {
+    export function createCommandsHash(commands: Exclude<AnyCommandData, MessageCommand.Data>[]): string {
         const hash = createHash('sha256');
 
         hash.update(JSON.stringify(commands.map(cmd => cmd)));
