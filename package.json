@@ -12,8 +12,8 @@
     "build": "turbo run build",
     "check": "turbo run check",
     "test": "npm run dev -w example",
-    "publish-dev": "turbo publish prerelease",
-    "publish-latest": "turbo publish",
+    "publish-pre": "changeset publish --tag next",
+    "publish-latest": "changeset publish",
     "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
     "test-create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
     "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
