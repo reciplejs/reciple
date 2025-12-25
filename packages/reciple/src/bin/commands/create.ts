@@ -1,11 +1,11 @@
 import { Command, Option } from 'commander';
 import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
-import { colors } from '@reciple/utils';
 import { TemplateBuilder } from '../../classes/templates/TemplateBuilder.js';
 import { cancel } from '@clack/prompts';
 import { inspect } from 'node:util';
 import { NotAnError } from '../../classes/NotAnError.js';
 import type { PackageManagerName } from 'nypm';
+import { colors } from '@prtty/prtty';
 
 export default class CreateSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('create')

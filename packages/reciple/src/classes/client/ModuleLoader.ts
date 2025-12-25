@@ -5,7 +5,7 @@ import micromatch from 'micromatch';
 import { globby, isDynamicPattern } from 'globby';
 import { CommandType, RecipleError, type Client } from '@reciple/core';
 import type { AnyModule, AnyModuleData } from '../../helpers/types.js';
-import { colors, recursiveDefaults } from '@reciple/utils';
+import { recursiveDefaults } from '@reciple/utils';
 import { BaseModule } from '../modules/BaseModule.js';
 import { BaseModuleValidator } from '../validation/BaseModuleValidator.js';
 import { ModuleType } from '../../helpers/constants.js';
@@ -21,6 +21,7 @@ import { PreconditionModuleValidator } from '../validation/PreconditionModule.js
 import { PostconditionModuleValidator } from '../validation/PostconditionModule.js';
 import type { Logger } from '@prtty/print';
 import { EventEmitter } from 'node:events';
+import { colors } from '@prtty/prtty';
 
 export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
     public readonly logger: Logger;

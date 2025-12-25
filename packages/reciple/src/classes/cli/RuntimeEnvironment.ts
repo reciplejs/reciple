@@ -1,4 +1,4 @@
-import { colors } from '@reciple/utils';
+import { colors } from '@prtty/prtty';
 import type { Client } from '@reciple/core';
 import { setTimeout } from 'node:timers/promises';
 

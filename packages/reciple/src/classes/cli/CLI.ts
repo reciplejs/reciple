@@ -2,13 +2,14 @@ import { Command } from 'commander';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { coerce } from 'semver';
-import { colors, Format, isDebugging, recursiveDefaults } from '@reciple/utils';
+import { Format, isDebugging, recursiveDefaults } from '@reciple/utils';
 import { logger, Logger, LogLevel } from '@prtty/print';
 import { config as loadEnv } from '@dotenvx/dotenvx';
 import { readdir, stat } from 'node:fs/promises';
 import { CLISubcommand } from './CLISubcommand.js';
 import { spinner, type SpinnerOptions } from '@clack/prompts';
 import type { RolldownPlugin } from 'rolldown';
+import { colors } from '@prtty/prtty';
 
 export class CLI {
     public build: string;

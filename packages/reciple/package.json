@@ -37,6 +37,7 @@
     "@clack/prompts": "^0.11.0",
     "@dotenvx/dotenvx": "^1.51.2",
     "@prtty/print": "^1.1.0",
+    "@prtty/prtty": "^1.1.0",
     "@reciple/utils": "^10.0.1-next.4",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.5",

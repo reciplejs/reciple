@@ -3,7 +3,7 @@ import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
 import { ConfigReader } from '../../classes/cli/ConfigReader.js';
 import { ModuleTemplateBuilder } from '../../classes/templates/ModuleTemplateBuilder.js';
 import { cancel } from '@clack/prompts';
-import { colors } from '@reciple/utils';
+import { colors } from '@prtty/prtty';
 import { NotAnError } from '../../classes/NotAnError.js';
 import { inspect } from 'node:util';
 

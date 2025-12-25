@@ -2,8 +2,9 @@ import { CommandType, type Client, type CommandManager } from '@reciple/core';
 import type { EventEmitter } from 'node:events';
 import type { ModuleManager } from '../managers/ModuleManager.js';
 import { BaseModule } from '../modules/BaseModule.js';
-import { colors, Format } from '@reciple/utils';
+import { Format } from '@reciple/utils';
 import type { ModuleLoader } from './ModuleLoader.js';
+import { colors } from '@prtty/prtty';
 
 export class EventListeners {
     public registeredEvents: EventListeners.RegisteredEvent[] = [];

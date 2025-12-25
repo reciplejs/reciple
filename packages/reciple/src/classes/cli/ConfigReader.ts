@@ -10,7 +10,7 @@ import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { resolveTSConfig } from 'pkg-types';
 import { unrun, type Options as UnrunOptions } from 'unrun';
-import { colors } from '@reciple/utils';
+import { colors } from '@prtty/prtty';
 
 declare module "@reciple/core" {
     interface Config {

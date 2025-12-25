@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { CLISubcommand } from '../../classes/cli/CLISubcommand.js';
 import { ConfigReader } from '../../classes/cli/ConfigReader.js';
 import { Logger } from '@prtty/print';
-import { colors, Format, resolveEnvProtocol } from '@reciple/utils';
+import { Format, resolveEnvProtocol } from '@reciple/utils';
 import { Client, CommandType } from '@reciple/core';
 import { ModuleLoader } from '../../classes/client/ModuleLoader.js';
 import { ModuleManager } from '../../classes/managers/ModuleManager.js';
@@ -11,6 +11,7 @@ import { EventListeners } from '../../classes/client/EventListeners.js';
 import { RuntimeEnvironment } from '../../classes/cli/RuntimeEnvironment.js';
 import { build } from 'tsdown';
 import { CLI } from '../../classes/cli/CLI.js';
+import { colors } from '@prtty/prtty';
 
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')

@@ -1,4 +1,4 @@
-import { colors, PackageJsonBuilder } from '@reciple/utils';
+import { PackageJsonBuilder } from '@reciple/utils';
 import { ConfigReader } from '../cli/ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, text, log } from '@clack/prompts';
@@ -12,6 +12,7 @@ import { packageJSON } from '../../helpers/constants.js';
 import { parse as parseDotenv } from '@dotenvx/dotenvx';
 import { ModuleTemplateBuilder } from './ModuleTemplateBuilder.js';
 import { detectPackageManager, installDependencies, installDependenciesCommand, runScript, runScriptCommand, type PackageManagerName } from 'nypm';
+import { colors } from '@prtty/prtty';
 
 export class TemplateBuilder {
     private _directory?: string;
@@ -53,7 +54,7 @@ export class TemplateBuilder {
     }
 
     public async init(): Promise<this> {
-        intro(colors.bold(colors.black(colors.bgCyan(` ${this.cli.command.name()} create - v${this.cli.build} `))));
+        intro(colors.bold().black().bgCyan(` ${this.cli.command.name()} create - v${this.cli.build} `));
         return this;
     }
 
@@ -322,9 +323,9 @@ export class TemplateBuilder {
                     silent: true
                 }),
                 indicator: 'timer',
-                errorMessage: `${colors.bold(colors.red('✗'))} Failed to install dependencies`,
-                successMessage: `${colors.bold(colors.green('✔'))} Dependencies installed successfully`,
-                message: `${colors.bold(colors.dim('$'))} Installing dependencies`
+                errorMessage: `${colors.bold().red('✗')} Failed to install dependencies`,
+                successMessage: `${colors.bold().green('✔')} Dependencies installed successfully`,
+                message: `${colors.bold().dim('$')} Installing dependencies`
             })[0];
 
             this.dependenciesInstalled = true;
@@ -389,23 +390,23 @@ export class TemplateBuilder {
                 silent: true
             }),
             indicator: 'timer',
-            errorMessage: `${colors.bold(colors.red('✗'))} Failed to build project`,
-            successMessage: `${colors.bold(colors.green('✔'))} Project built successfully`,
-            message: `${colors.bold(colors.dim('$'))} Building project`
+            errorMessage: `${colors.bold().red('✗')} Failed to build project`,
+            successMessage: `${colors.bold().green('✔')} Project built successfully`,
+            message: `${colors.bold().dim('$')} Building project`
         })[0];
 
         outro(`Project created in ${colors.cyan(this.relativeDirectory)}`);
 
-        console.log(`\n${colors.bold(colors.green('✔'))} Start developing:`);
+        console.log(`\n${colors.bold().green('✔')} Start developing:`);
 
         if (this.relativeDirectory !== './') {
-            console.log(`  • ${colors.cyan(colors.bold(`cd ${this.relativeDirectory}`))}`);
+            console.log(`  • ${colors.cyan().bold(`cd ${this.relativeDirectory}`)}`);
         }
 
-        console.log(`  • ${colors.cyan(colors.bold(installDependenciesCommand(this.packageManager ?? 'npm')))} ${colors.dim('(Install dependencies)')}`);
-        console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'build')))} ${colors.dim('(Build)')}`);
-        console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'dev')))} ${colors.dim('(Development)')}`);
-        console.log(`  • ${colors.cyan(colors.bold(runScriptCommand(this.packageManager ?? 'npm', 'start')))} ${colors.dim('(Production)')}`);
+        console.log(`  • ${colors.cyan().bold(installDependenciesCommand(this.packageManager ?? 'npm'))} ${colors.dim('(Install dependencies)')}`);
+        console.log(`  • ${colors.cyan().bold(runScriptCommand(this.packageManager ?? 'npm', 'build'))} ${colors.dim('(Build)')}`);
+        console.log(`  • ${colors.cyan().bold(runScriptCommand(this.packageManager ?? 'npm', 'dev'))} ${colors.dim('(Development)')}`);
+        console.log(`  • ${colors.cyan().bold(runScriptCommand(this.packageManager ?? 'npm', 'start'))} ${colors.dim('(Production)')}`);
 
 
         return this;

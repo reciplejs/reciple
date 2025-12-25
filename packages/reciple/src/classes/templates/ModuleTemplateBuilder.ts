@@ -17,8 +17,8 @@ import { NotAnError } from '../NotAnError.js';
 import { ApplicationCommandType } from 'discord.js';
 import { ModuleLoader } from '../client/ModuleLoader.js';
 import { existsSync } from 'node:fs';
-import { colors } from '@reciple/utils';
 import { readTSConfig } from 'pkg-types';
+import { colors } from '@prtty/prtty';
 
 export class ModuleTemplateBuilder {
     public _directory?: string;
@@ -54,7 +54,7 @@ export class ModuleTemplateBuilder {
     }
 
     public async init(): Promise<this> {
-        intro(colors.bold(colors.black(colors.bgCyan(` ${this.cli.command.name()} create module - v${this.cli.build} `))));
+        intro(colors.bold().black().bgCyan(` ${this.cli.command.name()} create module - v${this.cli.build} `));
         return this;
     }
 
