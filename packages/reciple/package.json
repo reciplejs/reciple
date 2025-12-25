@@ -49,8 +49,8 @@
     "pkg-types": "^2.3.0",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
-    "tsdown": "^0.18.2",
-    "unrun": "^0.2.20"
+    "tsdown": "^0.18.3",
+    "unrun": "^0.2.21"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.1-next.0",
