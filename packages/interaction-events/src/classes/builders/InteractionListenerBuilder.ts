@@ -18,11 +18,6 @@ export class InteractionListenerBuilder<T extends InteractionListenerType> {
         return this;
     }
 
-    public setCooldown(cooldown: number): this {
-        this.data.cooldown = cooldown;
-        return this;
-    }
-
     public setFilter(filter: InteractionListenerData<T>['filter']): this {
         this.data.filter = filter;
         return this;

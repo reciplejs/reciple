@@ -7,7 +7,6 @@ export class InteractionListener<T extends InteractionListenerType> implements I
     public readonly id: string = DiscordSnowflake.generate().toString();
     public readonly moduleId?: string;
     public readonly type!: T;
-    public readonly cooldown?: number;
     public readonly once?: boolean;
 
     constructor(data: InteractionListener.Resolvable<T>) {
@@ -25,7 +24,6 @@ export class InteractionListener<T extends InteractionListenerType> implements I
     public toJSON(): InteractionListenerData<T> {
         return {
             type: this.type,
-            cooldown: this.cooldown,
             once: this.once,
             filter: this.filter,
             execute: this.execute

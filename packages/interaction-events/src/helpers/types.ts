@@ -3,7 +3,6 @@ import type { InteractionListenerType } from './constants.js';
 
 export interface InteractionListenerData<T extends InteractionListenerType = InteractionListenerType> {
     type: T;
-    cooldown?: number;
     once?: boolean;
     filter?: (interaction: InteractionFromListenerType<T>) => Awaitable<boolean>;
     execute: (interaction: InteractionFromListenerType<T>) => Awaitable<void>;

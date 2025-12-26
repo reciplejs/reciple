@@ -40,7 +40,7 @@ export class InteractionEvents extends ClientEventModule<'interactionCreate'> im
         const type = InteractionEvents.getInteractionTypeFromInteraction(interaction);
         const listeners = this.listeners.filter(listener => listener.type === type);
 
-        this.logger.debug(`Triggered (${listeners.size}) listeners for interaction type "${type}".`);
+        this.logger.debug(`Triggered (${listeners.size}) listeners for interaction type "${InteractionListenerType[type]}".`);
 
         for (const [id, listener] of listeners) {
             if (!await Promise.resolve(listener.filter(interaction))) continue;
@@ -48,6 +48,7 @@ export class InteractionEvents extends ClientEventModule<'interactionCreate'> im
             await Promise.resolve(listener.execute(interaction));
 
             if (listener.once) {
+                this.logger.debug(`Removed listener "${id}" for interaction type "${InteractionListenerType[type]}".`);
                 this.listeners.delete(id);
             }
         }
