@@ -4,6 +4,8 @@ import path from 'node:path';
 import { BaseModule, CommandType, type AnyCommandData, type Config, type MessageCommand } from 'reciple';
 
 export class RecipleRegistryCache extends BaseModule implements RecipleRegistryCache.Options {
+    public readonly id: string = 'org.reciple.js.registry-cache';
+
     public createCacheEntryEvenIfDisabled: boolean = true;
     public cacheDir: string = path.join(process.cwd(), '.cache/reciple-registry/');
     public maxCacheAgeMs?: number;

@@ -1,5 +1,6 @@
 export * from './classes/builders/InteractionListenerBuilder.js';
 
+export * from './classes/modules/RecipleAnticrash.js';
 export * from './classes/modules/RecipleInteractionEvents.js';
 export * from './classes/modules/RecipleRegistryCache.js';
 
