@@ -1,12 +1,38 @@
 import { SlashCommandBuilder, SlashCommandModule, type SlashCommand } from "reciple";
 import { File, FileUpload, Label, Modal, Separator, TextDisplay, TextInput } from '@reciple/jsx';
 import { AttachmentBuilder, TextInputStyle } from 'discord.js';
+import { InteractionListenerBuilder, InteractionListenerType } from '@reciple/interaction-events';
 
 export class MessagePollCommand extends SlashCommandModule {
     data = new SlashCommandBuilder()
         .setName('modal')
         .setDescription('Test modal command')
         .toJSON();
+
+    interactions = [
+        new InteractionListenerBuilder()
+            .setType(InteractionListenerType.ModalSubmit)
+            .setExecute(async interaction => {
+                const myInput = interaction.fields.getTextInputValue('my-input');
+                const myParagraph = interaction.fields.getTextInputValue('my-paragraph');
+                const files = Array.from(interaction.fields.getUploadedFiles('my-file-upload')?.values() ?? []);
+
+                await interaction.deferReply({
+                    flags: ['Ephemeral']
+                });
+
+                await interaction.editReply({
+                    flags: ['IsComponentsV2'],
+                    components: <>
+                        <TextDisplay># {myInput}</TextDisplay>
+                        <TextDisplay>{myParagraph}</TextDisplay>
+                        <Separator/>
+                        {files.map((file) => <File url={`attachment://${file.name}`}/>)}
+                    </>,
+                    files: files.map((file) => new AttachmentBuilder(file.url, { name: file.name }))
+                });
+            })
+    ];
 
     async execute(data: SlashCommand.ExecuteData) {
         await data.interaction.showModal(
@@ -22,28 +48,6 @@ export class MessagePollCommand extends SlashCommandModule {
                 </Label>
             </Modal>
         );
-
-        const response = await data.interaction.awaitModalSubmit({ time: 60000 });
-        const myInput = response.fields.getTextInputValue('my-input');
-        const myParagraph = response.fields.getTextInputValue('my-paragraph');
-        const files = Array.from(response.fields.getUploadedFiles('my-file-upload')?.values() ?? []);
-
-        await response.deferReply({
-            flags: ['Ephemeral']
-        });
-
-        await response.editReply({
-            flags: ['IsComponentsV2'],
-            components: <>
-                <TextDisplay># {myInput}</TextDisplay>
-                <TextDisplay>{myParagraph}</TextDisplay>
-                <Separator/>
-                {files.map((file) => <File url={`attachment://${file.name}`}/>)}
-            </>,
-            files: files.map((file) => new AttachmentBuilder(file.url, {
-                name: file.name
-            })),
-        });
     }
 }
 

@@ -1,6 +1,5 @@
 import type { Client } from '@reciple/core';
 import { DiscordSnowflake } from '@sapphire/snowflake';
-import { ModuleType } from '../../helpers/constants.js';
 import { hasMixin } from 'ts-mixer';
 import type { AnyModule } from '../../helpers/types.js';
 
@@ -8,7 +7,6 @@ export class BaseModule implements BaseModule.Data {
     private readonly __$filepath: string = '';
 
     public readonly id: string = DiscordSnowflake.generate().toString();
-    public readonly moduleType: ModuleType.Base = ModuleType.Base;
 
     public client!: Client;
 
@@ -42,7 +40,6 @@ export namespace BaseModule {
 
     export interface Data {
         id?: string;
-        moduleType?: ModuleType.Base;
         onEnable?(data: BaseModule.EventData<false>): Promise<void>;
         onReady?(data: BaseModule.EventData<true>): Promise<void>;
         onDisable?(data: BaseModule.EventData<boolean>): Promise<void>;

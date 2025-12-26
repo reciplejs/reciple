@@ -1,12 +1,10 @@
 import { EventEmitter } from 'node:events';
 import { BaseModule } from '../BaseModule.js';
 import { ModuleType } from '../../../helpers/constants.js';
-import type { Awaitable, Constructable } from 'discord.js';
+import type { Awaitable } from 'discord.js';
 import { hasMixin } from 'ts-mixer';
 
-const base: Constructable<Omit<BaseModule, 'moduleType'>> = BaseModule;
-
-export abstract class EventModule<Events extends EventModule.EventMap = EventModule.EventMap, Event extends keyof Events = keyof Events> extends base implements EventModule.Data<Events, Event> {
+export abstract class EventModule<Events extends EventModule.EventMap = EventModule.EventMap, Event extends keyof Events = keyof Events> extends BaseModule implements EventModule.Data<Events, Event> {
     public readonly moduleType: ModuleType.Event = ModuleType.Event;
     public abstract emitter: EventEmitter;
     public abstract event: Event;

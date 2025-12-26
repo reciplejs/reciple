@@ -135,29 +135,33 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
         const data = recursiveDefaults<AnyModule|AnyModuleData|undefined>(await import(`file://${path.resolve(options?.cwd ?? process.cwd(), filepath)}`));
         if (BaseModule.isModule(data)) return data;
 
-        switch (data?.moduleType) {
-            case ModuleType.Command:
-                CommandModuleValidator.isValid(data);
-                switch (data.type) {
-                    case CommandType.Message: return MessageCommandModule.from(data);
-                    case CommandType.Slash: return SlashCommandModule.from(data);
-                    case CommandType.ContextMenu: return ContextMenuCommandModule.from(data);
-                    default: throw new RecipleError(`Unknown command type from module: ${colors.cyan(filepath)}`);
-                }
-            case ModuleType.Event:
-                EventModuleValidator.isValid(data);
-                return EventModule.from(data);
-            case ModuleType.Precondition:
-                PreconditionModuleValidator.isValid(data);
-                return PreconditionModule.from(data);
-            case ModuleType.Postcondition:
-                PostconditionModuleValidator.isValid(data);
-                return PostconditionModule.from(data);
-            case ModuleType.Base:
-            default:
-                BaseModuleValidator.isValid(data);
-                return BaseModule.from(data);
+        if (data && 'moduleType' in data) {
+            switch (data?.moduleType) {
+                case ModuleType.Command:
+                    CommandModuleValidator.isValid(data);
+                    switch (data.type) {
+                        case CommandType.Message: return MessageCommandModule.from(data);
+                        case CommandType.Slash: return SlashCommandModule.from(data);
+                        case CommandType.ContextMenu: return ContextMenuCommandModule.from(data);
+                        default: throw new RecipleError(`Unknown command type from module: ${colors.cyan(filepath)}`);
+                    }
+                case ModuleType.Event:
+                    EventModuleValidator.isValid(data);
+                    return EventModule.from(data);
+                case ModuleType.Precondition:
+                    PreconditionModuleValidator.isValid(data);
+                    return PreconditionModule.from(data);
+                case ModuleType.Postcondition:
+                    PostconditionModuleValidator.isValid(data);
+                    return PostconditionModule.from(data);
+                default:
+                    BaseModuleValidator.isValid(data);
+                    return BaseModule.from(data);
+            }
         }
+
+        BaseModuleValidator.isValid(data);
+        return BaseModule.from(data);
     }
 
     public static async resolveSourceDirectories(options: ModuleLoader.ResolveSourceDirectoryOptions): Promise<string[]> {
