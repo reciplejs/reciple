@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, SlashCommandModule, type SlashCommand } from "reciple";
 import { File, FileUpload, Label, Modal, Separator, TextDisplay, TextInput } from '@reciple/jsx';
 import { AttachmentBuilder, TextInputStyle } from 'discord.js';
-import { InteractionListenerBuilder, InteractionListenerType } from '@reciple/interaction-events';
+import { InteractionListenerBuilder, InteractionListenerType } from '@reciple/modules';
 
 export class MessagePollCommand extends SlashCommandModule {
     data = new SlashCommandBuilder()
