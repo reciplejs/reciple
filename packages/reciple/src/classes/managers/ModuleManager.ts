@@ -77,6 +77,9 @@ export class ModuleManager {
 
     public add(module: AnyModule): void {
         this.cache.set(module.id, module);
+
+        if (!('moduleType' in module)) return;
+
         switch (module.moduleType) {
             case ModuleType.Command:
                 this.client.commands?.add(module);
@@ -90,7 +93,6 @@ export class ModuleManager {
             case ModuleType.Postcondition:
                 this.client.postconditions?.cache.set(module.id, module);
                 break;
-            case ModuleType.Base:
             default:
                 break;
         }
@@ -98,6 +100,9 @@ export class ModuleManager {
 
     public remove(module: AnyModule): void {
         this.cache.delete(module.id);
+
+        if (!('moduleType' in module)) return;
+
         switch (module.moduleType) {
             case ModuleType.Command:
                 this.client.commands?.cache.delete(module.id);
@@ -111,7 +116,6 @@ export class ModuleManager {
             case ModuleType.Postcondition:
                 this.client.postconditions?.cache.delete(module.id);
                 break;
-            case ModuleType.Base:
             default:
                 break;
         }
