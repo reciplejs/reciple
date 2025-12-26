@@ -1,9 +1,9 @@
 import { type Interaction, type CacheType, type Awaitable, Collection } from 'discord.js';
 import { ClientEventModule, type AnyModule } from 'reciple';
-import { InteractionListener } from './InteractionListener.js';
-import { InteractionListenerType } from '../helpers/constants.js';
+import { InteractionListener } from '../InteractionListener.js';
+import { InteractionListenerType } from '../../helpers/constants.js';
 
-export class InteractionEvents extends ClientEventModule<'interactionCreate'> implements InteractionEvents.Options {
+export class RecipleInteractionEvents extends ClientEventModule<'interactionCreate'> implements RecipleInteractionEvents.Options {
     public readonly id: string = 'org.reciple.js.interaction-events';
     public event = 'interactionCreate' as const;
     public moduleEventListenersProperty: string|string[] = 'interactions';
@@ -12,7 +12,7 @@ export class InteractionEvents extends ClientEventModule<'interactionCreate'> im
 
     private readonly logger = useLogger().clone({ label: 'InteractionEvents' });
 
-    constructor(options: InteractionEvents.Options = {}) {
+    constructor(options: RecipleInteractionEvents.Options = {}) {
         super();
 
         Object.assign(this, options);
@@ -37,7 +37,7 @@ export class InteractionEvents extends ClientEventModule<'interactionCreate'> im
     }
 
     public async onEvent(interaction: Interaction<CacheType>): Promise<void> {
-        const type = InteractionEvents.getInteractionTypeFromInteraction(interaction);
+        const type = RecipleInteractionEvents.getInteractionTypeFromInteraction(interaction);
         const listeners = this.listeners.filter(listener => listener.type === type);
 
         this.logger.debug(`Triggered (${listeners.size}) listeners for interaction type "${InteractionListenerType[type]}".`);
@@ -57,7 +57,7 @@ export class InteractionEvents extends ClientEventModule<'interactionCreate'> im
     public async resolveListeners(customModules?: AnyModule[]) {
         this.logger.debug(`Resolving listeners from (${customModules?.length ?? this.client.modules.cache.size}) modules...`);
 
-        const modules = (customModules ?? this.client.modules.cache.map(m => m)) as InteractionEvents.ListenerModule<string, InteractionListenerType>[];
+        const modules = (customModules ?? this.client.modules.cache.map(m => m)) as RecipleInteractionEvents.ListenerModule<string, InteractionListenerType>[];
         const listenersProperty = Array.isArray(this.moduleEventListenersProperty) ? this.moduleEventListenersProperty : [this.moduleEventListenersProperty];
         const listeners: InteractionListener<InteractionListenerType>[] = [];
 
@@ -90,7 +90,7 @@ export class InteractionEvents extends ClientEventModule<'interactionCreate'> im
     }
 }
 
-export namespace InteractionEvents {
+export namespace RecipleInteractionEvents {
     export interface Options {
         /**
          * The property that is scanned from modules to get interaction listeners.

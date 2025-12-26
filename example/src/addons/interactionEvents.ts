@@ -1,3 +1,3 @@
-import { InteractionEvents } from '@reciple/interaction-events';
+import { RecipleInteractionEvents } from '@reciple/modules';
 
-export default new InteractionEvents();
+export default new RecipleInteractionEvents();

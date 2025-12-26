@@ -3,7 +3,7 @@ import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { BaseModule, CommandType, type AnyCommandData, type Config, type MessageCommand } from 'reciple';
 
-export class RegistryCache extends BaseModule implements RegistryCache.Options {
+export class RecipleRegistryCache extends BaseModule implements RecipleRegistryCache.Options {
     public createCacheEntryEvenIfDisabled: boolean = true;
     public cacheDir: string = path.join(process.cwd(), '.cache/reciple-registry/');
     public maxCacheAgeMs?: number;
@@ -12,7 +12,7 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
 
     private readonly logger = useLogger().clone({ label: 'RegistryCache' });
 
-    constructor(options?: RegistryCache.Options) {
+    constructor(options?: RecipleRegistryCache.Options) {
         super();
         Object.assign(this, options ?? {});
     }
@@ -59,14 +59,14 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
         });
     }
 
-    public async readCacheEntry(): Promise<RegistryCache.CacheEntry|null> {
+    public async readCacheEntry(): Promise<RecipleRegistryCache.CacheEntry|null> {
         const stats = await stat(this.cachePath).catch(() => null);
         if (!stats) return null;
 
         return await readFile(this.cachePath, 'utf-8').then(JSON.parse).catch(() => null);
     }
 
-    public async writeCacheEntry(entry?: RegistryCache.CacheEntry): Promise<void> {
+    public async writeCacheEntry(entry?: RecipleRegistryCache.CacheEntry): Promise<void> {
         entry ??= await this.createCacheEntry();
 
         this.logger.debug('Writing application commands cache entry...');
@@ -80,7 +80,7 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
         await rm(this.cachePath).catch(() => null);
     }
 
-    public async createCacheEntry(): Promise<RegistryCache.CacheEntry> {
+    public async createCacheEntry(): Promise<RecipleRegistryCache.CacheEntry> {
         this.logger.debug('Creating current application commands cache entry...');
         const commands = Array.from(this.client.commands?.cache.filter(cmd => cmd.type !== CommandType.Message).map(cmd => cmd.toJSON()).values() ?? []);
 
@@ -88,8 +88,8 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
             Object.assign(command, { id: "[cache_value]" });
         }
 
-        const commandsHash = RegistryCache.createCommandsHash(commands);
-        const configHash = RegistryCache.createConfigHash(this.client.config?.applicationCommandsRegister ?? {});
+        const commandsHash = RecipleRegistryCache.createCommandsHash(commands);
+        const configHash = RecipleRegistryCache.createConfigHash(this.client.config?.applicationCommandsRegister ?? {});
 
         this.logger.debug(`Commands hash: ${commandsHash}`);
         this.logger.debug(`Config hash: ${configHash}`);
@@ -102,7 +102,7 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
         };
     }
 
-    public isCacheHit(cached: RegistryCache.CacheEntry, current: RegistryCache.CacheEntry): boolean {
+    public isCacheHit(cached: RecipleRegistryCache.CacheEntry, current: RecipleRegistryCache.CacheEntry): boolean {
         this.logger.debug('Comparing cache entry with current application commands and configuration...');
         if (this.maxCacheAgeMs) {
             const age = Date.now() - cached.createdAt;
@@ -127,14 +127,14 @@ export class RegistryCache extends BaseModule implements RegistryCache.Options {
 
     private isEnabled(): boolean {
         if (process.env[this.cacheEnabledEnv] !== 'false' && process.env[this.cacheEnabledEnv] !== '0') {
-            return RegistryCache.checkClientIfEnabled(this.client.config ?? {});
+            return RecipleRegistryCache.checkClientIfEnabled(this.client.config ?? {});
         }
 
         return false;
     }
 }
 
-export namespace RegistryCache {
+export namespace RecipleRegistryCache {
     export interface Options {
         /**
          * @default true

@@ -1,8 +1,8 @@
 {
-  "name": "@reciple/registry-cache",
+  "name": "@reciple/modules",
   "version": "10.0.1-next.0",
   "license": "LGPL-3.0-only",
-  "description": "A caching layer for Reciple commands to improve startup times and reduce redundant network requests",
+  "description": "A collection of useful modules for reciple",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "type": "module",
@@ -25,7 +25,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/thenorthsolution/reciple",
-    "directory": "packages/registry-cache"
+    "directory": "packages/modules"
   },
   "peerDependencies": {
     "discord.js": "^14.25.1",
@@ -41,5 +41,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@sapphire/snowflake": "^3.5.5"
   }
 }

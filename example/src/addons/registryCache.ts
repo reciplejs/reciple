@@ -1,3 +1,3 @@
-import { RegistryCache } from '@reciple/registry-cache';
+import { RecipleRegistryCache } from '@reciple/modules';
 
-export default new RegistryCache();
+export default new RecipleRegistryCache();
