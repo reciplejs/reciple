@@ -94,3 +94,9 @@ export const build = {
     minify: false,
     sourcemap: true
 };
+
+/**
+ * @type {import('reciple').ShardingConfig|null}
+ */export const sharding = {
+    mode: 'process'
+}
