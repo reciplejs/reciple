@@ -1,4 +1,4 @@
-import { AttachmentBuilder, codeBlock, Colors, EmbedBuilder, escapeCodeBlock, type Awaitable, type BaseMessageOptions as DJSBaseMessageOptions, type Message, type SendableChannels } from 'discord.js';
+import { AttachmentBuilder, BaseChannel, codeBlock, Colors, EmbedBuilder, escapeCodeBlock, type Awaitable, type BaseMessageOptions as DJSBaseMessageOptions, type Message, type SendableChannels } from 'discord.js';
 import { inspect } from 'node:util';
 import { BaseModule } from 'reciple';
 
@@ -43,7 +43,7 @@ export class RecipleAnticrash extends BaseModule implements RecipleAnticrash.Opt
         this.logger.err(reason);
 
         for (const channelId of this.reportChannels) {
-            const channel = await this.getTextChannelFromId(channelId);
+            const channel = await this.resolveChannel(channelId);
             if (!channel) continue;
 
             const message = await channel.send(await this.createReportMessageOptions(reason, stack)).catch(() => null);
@@ -89,7 +89,11 @@ export class RecipleAnticrash extends BaseModule implements RecipleAnticrash.Opt
         };
     }
 
-    public async getTextChannelFromId(id: string): Promise<SendableChannels|null> {
+    public async resolveChannel(resolvable: Exclude<RecipleAnticrash.Options['reportChannels'], undefined>[0]): Promise<SendableChannels|null> {
+        if (resolvable instanceof BaseChannel) return resolvable;
+        if (typeof resolvable === 'function') return Promise.resolve(resolvable()).catch(() => null);
+
+        const id = typeof resolvable === 'string' ? resolvable : resolvable.id;
         const channel = await this.client.channels.fetch(id).catch(() => null);
 
         if (channel) {
@@ -109,7 +113,7 @@ export class RecipleAnticrash extends BaseModule implements RecipleAnticrash.Opt
 export namespace RecipleAnticrash {
     export interface Options {
         baseReportMessageOptions?: BaseMessageOptions|((reason: any) => Awaitable<BaseMessageOptions>);
-        reportChannels?: string[];
+        reportChannels?: (string|{ id: string; }|SendableChannels|(() => Awaitable<SendableChannels>))[];
     }
 
     export interface Report {
