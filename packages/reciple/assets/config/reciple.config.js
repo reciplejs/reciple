@@ -85,3 +85,10 @@ export const build = {
     external: [],
     noExternal: [],
 };
+
+/**
+ * @type {import('reciple').ShardingConfig}
+ */
+export const sharding = {
+    mode: 'process',  
+};
