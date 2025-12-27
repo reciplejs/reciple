@@ -43,6 +43,8 @@ export default class StartShardingSubcommand extends CLISubcommand {
 
         const logger = config.logger instanceof Logger ? this.cli.logger = config.logger : this.cli.logger.clone(config.logger);
 
+        logger.label = 'ShardingManager';
+
         let token = flags.token || config.token || '';
             token = resolveEnvProtocol(token) || token;
 
