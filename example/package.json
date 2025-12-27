@@ -9,9 +9,8 @@
   },
   "devDependencies": {
     "@reciple/core": "^10.0.1-next.4",
-    "@reciple/interaction-events": "^10.0.1-next.0",
     "@reciple/jsx": "^10.0.1-next.0",
-    "@reciple/registry-cache": "^10.0.1-next.0",
+    "@reciple/modules": "^10.0.1-next.0",
     "reciple": "^10.0.1-next.11"
   },
   "dependencies": {
