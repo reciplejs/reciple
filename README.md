@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="https://i.imgur.com/h0ljJR5.png" width="50%">
+    <img src="https://i.imgur.com/C3gWxwc.png" width="50%">
     <p align="center">
         <b>A Discord.js framework that just works.</b>
     </p>
@@ -27,15 +27,22 @@
     </div>
 </h3>
 
----
+## About
 
-```bash
-# Get started with reciple
-npx reciple@latest create my-bot
-yarn dlx reciple@latest create my-bot
-pnpmx reciple@latest create my-bot
-bunx reciple@latest create my-bot
-deno run -A npm:reciple@latest create my-bot
-```
+Reciple is a command framework for [Discord.js](https://discord.js.org/) that just works.
 
+## Packages
 
+- [@reciple/core](packages/core) - Contains the core classes and interfaces of reciple.
+- [@reciple/jsx](packages/jsx) - Contains the JSX component wrappers of Discord.js builders.
+- [@reciple/modules](packages/modules) - Contains some useful modules for reciple.
+- [@reciple/utils](packages/utils) - Contains the utilities used by reciple packages.
+- [create-reciple](packages/create-reciple) - An alias for `reciple create`.
+- [reciple](packages/reciple) - The reciple CLI and main handler framework and loaders.
+
+## Links
+
+- [Website](https://reciple.js.org)
+- [Discord](https://discord.gg/KxfPZYuTGV)
+- [Github](https://github.com/reciplejs/reciple)
+- [NPM](https://npmjs.org/package/reciple)
