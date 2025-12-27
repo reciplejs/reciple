@@ -33,7 +33,7 @@
 # Get started with reciple
 npx reciple@latest create my-bot
 yarn dlx reciple@latest create my-bot
-pnpm dlx reciple@latest create my-bot
+pnpmx reciple@latest create my-bot
 bunx reciple@latest create my-bot
 deno run -A npm:reciple@latest create my-bot
 ```
