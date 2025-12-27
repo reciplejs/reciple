@@ -1,4 +1,5 @@
 import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandFlagValidatePrecondition, MessageCommandOptionValidatePrecondition, type BuildConfig, type Config } from 'reciple';
+import type { ShardingConfig } from '../../src/index.js';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -77,4 +78,8 @@ export const build: BuildConfig = {
     outDir: './modules',
     external: [],
     noExternal: [],
+};
+
+export const sharding: ShardingConfig = {
+    mode: 'process',
 };

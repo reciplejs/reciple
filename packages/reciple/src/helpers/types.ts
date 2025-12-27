@@ -7,6 +7,7 @@ import type { PreconditionModule } from '../classes/modules/PreconditionModule.j
 import type { SlashCommandModule } from '../classes/modules/commands/SlashCommandModule.js';
 import type { CommandType } from '@reciple/core';
 import type { UserConfig } from 'tsdown';
+import type { ShardingManagerOptions } from 'discord.js';
 
 export type AnyCommandBuilderMethods = 'setCommand'
     |'setCommand'
@@ -60,3 +61,5 @@ export type BuildConfig = Omit<UserConfig,
     |'workspace'
     |'customLogger'
     |'logLevel'>;
+
+export type ShardingConfig = Omit<ShardingManagerOptions, 'shardArgs'|'token'|'execArgv'>;

@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env build",
     "start": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start --build",
+    "sharding": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start sharding --build",
     "dev": "nodemon"
   },
   "devDependencies": {

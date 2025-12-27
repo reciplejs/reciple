@@ -11,6 +11,7 @@ import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { resolveTSConfig } from 'pkg-types';
 import { unrun, type Options as UnrunOptions } from 'unrun';
 import { colors } from '@prtty/prtty';
+import type { ShardingManagerOptions } from 'discord.js';
 
 declare module "@reciple/core" {
     interface Config {
@@ -32,6 +33,7 @@ export class ConfigReader {
     private _client: Client|null = null;
     private _config: Config|null = null;
     private _build: BuildConfig|null = null;
+    private _sharding: ShardingManagerOptions|null = null;
 
     get client() {
         if (!this._client) throw new RecipleError('client is not yet loaded from config.');
@@ -46,6 +48,10 @@ export class ConfigReader {
         return ConfigReader.normalizeTsdownConfig({
             overrides: this._build ?? {}
         });
+    }
+
+    get sharding() {
+        return this._sharding;
     }
 
     constructor(public readonly filepath: string) {}
@@ -63,6 +69,7 @@ export class ConfigReader {
         this._client = module.client;
         this._config = module.config;
         this._build = module.build;
+        this._sharding = module.sharding ?? null;
 
         return this;
     }

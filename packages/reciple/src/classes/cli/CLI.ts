@@ -34,6 +34,7 @@ export class CLI {
             .description(options.description)
             .version(options.build, '-v, --version', 'Output the CLI version number')
             .option('-D, --debug', 'Enable debug mode', isDebugging())
+            .option('--no-debug', 'Disabled debug mode')
             .option('--env <file>', 'Load environment variables from .env file',  (v, p) => p.concat(v), [] as string[])
             .enablePositionalOptions(true)
             .hook('preAction', this.handlePreAction.bind(this))
@@ -135,7 +136,7 @@ export namespace CLI {
     }
 
     export const root: string = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../../');
-    export const bin: string = path.join(CLI.root, 'dist/bin/reciple.js');
+    export const bin: string = path.join(CLI.root, 'dist/bin/reciple.mjs');
     export const version = process.env.__VERSION__;
 
     export function stringifyFlags(flags: Record<string, any>, command: Command, ignored: string[] = []): string[] {

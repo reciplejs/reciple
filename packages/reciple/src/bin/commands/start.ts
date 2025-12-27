@@ -29,6 +29,8 @@ export default class StartSubcommand extends CLISubcommand {
             ?? ConfigReader.createConfigFilename('js')
         );
 
+        console.log(this.cli.getFlags(), flags);
+
         const { client, config, build: buildConfig } = await configReader.read();
 
         const logger = config.logger instanceof Logger ? this.cli.logger = config.logger : this.cli.logger.clone(config.logger);
