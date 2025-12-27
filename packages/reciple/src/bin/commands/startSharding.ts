@@ -126,6 +126,7 @@ export default class StartShardingSubcommand extends CLISubcommand {
         });
 
         eventListeners.registerProcessExitEvents(signal => this.destroyShardingManager(manager));
+        process.stdin.resume();
 
         await manager.spawn();
     }
