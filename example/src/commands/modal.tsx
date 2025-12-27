@@ -12,6 +12,7 @@ export class MessagePollCommand extends SlashCommandModule {
     interactions = [
         new InteractionListenerBuilder()
             .setType(InteractionListenerType.ModalSubmit)
+            .setFilter(interaction => interaction.customId === 'my-modal')
             .setExecute(async interaction => {
                 const myInput = interaction.fields.getTextInputValue('my-input');
                 const myParagraph = interaction.fields.getTextInputValue('my-paragraph');
