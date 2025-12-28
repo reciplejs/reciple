@@ -7,7 +7,7 @@ import type { AnyCommandBuilderMethods } from '../../../helpers/types.js';
 
 export interface SlashCommandModule extends Omit<BaseModule, 'moduleType'>, SlashCommandModule.SlashCommandWithoutBuilderMethods {}
 
-@mix(BaseModule, SlashCommand)
+@mix(SlashCommand, BaseModule)
 export abstract class SlashCommandModule implements SlashCommandModule {
     public readonly moduleType: ModuleType.Command = ModuleType.Command;
     public readonly id: string = DiscordSnowflake.generate().toString();

@@ -16,7 +16,7 @@ export class SlashPingCommand extends SlashCommandModule {
             .setFilter(interaction => interaction.customId === 'refresh-ping')
             .setExecute(async interaction => {
                 await interaction.deferUpdate();
-                await interaction.message.edit(this.createPingMessage(true));
+                await interaction.message.edit(this.createPingMessage(false));
             })
     ];
 

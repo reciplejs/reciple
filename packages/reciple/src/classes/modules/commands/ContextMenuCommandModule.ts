@@ -7,7 +7,7 @@ import { ContextMenuCommand, type ContextMenuCommandBuilder } from '@reciple/cor
 
 export interface ContextMenuCommandModule extends Omit<BaseModule, 'moduleType'>, ContextMenuCommandModule.ContextMenuCommandWithoutBuilderMethods {}
 
-@mix(BaseModule, ContextMenuCommand)
+@mix(ContextMenuCommand, BaseModule)
 export abstract class ContextMenuCommandModule implements ContextMenuCommandModule {
     public readonly moduleType: ModuleType.Command = ModuleType.Command;
     public readonly id: string = DiscordSnowflake.generate().toString();
