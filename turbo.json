@@ -13,7 +13,6 @@
       "cache": true
     },
     "check": {
-      "dependsOn": ["^check"]
     },
     "docs": {
       "outputs": ["docs/docs.json"],
