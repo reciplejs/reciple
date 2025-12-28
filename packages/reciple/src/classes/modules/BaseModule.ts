@@ -3,8 +3,6 @@ import { DiscordSnowflake } from '@sapphire/snowflake';
 import { hasMixin } from 'ts-mixer';
 import type { AnyModule } from '../../helpers/types.js';
 
-// FIXME: Problems with mixins
-
 export class BaseModule implements BaseModule.Data {
     private readonly __$filepath: string = '';
 

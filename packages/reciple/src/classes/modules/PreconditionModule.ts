@@ -5,7 +5,7 @@ import { ModuleType } from '../../helpers/constants.js';
 
 export interface PreconditionModule<D = any> extends Omit<BaseModule, 'moduleType'>, CommandPrecondition<D> {}
 
-@mix(BaseModule, CommandPrecondition)
+@mix(CommandPrecondition, BaseModule)
 export abstract class PreconditionModule<D = any> implements PreconditionModule<D> {
     public moduleType: ModuleType.Precondition = ModuleType.Precondition;
 
