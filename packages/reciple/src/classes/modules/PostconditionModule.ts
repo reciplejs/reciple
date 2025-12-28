@@ -12,7 +12,7 @@ export abstract class PostconditionModule<D = any> implements PostconditionModul
     public abstract execute<T extends CommandType>(data: CommandPostcondition.ExecuteData<T>, preconditionTrigger?: CommandPrecondition.ResultData<T, any>): Promise<CommandPostcondition.ResultDataResolvable<T, D>>;
 
     public static from<D = any>(data: PostconditionModule.Resolvable<D>): PostconditionModule<D> {
-        if (data instanceof PostconditionModule || hasMixin(data, PostconditionModule)) return data;
+        if (hasMixin(data, PostconditionModule)) return data;
 
         const ModuleInstance = class extends PostconditionModule { execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);

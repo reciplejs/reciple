@@ -14,7 +14,7 @@ export abstract class EventModule<Events extends EventModule.EventMap = EventMod
     public abstract onEvent(...args: Events[Event]): Awaitable<void>;
 
     public static from(data: EventModule.Resolvable): EventModule {
-        if (data instanceof EventModule || hasMixin(data, EventModule)) return data;
+        if (hasMixin(data, EventModule)) return data;
 
         const ModuleInstance = class extends EventModule {
             emitter = data.emitter;

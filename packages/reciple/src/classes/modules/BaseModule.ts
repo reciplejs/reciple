@@ -19,11 +19,11 @@ export class BaseModule implements BaseModule.Data {
     public async onDisable(data: BaseModule.EventData<boolean>): Promise<void> {}
 
     public static isModule(data: unknown): data is AnyModule {
-        return data instanceof BaseModule || hasMixin(data, BaseModule);
+        return hasMixin(data, BaseModule);
     }
 
     public static from(data: BaseModule.Resolvable): BaseModule {
-        if (data instanceof BaseModule || hasMixin(data, BaseModule)) return data;
+        if (hasMixin(data, BaseModule)) return data;
 
         const ModuleInstance = class extends BaseModule {};
         Object.assign(ModuleInstance.prototype, data);

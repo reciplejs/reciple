@@ -1,4 +1,4 @@
-import { mix } from 'ts-mixer';
+import { hasMixin, mix } from 'ts-mixer';
 import { BaseManager } from '../abstract/BaseManager.js';
 import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 import type { Client } from '../structures/Client.js';
@@ -15,7 +15,7 @@ export class PreconditionManager {
 
     constructor(public readonly client: Client, preconditions?: Iterable<CommandPrecondition.Resolvable>) {
         if (preconditions) for (const precondition of preconditions) {
-            this.cache.set(precondition.id, precondition instanceof CommandPrecondition ? precondition : CommandPrecondition.from(precondition));
+            this.cache.set(precondition.id, hasMixin(precondition, CommandPrecondition) ? precondition : CommandPrecondition.from(precondition));
         }
     }
 

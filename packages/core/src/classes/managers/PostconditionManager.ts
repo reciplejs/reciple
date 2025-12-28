@@ -1,4 +1,4 @@
-import { mix } from 'ts-mixer';
+import { hasMixin, mix } from 'ts-mixer';
 import { BaseManager } from '../abstract/BaseManager.js';
 import type { Client } from '../structures/Client.js';
 import { EventEmitter } from 'node:events';
@@ -16,7 +16,7 @@ export class PostconditionManager {
 
     constructor(public readonly client: Client, postconditions?: Iterable<CommandPostcondition.Resolvable>) {
         if (postconditions) for (const postcondition of postconditions) {
-            this.cache.set(postcondition.id, postcondition instanceof CommandPostcondition ? postcondition : CommandPostcondition.from(postcondition));
+            this.cache.set(postcondition.id, hasMixin(postcondition, CommandPostcondition) ? postcondition : CommandPostcondition.from(postcondition));
         }
     }
 

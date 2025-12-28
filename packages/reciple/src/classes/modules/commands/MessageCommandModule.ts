@@ -17,7 +17,7 @@ export abstract class MessageCommandModule implements MessageCommandModule {
     public abstract execute(data: MessageCommand.ExecuteData): Promise<void>;
 
     public static from(data: MessageCommandModule.Resolvable): MessageCommandModule {
-        if (data instanceof MessageCommandModule || hasMixin(data, MessageCommandModule)) return data;
+        if (hasMixin(data, MessageCommandModule)) return data;
 
         const ModuleInstance = class extends MessageCommandModule { data = data.data; execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);

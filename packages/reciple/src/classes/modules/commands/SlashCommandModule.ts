@@ -17,7 +17,7 @@ export abstract class SlashCommandModule implements SlashCommandModule {
     public abstract execute(data: SlashCommand.ExecuteData): Promise<void>;
 
     public static from(data: SlashCommandModule.Resolvable): SlashCommandModule {
-        if (data instanceof SlashCommandModule || hasMixin(data, SlashCommandModule)) return data;
+        if (hasMixin(data, SlashCommandModule)) return data;
 
         const ModuleInstance = class extends SlashCommandModule { data = data.data; execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);

@@ -31,9 +31,7 @@ export class InteractionListener<T extends InteractionListenerType> implements I
     }
 
     public static from<T extends InteractionListenerType>(data: InteractionListener.Resolvable<T>): InteractionListener<T> {
-        if (data instanceof InteractionListener) return data;
-
-        return new InteractionListener(data);
+        return data instanceof InteractionListener ? data : new InteractionListener(data);
     }
 }
 

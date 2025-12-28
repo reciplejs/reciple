@@ -6,7 +6,6 @@ import { CooldownAdapter } from '../adapters/CooldownAdapter.js';
 import { CommandManager } from '../managers/CommandManager.js';
 import { CommandPrecondition } from './CommandPrecondition.js';
 import type { AnyCommandResolvable } from '../../helpers/types.js';
-import { BaseCommand } from '../abstract/BaseCommand.js';
 import { SlashCommand } from '../commands/SlashCommand.js';
 import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
 import { MessageCommand } from '../commands/MessageCommand.js';
@@ -14,6 +13,7 @@ import { PostconditionManager } from '../managers/PostconditionManager.js';
 import { CommandPostcondition } from './CommandPostcondition.js';
 import { Utils } from './Utils.js';
 import type { Config } from '../../helpers/config.js';
+import { hasMixin } from 'ts-mixer';
 
 declare module "discord.js" {
     interface ClientOptions {
@@ -89,7 +89,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
     public async login(token: string|undefined = this.options.token): Promise<string> {
         this._commands = new CommandManager(this);
         this._cooldowns = new CooldownManager(this,
-            this.options.cooldownAdapter instanceof BaseCooldownAdapter
+            hasMixin(this.options.cooldownAdapter, BaseCooldownAdapter)
                 ? this.options.cooldownAdapter
                 : this.options.cooldownAdapter
                     ? new this.options.cooldownAdapter()
@@ -102,19 +102,19 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
 
         if (this.options.preconditions) {
             for (const precondition of this.options.preconditions) {
-                this._preconditions.cache.set(precondition.id, precondition instanceof CommandPrecondition ? precondition : CommandPrecondition.from(precondition));
+                this._preconditions.cache.set(precondition.id, CommandPrecondition.from(precondition));
             }
         }
 
         if (this.options.postconditions) {
             for (const postcondition of this.options.postconditions) {
-                this._postconditions.cache.set(postcondition.id, postcondition instanceof CommandPostcondition ? postcondition : CommandPostcondition.from(postcondition));
+                this._postconditions.cache.set(postcondition.id, CommandPostcondition.from(postcondition));
             }
         }
 
         if (this.options.commands) {
             for (const command of this.options.commands) {
-                this._commands.cache.set(command.id, command instanceof BaseCommand ? command : Utils.createCommandInstance(command));
+                this._commands.cache.set(command.id, Utils.createCommandInstance(command));
             }
         }
 

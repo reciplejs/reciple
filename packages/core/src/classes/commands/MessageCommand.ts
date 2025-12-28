@@ -13,6 +13,7 @@ import { MessageCommandFlagValueManager } from '../managers/MessageCommandFlagVa
 import { Utils } from '../structures/Utils.js';
 import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
 import { MessageCommandValidator } from '../validators/MessageCommandValidator.js';
+import { hasMixin } from 'ts-mixer';
 
 export class MessageCommand extends BaseCommand<CommandType.Message> {
     public readonly type: CommandType.Message = CommandType.Message;
@@ -20,11 +21,11 @@ export class MessageCommand extends BaseCommand<CommandType.Message> {
     public async execute(data: MessageCommand.ExecuteData): Promise<void> {}
 
     get options() {
-        return this.data.options?.map(o => o instanceof MessageCommandOption ? o : new MessageCommandOption(o)) ?? [];
+        return this.data.options?.map(o => hasMixin(o, MessageCommandOption) ? o : new MessageCommandOption(o)) ?? [];
     }
 
     get flags() {
-        return this.data.flags?.map(f => f instanceof MessageCommandFlag ? f : new MessageCommandFlag(f)) ?? [];
+        return this.data.flags?.map(f => hasMixin(f, MessageCommandFlag) ? f : new MessageCommandFlag(f)) ?? [];
     }
 
     constructor(data?: Partial<MessageCommand.Data>) {

@@ -17,7 +17,7 @@ export abstract class ContextMenuCommandModule implements ContextMenuCommandModu
     public abstract execute(data: ContextMenuCommand.ExecuteData): Promise<void>;
 
     public static from(data: ContextMenuCommandModule.Resolvable): ContextMenuCommandModule {
-        if (data instanceof ContextMenuCommandModule || hasMixin(data, ContextMenuCommandModule)) return data;
+        if (hasMixin(data, ContextMenuCommandModule)) return data;
 
         const ModuleInstance = class extends ContextMenuCommandModule { data = data.data; execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);

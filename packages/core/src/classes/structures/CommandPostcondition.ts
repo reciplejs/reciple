@@ -6,6 +6,7 @@ import type { Cooldown } from './Cooldown.js';
 import type { PreconditionResultManager } from '../managers/PreconditionResultManager.js';
 import { DiscordSnowflake } from '@sapphire/snowflake';
 import type { CommandPrecondition } from './CommandPrecondition.js';
+import { hasMixin } from 'ts-mixer';
 
 export class CommandPostcondition<D = any> implements CommandPostcondition.Data<D> {
     public readonly id: string = DiscordSnowflake.generate().toString();
@@ -25,7 +26,7 @@ export class CommandPostcondition<D = any> implements CommandPostcondition.Data<
     }
 
     public static from<D>(data: CommandPostcondition.Resolvable<D>): CommandPostcondition<D> {
-        if (data instanceof CommandPostcondition) return data;
+        if (hasMixin(data, CommandPostcondition)) return data;
 
         const instance = new (class extends CommandPostcondition<D> { id = data.id; });
         Object.assign(instance, data);

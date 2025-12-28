@@ -12,7 +12,7 @@ export abstract class PreconditionModule<D = any> implements PreconditionModule<
     public abstract execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<CommandPrecondition.ResultDataResolvable<T, D>>;
 
     public static from<D>(data: PreconditionModule.Resolvable<D>): PreconditionModule<D> {
-        if (data instanceof PreconditionModule || hasMixin(data, PreconditionModule)) return data;
+        if (hasMixin(data, PreconditionModule)) return data;
 
         const ModuleInstance = class extends PreconditionModule { execute = data.execute; };
         Object.assign(ModuleInstance.prototype, data);
