@@ -35,7 +35,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
     }
 
     public async findModules(ignoreErrors: boolean = false): Promise<AnyModule[]> {
-        const modulePaths = await ModuleLoader.scanForModules(this.client.config?.modules);
+        const modulePaths = await ModuleLoader.scanForModulePaths(this.client.config?.modules);
         const modules: AnyModule[] = [];
 
         this.emit('modulesResolving', modulePaths);
@@ -43,7 +43,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
         for (const path of modulePaths) {
             try {
                 this.emit('moduleResolving', path);
-                const resolved = await ModuleLoader.resolveModulePath(path);
+                const resolved = await ModuleLoader.resolveModuleFromPath(path);
 
                 Object.assign(resolved, { client: this.client, __$filepath: path });
                 modules.push(resolved);
@@ -99,7 +99,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
         return directories;
     }
 
-    public static async scanForModules(config?: ModuleLoader.Config & { cwd?: string; createDirectories?: boolean; }): Promise<string[]> {
+    public static async scanForModulePaths(config?: ModuleLoader.Config & { cwd?: string; createDirectories?: boolean; }): Promise<string[]> {
         const directories = await ModuleLoader.scanForDirectories(config);
 
         let modules: string[] = [];
@@ -128,7 +128,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
         return modules;
     }
 
-    public static async resolveModulePath(filepath: string, options?: { cwd?: string; }): Promise<AnyModule> {
+    public static async resolveModuleFromPath(filepath: string, options?: { cwd?: string; }): Promise<AnyModule> {
         const stats = await stat(filepath).catch(() => undefined);
         if (!stats) throw new RecipleError(`Module not found: ${filepath}`);
 

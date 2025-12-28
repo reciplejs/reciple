@@ -30,7 +30,6 @@ export class ViewAvatarCommand extends ContextMenuCommandModule {
             ]
         };
 
-        console.log(messageData);
         await data.interaction.reply(messageData);
     }
 }
