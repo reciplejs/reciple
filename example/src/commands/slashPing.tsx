@@ -21,7 +21,6 @@ export class SlashPingCommand extends SlashCommandModule {
     ];
 
     async execute(data: SlashCommand.ExecuteData) {
-        console.log(this);
         await data.interaction.reply(this.createPingMessage(false));
     }
 

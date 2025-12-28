@@ -13,24 +13,32 @@ export class MessageCommandPostcondition extends PostconditionModule {
         if (data.executeData.type !== CommandType.Message) return true;
 
         const message = data.executeData.message;
+
+        await message.reply({
+            content: await this.getResponse(data)
+        });
+
+        return false;
+    }
+
+    public async getResponse(data: CommandPostcondition.ExecuteData<CommandType>): Promise<string> {
+        if (data.executeData.type !== CommandType.Message) throw new Error('Invalid command type');
+
         const invalidOptions = await data.executeData.options.getInvalidOptions();
         const invalidFlags = await data.executeData.flags.getInvalidFlags();
 
         switch (data.reason) {
             case CommandPostconditionReason.InvalidArgs:
-                await message.reply(`Invalid arguments ${invalidOptions.filter(o => o.missing === false).map(o => inlineCode(o.option.name)).join(' ')} were passed to the command`);
-                return true;
+                return `Invalid arguments ${invalidOptions.filter(o => o.missing === false).map(o => inlineCode(o.option.name)).join(' ')} were passed to the command`;
             case CommandPostconditionReason.MissingArgs:
-                await message.reply(`Missing arguments ${invalidOptions.filter(o => o.missing === true).map(o => inlineCode(o.option.name)).join(' ')} were passed to the command`);
-                return true;
+                return `Missing arguments ${invalidOptions.filter(o => o.missing === true).map(o => inlineCode(o.option.name)).join(' ')} were passed to the command`;
             case CommandPostconditionReason.InvalidFlags:
-                await message.reply(`Invalid flags ${invalidFlags.filter(o => o.missing === false).map(o => inlineCode(o.flag.name)).join(' ')} were passed to the command`);
+                return `Invalid flags ${invalidFlags.filter(o => o.missing === false).map(o => inlineCode(o.flag.name)).join(' ')} were passed to the command`;
             case CommandPostconditionReason.MissingFlags:
-                await message.reply(`Missing flags ${invalidFlags.filter(o => o.missing === true).map(o => inlineCode(`--${o.flag.name}`)).join(' ')} were passed to the command`);
-                return true;
+                return `Missing flags ${invalidFlags.filter(o => o.missing === true).map(o => inlineCode(`--${o.flag.name}`)).join(' ')} were passed to the command`;
         }
 
-        return false;
+        return 'No error';
     }
 }
 
