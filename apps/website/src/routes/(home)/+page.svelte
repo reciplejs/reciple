@@ -4,8 +4,39 @@
     import { Button } from '$lib/components/ui/button';
     import SquareArrowOutUpRightIcon from '@lucide/svelte/icons/square-arrow-out-up-right';
     import PackageManagerCommand from '$lib/components/shared/home/PackageManagerCommand.svelte';
+    import { MetaTags } from 'svelte-meta-tags';
+    import { page } from '$app/state';
 
+    const baseMetaTags = {
+        title: "reciple",
+        description: "⚡ Reciple is a Discord.js command framework that just works.",
+    }
 </script>
+
+<MetaTags
+    {...baseMetaTags}
+    keywords={["reciple", "discord.js", "framework"]}
+    openGraph={{
+        ...baseMetaTags,
+        url: page.url.href,
+        siteName: "reciple",
+        images: [
+            {
+                url: resolve('/') + 'assets/reciple-art.png',
+                width: 2560,
+                height: 1440,
+                alt: "reciple"
+            }
+        ],
+        locale: "en-US",
+        type: "website"
+    }}
+    twitter={{
+        ...baseMetaTags,
+        image: resolve('/') + 'assets/reciple-art.png',
+        cardType: "summary_large_image"
+    }}
+/>
 
 <div class="size-full flex items-center-safe">
     <div class="flex flex-col lg:flex-row md:text-center lg:text-start text-start md:items-center pt-16 pb-20 gap-5 sm:gap-5 lg:gap-20 w-full">
