@@ -40,8 +40,8 @@
         </a>
         <div class="flex sm:justify-between justify-end items-center gap-4 w-full">
             <div class="flex gap-4 font-semibold opacity-80">
-                <a href={resolve('/')}>Guide</a>
-                <a href={resolve('/')}>Docs</a>
+                <a href={resolve('/(main)/guide')}>Guide</a>
+                <a href={resolve('/(main)/docs')}>Docs</a>
             </div>
             <ButtonGroup class="sm:flex hidden">
                 <Button

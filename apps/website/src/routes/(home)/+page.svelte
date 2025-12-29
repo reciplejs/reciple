@@ -48,10 +48,10 @@
                 Reciple is a Discord.js command framework. Reciple makes Discord.js command handling simple and easy using our built-in CLI tool.
             </p>
             <div class="flex flex-col md:justify-center lg:justify-start justify-start sm:flex-row gap-2 mt-10 lg:mt-5">
-                <Button href={resolve('/')} variant="default" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! shadow-sm shadow-primary/50">
+                <Button href={resolve('/(main)/guide')} variant="default" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! shadow-sm shadow-primary/50">
                     Get Started
                 </Button>
-                <Button href={resolve('/')} variant="secondary" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! border">
+                <Button href={resolve('/(main)/docs')} variant="secondary" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! border">
                     Docs
                 </Button>
                 <Button href={Links.discord} variant="secondary" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! border">
