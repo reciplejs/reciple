@@ -11,6 +11,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@icons-pack/svelte-simple-icons": "^6.5.0",
 		"@internationalized/date": "^3.10.1",
 		"@lucide/svelte": "^0.561.0",
 		"@sveltejs/adapter-auto": "^7.0.0",
