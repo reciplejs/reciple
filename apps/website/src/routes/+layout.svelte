@@ -12,7 +12,8 @@
 </script>
 
 <svelte:head>
-    <link rel="shortcut icon" href={resolve('/') + 'favicon.png'} type="image/png">
+    <link rel="icon" href={resolve('/') + "favicon.ico"} sizes="any">
+    <link rel="apple-touch-icon" href={resolve('/') + "apple-touch-icon-180x180.png"}>
 </svelte:head>
 
 <ModeWatcher/>
