@@ -5,6 +5,7 @@
   "type": "module",
   "workspaces": [
     "packages/*",
+    "apps/*",
     "example"
   ],
   "scripts": {
