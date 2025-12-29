@@ -6,8 +6,8 @@
 
 <Header/>
 
-<div class="flex justify-center size-full">
-    <main class="container max-w-7xl h-full px-6 pt-16">
+<div class="flex justify-center size-full pt-16">
+    <main class="container max-w-7xl h-full px-6">
         {@render children?.()}
     </main>
 </div>
