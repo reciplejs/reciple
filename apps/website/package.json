@@ -11,6 +11,9 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@fontsource-variable/inter": "^5.2.8",
+		"@fontsource-variable/roboto-mono": "^5.2.8",
+		"@fontsource/archivo-black": "^5.2.8",
 		"@icons-pack/svelte-simple-icons": "^6.5.0",
 		"@internationalized/date": "^3.10.1",
 		"@lucide/svelte": "^0.561.0",

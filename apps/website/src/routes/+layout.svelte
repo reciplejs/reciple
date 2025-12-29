@@ -1,5 +1,9 @@
 <script lang="ts">
-	import '$lib/styles/app.css';
+    import '@fontsource-variable/inter';
+    import '@fontsource-variable/roboto-mono';
+    import '@fontsource/archivo-black';
+    import '$lib/styles/app.css';
+
 	import { ModeWatcher } from "mode-watcher";
 
 	let { children } = $props();
