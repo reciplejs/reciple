@@ -53,18 +53,18 @@
     }
 </script>
 
-<Tabs bind:value={currentPackageManager} class="bg-muted rounded w-full gap-0">
-    <TabsList class="w-full overflow-auto">
+<Tabs bind:value={currentPackageManager} class="bg-secondary border rounded w-full gap-0">
+    <TabsList class="w-full overflow-auto justify-start bg-transparent">
         {#each Object.keys(commands) as packageManager (packageManager)}
             {@const Icon = packageManagerIcons[packageManager as PackageManager]}
-            <TabsTrigger value={packageManager}>
+            <TabsTrigger value={packageManager} class="data-[state=active]:text-primary shadow-none! font-bold border-none bg-transparent!">
                 <Icon/>
                 {packageManager}
             </TabsTrigger>
         {/each}
     </TabsList>
     {#each Object.keys(commands) as packageManager (packageManager)}
-        <TabsContent value={packageManager} class="border rounded relative whitespace-nowrap">
+        <TabsContent value={packageManager} class="rounded relative whitespace-nowrap">
             <code class="block w-full px-4 py-3 pr-12 overflow-auto">
                 {commands[packageManager as PackageManager]}
             </code>
