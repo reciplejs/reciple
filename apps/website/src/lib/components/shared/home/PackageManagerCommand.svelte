@@ -1,6 +1,8 @@
 <script lang="ts">
+    import type { TabsRootProps } from 'bits-ui';
     import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
     import { Button } from '$lib/components/ui/button';
+    import { cn } from '$lib/helpers/utils';
     import SiNpm from '@icons-pack/svelte-simple-icons/icons/SiNpm';
     import SiYarn from '@icons-pack/svelte-simple-icons/icons/SiYarn';
     import SiPnpm from '@icons-pack/svelte-simple-icons/icons/SiPnpm';
@@ -10,75 +12,73 @@
     import { toast } from 'svelte-sonner';
 
     let {
-        commands
-    }: {
-        commands: Record<PackageManager, string>;
+        value = $bindable('npm'),
+        ...props
+    }: TabsRootProps & {
+        value?: keyof typeof installCommands;
     } = $props();
 
-    // svelte-ignore state_referenced_locally
-    let currentPackageManager = $state(Object.keys(commands)[0] as PackageManager);
-
-    async function onCopy() {
-        if (!supportsClipboard()) {
-            toast.error('Clipboard not supported');
-            return;
-        }
-
-        await navigator.clipboard.writeText(commands[currentPackageManager]);
-        toast.success('Copied command to clipboard');
-    }
-
-    function supportsClipboard() {
-        return 'clipboard' in navigator;
-    }
-</script>
-
-<script module>
-    export type PackageManager = 'npm'|'yarn'|'pnpm'|'bun' |'deno';
-
-    export const installCommands: Record<PackageManager, string> = {
+    const installCommands = {
         npm: 'npx reciple@latest create',
         yarn: 'yarn dlx reciple@latest create',
         pnpm: 'pnpx reciple@latest create',
         bun: 'bunx reciple@latest create',
-        deno: 'deno run -A npm:reciple@latest create',
+        deno: 'deno run -A npm:reciple@latest create'
     };
 
-    export const packageManagerIcons = {
+    const commandIcons = {
         npm: SiNpm,
         yarn: SiYarn,
         pnpm: SiPnpm,
         bun: SiBun,
         deno: SiDeno
+    };
+
+    let currentValue: typeof installCommands[keyof typeof installCommands] = $derived(installCommands[value]);
+
+    async function copyToClipboard() {
+        if (!supportsClipboard()) {
+            toast.error('Clipboard not supported');
+            return;
+        }
+
+        await navigator.clipboard.writeText(currentValue);
+        toast.success('Copied command to clipboard');
+    }
+
+    function supportsClipboard() {
+        return 'clipboard' in navigator && 'writeText' in navigator.clipboard;
     }
 </script>
 
-<Tabs bind:value={currentPackageManager} class="bg-secondary border rounded w-full gap-0">
-    <TabsList class="w-full overflow-auto justify-start bg-transparent">
-        {#each Object.keys(commands) as packageManager (packageManager)}
-            {@const Icon = packageManagerIcons[packageManager as PackageManager]}
-            <TabsTrigger value={packageManager} class="data-[state=active]:text-primary shadow-none! font-bold border-none bg-transparent!">
+<Tabs bind:value {...props} class={cn("bg-card rounded-xl border p-1 w-full", props.class)}>
+    <TabsList class="w-full overflow-auto h-fit justify-start bg-transparent rounded-b-none border-b pb-2">
+        {#each Object.keys(installCommands) as pkgManager}
+            {@const Icon = commandIcons[pkgManager as keyof typeof commandIcons]}
+            <TabsTrigger value={pkgManager} class="flex items-center gap-2 py-1 data-[state=active]:bg-black/5 shadow-transparent">
                 <Icon/>
-                {packageManager}
+                <span>{pkgManager}</span>
             </TabsTrigger>
         {/each}
     </TabsList>
-    {#each Object.keys(commands) as packageManager (packageManager)}
-        <TabsContent value={packageManager} class="rounded relative whitespace-nowrap">
-            <code class="block w-full px-4 py-3 pr-12 overflow-auto">
-                {commands[packageManager as PackageManager]}
-            </code>
-            <Button
-                variant="outline"
-                size="icon-sm"
-                class={[
-                    "shrink-0 m-2 absolute top-0 right-0 z-10",
-                    !supportsClipboard() && "hidden"
-                ]}
-                onclick={onCopy}
-            >
-                <ClipboardIcon/>
-            </Button>
+    {#each Object.entries(installCommands) as [pkgManager, command]}
+        <TabsContent value={pkgManager}>
+            <div class="p-1 text-start text-sm flex items-center gap-2 relative whitespace-nowrap">
+                <button class="**:select-all w-full px-2.5 overflow-auto text-start" onclick={copyToClipboard}>
+                    <code>{command}</code>
+                </button>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    class={[
+                        "relative overflow-clip",
+                        !supportsClipboard() && "hidden"
+                    ]}
+                    onclick={copyToClipboard}
+                >
+                    <ClipboardIcon/>
+                </Button>
+            </div>
         </TabsContent>
     {/each}
 </Tabs>

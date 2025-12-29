@@ -3,12 +3,12 @@
     import { Links } from "$lib/helpers/constants";
     import { Button } from '$lib/components/ui/button';
     import SquareArrowOutUpRightIcon from '@lucide/svelte/icons/square-arrow-out-up-right';
-    import PackageManagerCommand, { installCommands } from '$lib/components/shared/home/PackageManagerCommand.svelte';
+    import PackageManagerCommand from '$lib/components/shared/home/PackageManagerCommand.svelte';
 
 </script>
 
 <div class="size-full flex items-center-safe">
-    <div class="grid lg:grid-cols-2 pt-16 pb-20 gap-10 sm:gap-5 lg:gap-20">
+    <div class="flex flex-col sm:flex-row pt-16 pb-20 gap-10 sm:gap-5 lg:gap-20 w-full">
         <div class="grid">
             <h1 class="text-5xl font-black font-archivo tracking-tight leading-tight">
                 Another <a href={Links.discordJs} class="bg-primary text-primary-foreground px-2 py-1 rounded-md shadow-lg shadow-primary/50">Discord.js</a> framework that just works
@@ -29,8 +29,8 @@
                 </Button>
             </div>
         </div>
-        <div class="flex flex-col gap-2 items-center">
-            <PackageManagerCommand commands={installCommands}/>
+        <div class="flex items-center w-full max-w-lg">
+            <PackageManagerCommand/>
         </div>
     </div>
 </div>
