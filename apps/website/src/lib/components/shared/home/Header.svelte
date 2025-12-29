@@ -1,0 +1,80 @@
+<script lang="ts">
+    import { resolve } from "$app/paths";
+    import { mode, toggleMode } from 'mode-watcher';
+    import { Links } from '$lib/helpers/constants';
+    import { ButtonGroup } from '$lib/components/ui/button-group';
+    import { Button } from '$lib/components/ui/button';
+    import SiDiscord from '@icons-pack/svelte-simple-icons/icons/SiDiscord';
+    import SiGithub from '@icons-pack/svelte-simple-icons/icons/SiGithub';
+    import SunIcon from '@lucide/svelte/icons/sun';
+    import MoonIcon from '@lucide/svelte/icons/moon';
+
+    let {
+        scrolling = $bindable(false)
+    }: {
+        scrolling?: boolean
+    } = $props();
+
+    $effect(() => {
+        onScroll();
+    });
+
+    function onScroll() {
+        scrolling = window.scrollY > 0;
+    }
+</script>
+
+<svelte:window onscroll={onScroll}/>
+
+<header
+    class={[
+        "fixed top-0 left-0 h-16 w-full border-b border-transparent flex center justify-center items-center transition-all duration-300 ease-in-out",
+        scrolling && "border-border! shadow bg-background/80 backdrop-blur-md"
+    ]}
+>
+    <nav class="container max-w-7xl flex items-center gap-10 px-6">
+        <a href={resolve('/(home)')} class="text-3xl font-bold -translate-y-0.5 text-primary dark:text-foreground">
+            reciple
+        </a>
+        <div class="flex justify-between items-center w-full">
+            <div class="flex gap-4 font-semibold opacity-80">
+                <a href={resolve('/')}>Guide</a>
+                <a href={resolve('/')}>Docs</a>
+            </div>
+            <ButtonGroup>
+                <Button
+                    size="icon"
+                    variant="outline"
+                    href={Links.discord}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <SiDiscord/>
+                </Button>
+                <Button
+                    size="icon"
+                    variant="outline"
+                    href={Links.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <SiGithub/>
+                </Button>
+                <Button
+                    size="icon"
+                    variant="outline"
+                    onclick={e => {
+                        e.preventDefault();
+                        toggleMode()
+                    }}
+                >
+                    {#if mode.current === 'dark'}
+                        <SunIcon fill="currentColor"/>
+                    {:else}
+                        <MoonIcon fill="currentColor"/>
+                    {/if}
+                </Button>
+            </ButtonGroup>
+        </div>
+    </nav>
+</header>
