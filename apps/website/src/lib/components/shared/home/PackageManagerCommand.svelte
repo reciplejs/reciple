@@ -51,11 +51,11 @@
     }
 </script>
 
-<Tabs bind:value {...props} class={cn("bg-card rounded-xl border p-1 w-full", props.class)}>
+<Tabs bind:value {...props} class={cn("bg-card rounded border p-1 w-full", props.class)}>
     <TabsList class="w-full overflow-auto h-fit justify-start bg-transparent rounded-b-none border-b pb-2">
         {#each Object.keys(installCommands) as pkgManager}
             {@const Icon = commandIcons[pkgManager as keyof typeof commandIcons]}
-            <TabsTrigger value={pkgManager} class="flex items-center gap-2 py-1 data-[state=active]:bg-black/5 shadow-transparent">
+            <TabsTrigger value={pkgManager} class="flex items-center gap-2 py-1 data-[state=active]:bg-black/5 font-semibold shadow-transparent">
                 <Icon/>
                 <span>{pkgManager}</span>
             </TabsTrigger>
