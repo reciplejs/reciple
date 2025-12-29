@@ -55,7 +55,7 @@
     <TabsList class="w-full overflow-auto h-fit justify-start bg-transparent rounded-b-none border-b pb-2">
         {#each Object.keys(installCommands) as pkgManager}
             {@const Icon = commandIcons[pkgManager as keyof typeof commandIcons]}
-            <TabsTrigger value={pkgManager} class="flex items-center gap-2 py-1 data-[state=active]:bg-black/5 font-semibold shadow-transparent">
+            <TabsTrigger value={pkgManager} class="flex items-center gap-2 py-1 font-semibold shadow-none! border-none! data-[state=active]:bg-foreground/5!">
                 <Icon/>
                 <span>{pkgManager}</span>
             </TabsTrigger>

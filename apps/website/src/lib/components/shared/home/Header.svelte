@@ -35,7 +35,7 @@
     ]}
 >
     <nav class="container max-w-7xl flex items-center gap-10 px-6">
-        <a href={resolve('/(home)')} class="text-3xl font-bold -translate-y-0.5 text-primary dark:text-foreground">
+        <a href={resolve('/(home)')} class="text-2xl sm:text-3xl font-bold -translate-y-0.5 text-primary dark:text-foreground">
             reciple
         </a>
         <div class="flex sm:justify-between justify-end items-center gap-4 w-full">
@@ -47,6 +47,7 @@
                 <Button
                     size="icon"
                     variant="outline"
+                    class="border-r-0"
                     href={Links.discord}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -56,6 +57,7 @@
                 <Button
                     size="icon"
                     variant="outline"
+                    class="border-x-0"
                     href={Links.github}
                     target="_blank"
                     rel="noopener noreferrer"
