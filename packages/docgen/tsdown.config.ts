@@ -1,3 +1,5 @@
 import { createTsdownConfig } from '../../tsdown.config.js';
 
-export default createTsdownConfig();
+export default createTsdownConfig({
+    platform: 'neutral'
+});
