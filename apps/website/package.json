@@ -37,6 +37,7 @@
 		"vite-plugin-pwa": "^1.2.0"
 	},
 	"dependencies": {
+    "@reciple/docgen": "^10.0.1",
 		"mode-watcher": "^1.1.0",
 		"runed": "^0.37.1",
 		"svelte-meta-tags": "^4.5.0"
