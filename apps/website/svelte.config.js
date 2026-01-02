@@ -1,7 +1,9 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import { escapeSvelte, mdsvex } from 'mdsvex';
 import adapter from '@sveltejs/adapter-auto';
 import { createHighlighter } from 'shiki';
-import { escapeSvelte, mdsvex } from 'mdsvex';
+import rehypeSlug from 'rehype-slug';
 
 /**
  * @type {Record<string, import('shiki').BundledTheme>}
@@ -43,7 +45,12 @@ const config = {
         vitePreprocess(),
         mdsvex({
             extensions: ['.svx', '.md'],
-            rehypePlugins: [],
+            rehypePlugins: [
+                rehypeSlug,
+                [rehypeAutolinkHeadings, {
+                    behavior: 'append'
+                }]
+            ],
             highlight: {
                 highlighter: (code, lang = 'text') => {
                     const html = escapeSvelte(highlighter.codeToHtml(code, {

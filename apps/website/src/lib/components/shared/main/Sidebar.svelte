@@ -183,7 +183,7 @@
                                                                 href={item.href}
                                                                 target={item.external ? '_blank' : undefined}
                                                                 class={[
-                                                                    isActive && "text-primary! font-medium bg-primary/10!"
+                                                                    isActive && "text-primary! font-medium bg-primary/10! dark:bg-primary! dark:text-primary-foreground!",
                                                                 ]}
                                                             >
                                                                 {#if item.icon}

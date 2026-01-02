@@ -3,7 +3,6 @@
 html {
     .shiki,
     .shiki span {
-        @apply select-text;
         color: var(--shiki-light);
         background-color: var(--shiki-light-bg);
         font-style: var(--shiki-light-font-style);
@@ -44,6 +43,41 @@ html {
 
         & pre.shiki {
             @apply border;
+        }
+
+        & pre,
+        & code,
+        .shiki span {
+            @apply select-text!;
+        }
+
+        & h1,
+        & h2,
+        & h3,
+        & h4,
+        & h5,
+        & h6{
+            &:hover,
+            & a:focus {
+                & span.icon.icon-link::after {
+                    content: '';
+                    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWxpbmsyLWljb24gbHVjaWRlLWxpbmstMiI+PHBhdGggZD0iTTkgMTdIN0E1IDUgMCAwIDEgNyA3aDIiLz48cGF0aCBkPSJNMTUgN2gyYTUgNSAwIDEgMSAwIDEwaC0yIi8+PGxpbmUgeDE9IjgiIHgyPSIxNiIgeTE9IjEyIiB5Mj0iMTIiLz48L3N2Zz4=');
+                    @apply inline-block size-6 ms-2 align-middle dark:invert;
+                }
+            }
+        }
+    }
+
+    &.dark .prose {
+        & h1,
+        & h2,
+        & h3,
+        & h4,
+        & h5,
+        & h6{
+            & a span.icon.icon-link::after {
+                filter: invert(1);
+            }
         }
     }
 }

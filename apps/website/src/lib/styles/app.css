@@ -182,7 +182,7 @@
     }
     html,
     body {
-        @apply bg-background text-foreground size-full;
+        @apply bg-background text-foreground size-full scroll-smooth;
         letter-spacing: var(--tracking-normal);
     }
 }
