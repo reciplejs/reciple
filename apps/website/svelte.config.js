@@ -1,5 +1,6 @@
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeExternalLinks from 'rehype-external-links';
 import { escapeSvelte, mdsvex } from 'mdsvex';
 import adapter from '@sveltejs/adapter-auto';
 import { createHighlighter } from 'shiki';
@@ -47,6 +48,7 @@ const config = {
             extensions: ['.svx', '.md'],
             rehypePlugins: [
                 rehypeSlug,
+                [rehypeExternalLinks, { rel: ['nofollow'], target: '_blank' }],
                 [rehypeAutolinkHeadings, {
                     behavior: 'append'
                 }]
