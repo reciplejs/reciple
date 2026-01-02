@@ -19,6 +19,10 @@
     <Sidebar collapsible='icon'/>
     <SidebarInset>
         <Header title={metadata.title}/>
-        {@render children?.()}
+        <div class="flex justify-center size-full">
+            <div class="container size-full max-w-7xl">
+                {@render children?.()}
+            </div>
+        </div>
     </SidebarInset>
 </SidebarProvider>

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { SidebarTrigger } from "$lib/components/ui/sidebar";
     import { Separator } from '$lib/components/ui/separator';
-    import { Button } from '../../ui/button';
-    import SiGithub from '@icons-pack/svelte-simple-icons/icons/SiGithub';
+    import ButtonLinks from '../ButtonLinks.svelte';
+    import DropdownLinks from '../../DropdownLinks.svelte';
 
     let {
         title
@@ -21,10 +21,7 @@
         <SidebarTrigger class="-ms-1"/>
         <Separator orientation="vertical" class="me-2 data-[orientation=vertical]:h-4"/>
         <h3 class="text-lg font-semibold w-full truncate overflow-hidden text-nowrap shrink">{title}</h3>
-        <div class="shrink-0">
-            <Button variant="outline" size="icon">
-                <SiGithub/>
-            </Button>
-        </div>
+        <ButtonLinks/>
+        <DropdownLinks/>
     </div>
 </header>

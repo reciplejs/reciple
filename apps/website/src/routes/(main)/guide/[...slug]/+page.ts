@@ -1,6 +1,8 @@
 import type { MarkdownModules } from '$lib/helpers/types.js';
 import { error } from '@sveltejs/kit';
 
+export const prerender = true;
+
 export async function load(data) {
     const parts = data.params.slug.split('/');
     const pageId = parts.pop();

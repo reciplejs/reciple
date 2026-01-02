@@ -2,7 +2,6 @@
     import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarSeparator } from "$lib/components/ui/sidebar";
     import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '$lib/components/ui/dropdown-menu';
     import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '$lib/components/ui/collapsible';
-    import CircleIcon from '@lucide/svelte/icons/circle';
     import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
     import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
     import PackageIcon from '@lucide/svelte/icons/package';
@@ -31,7 +30,7 @@
                                 class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
                                 <div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <CircleIcon/>
+                                    <PackageIcon/>
                                 </div>
                                 <div class="grid flex-1 text-start text-sm leading-tight">
                                     <span class="truncate font-medium">

@@ -1,3 +1,5 @@
+@reference "./app.css";
+
 html {
     .shiki,
     .shiki span {
@@ -20,5 +22,28 @@ html {
 
     pre.shiki {
         @apply border;
+    }
+}
+
+.prose {
+    & p,
+    & h1,
+    & h2,
+    & h3,
+    & h4,
+    & h5,
+    & h6,
+    & blockquote,
+    & pre,
+    & td {
+        white-space: break-spaces;
+        word-wrap: break-word;
+    }
+
+    & table {
+        overflow: auto;
+        display: block;
+        border-collapse: collapse;
+        border-spacing: 0;
     }
 }
