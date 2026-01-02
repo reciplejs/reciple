@@ -7,7 +7,7 @@
     import type { WithElementRef } from '$lib/helpers/utils';
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Snippet } from 'svelte';
-    import { sidebarData } from '../../../helpers/contexts';
+    import { searchDialogState, sidebarData } from '$lib/helpers/contexts';
     import { page } from '$app/state';
     import { resolve } from '$app/paths';
     import { goto } from '$app/navigation';
@@ -27,6 +27,7 @@
 	} = $props();
 
     let data = sidebarData.get();
+    let searchState = searchDialogState.getOr(undefined);
 </script>
 
 <Sidebar {...props}>
@@ -43,21 +44,26 @@
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
-        <SidebarSeparator/>
-        <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton
-                    tooltipContent="Search"
-                    class="w-full rounded-md justify-start overflow-hidden bg-sidebar-accent/50 border border-sidebar-border"
-                >
-                    <SearchIcon/>
-                    <span>Search</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
+        {#if searchState !== undefined}
+            <SidebarSeparator/>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    {#if searchState !== undefined}
+                        <SidebarMenuButton
+                            tooltipContent="Search"
+                            class="w-full rounded-md justify-start overflow-hidden bg-sidebar-accent/50 border border-sidebar-border"
+                            onclick={() => searchState.open = true}
+                        >
+                            <SearchIcon/>
+                            <span>Search</span>
+                        </SidebarMenuButton>
+                    {/if}
+                </SidebarMenuItem>
+            </SidebarMenu>
+        {/if}
         {@render header?.()}
+        <SidebarSeparator/>
     </SidebarHeader>
-    <SidebarSeparator/>
     <SidebarContent>
         {#if data.content?.groups}
             {#each data.content.groups as group (group.label)}

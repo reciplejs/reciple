@@ -2,8 +2,8 @@
     import Sidebar from '$lib/components/shared/main/Sidebar.svelte';
     import Header from '$lib/components/shared/main/Header.svelte';
     import { SidebarInset, SidebarProvider } from '$lib/components/ui/sidebar';
-    import { pageMetadata, sidebarData } from '$lib/helpers/contexts';
-    import type { MarkdownMetadata } from '../../lib/helpers/types';
+    import { pageMetadata, searchDialogState, sidebarData } from '$lib/helpers/contexts';
+    import type { MarkdownMetadata } from '$lib/helpers/types';
     import { page } from '$app/state';
 
     let { children } = $props();
@@ -13,8 +13,13 @@
         description: undefined
     });
 
+    let searchState: { open: boolean; } = $state({
+        open: false
+    })
+
     pageMetadata.set(metadata);
     sidebarData.set(page.data.sidebarData);
+    searchDialogState.set(searchState);
 </script>
 
 <SidebarProvider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;">
