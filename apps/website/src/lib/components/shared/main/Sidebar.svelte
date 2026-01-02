@@ -36,7 +36,7 @@
             <SidebarMenuItem>
                 <SidebarMenuButton size="lg" class="bg-transparent!">
                     <div class="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                        <SparklesIcon class="size-5.5"/>
+                        <SparklesIcon class="size-5"/>
                     </div>
                     <div class="grid flex-1 text-start text-lg leading-tight font-bold">
                         reciple
