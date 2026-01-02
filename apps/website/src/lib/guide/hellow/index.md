@@ -2,57 +2,72 @@
 title: Hello World
 description: Hello World
 ---
+# Markdown syntax guide
 
-# Terminal Environment Changes
+## Headers
 
-## Extension: ms-python.python
+# This is a Heading h1
+## This is a Heading h2
+###### This is a Heading h6
 
-- `PYTHONSTARTUP=/home/vin/.config/Code/User/workspaceStorage/8d6a0ddbe8c53c3a072784271c49e525/ms-python.python/pythonrc.py`
-- `PYTHON_BASIC_REPL=1`
+## Emphasis
 
-## Extension: vscode.git
+*This text will be italic*  
+_This will also be italic_
 
-Enables the following features: git auth provider
+**This text will be bold**  
+__This will also be bold__
 
-- `GIT_ASKPASS=/usr/share/code/resources/app/extensions/git/dist/askpass.sh`
-- `VSCODE_GIT_ASKPASS_NODE=/usr/share/code/code`
-- `VSCODE_GIT_ASKPASS_EXTRA_ARGS=`
-- `VSCODE_GIT_ASKPASS_MAIN=/usr/share/code/resources/app/extensions/git/dist/askpass-main.js`
-- `VSCODE_GIT_IPC_HANDLE=/run/user/1000/vscode-git-ba9a2df2ee.sock`
+_You **can** combine them_
 
-## Extension: GitHub.copilot-chat
+## Lists
 
-Enables use of `copilot-debug` and `copilot` commands in the terminal
+### Unordered
 
-- `PATH=/home/vin/.config/Code/User/globalStorage/github.copilot-chat/debugCommand:/home/vin/.config/Code/User/globalStorage/github.copilot-chat/copilotCli`
+* Item 1
+* Item 2
+* Item 2a
+* Item 2b
+    * Item 3a
+    * Item 3b
 
-## Extension: GitHub.copilot
+### Ordered
+
+1. Item 1
+2. Item 2
+3. Item 3
+    1. Item 3a
+    2. Item 3b
+
+## Images
+
+![This is an alt text.](/image/Markdown-mark.svg "This is a sample image.")
+
+## Links
+
+You may be using [Markdown Live Preview](https://markdownlivepreview.com/).
+
+## Blockquotes
+
+> Markdown is a lightweight markup language with plain-text-formatting syntax, created in 2004 by John Gruber with Aaron Swartz.
+>
+>> Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor.
+
+## Tables
+
+| Left columns  | Right columns |
+| ------------- |:-------------:|
+| left foo      | right foo     |
+| left bar      | right bar     |
+| left baz      | right baz     |
+
+## Blocks of code
 
 ```js
-import { mdsvex } from 'mdsvex';
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-	// Consult https://svelte.dev/docs/kit/integrations
-	// for more information about preprocessors
-	preprocess: [
-        vitePreprocess(),
-        mdsvex({
-            extensions: ['.svx', '.md']
-        })
-    ],
-
-	kit: {
-		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-		adapter: adapter()
-	},
-
-	extensions: ['.svelte', '.svx', '.md']
-};
-
-export default config;
+let message = 'Hello world';
+alert(message);
 ```
+
+## Inline code
+
+This web site is using `markedjs/marked`.

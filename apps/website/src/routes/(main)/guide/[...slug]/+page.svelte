@@ -1,4 +1,5 @@
 <script lang="ts">
+    import '$lib/styles/markdown.css';
     import { Separator } from '$lib/components/ui/separator';
 
     let { data } = $props();
