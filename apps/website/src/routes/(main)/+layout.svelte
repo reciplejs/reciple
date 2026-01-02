@@ -2,8 +2,9 @@
     import Sidebar from '$lib/components/shared/main/Sidebar.svelte';
     import Header from '$lib/components/shared/main/Header.svelte';
     import { SidebarInset, SidebarProvider } from '$lib/components/ui/sidebar';
-    import { pageMetadata } from '$lib/helpers/contexts';
+    import { pageMetadata, sidebarData } from '$lib/helpers/contexts';
     import type { MarkdownMetadata } from '../../lib/helpers/types';
+    import { page } from '$app/state';
 
     let { children } = $props();
 
@@ -13,6 +14,7 @@
     });
 
     pageMetadata.set(metadata);
+    sidebarData.set(page.data.sidebarData);
 </script>
 
 <SidebarProvider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;">

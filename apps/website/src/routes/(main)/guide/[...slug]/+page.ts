@@ -1,7 +1,6 @@
-import type { MarkdownModules } from '$lib/helpers/types.js';
+import { resolve } from '$app/paths';
+import type { MarkdownModules, SidebarData } from '$lib/helpers/types.js';
 import { error } from '@sveltejs/kit';
-
-export const prerender = true;
 
 export async function load(data) {
     const parts = data.params.slug.split('/');
@@ -11,7 +10,7 @@ export async function load(data) {
     const modules = import.meta.glob(`$lib/guide/*/*.md`) as MarkdownModules;
     const markdown = Object
         .entries(modules)
-        .find(([path, current]) => {
+        .find(([path]) => {
             const parts = path.split('/');
             const page = parts.pop()?.split('-').pop()?.replace('.md', '');
             const category = parts.pop()?.split('-').pop();
@@ -26,6 +25,41 @@ export async function load(data) {
     return {
         component,
         metadata,
-        modules
+        modules,
+        sidebarData: await createSidebarData(modules)
+    };
+}
+
+async function createSidebarData(modules: MarkdownModules): Promise<SidebarData> {
+    const categories: Exclude<SidebarData['content'], undefined>['groups'][0]['categories'] = {};
+
+    for (const [path, module] of Object.entries(modules)) {
+        const { metadata } = await module();
+        if (!metadata) continue;
+
+        const parts = path.split('/');
+        const pageId = parts.pop()?.split('-').pop()?.replace('.md', '');
+        const categoryId = parts.pop()?.split('-').pop();
+
+        if (!pageId || !categoryId) continue;
+
+        const category = categories[metadata.category ?? categoryId] ??= { links: [] };
+
+        category.links.push({
+            label: metadata.title ?? pageId,
+            href: resolve(`/(main)/guide/[...slug]`, {
+                slug: `${categoryId}/${pageId}`
+            })
+        });
+    }
+
+    return {
+        content: {
+            groups: [
+                {
+                    categories
+                }
+            ]
+        }
     };
 }
