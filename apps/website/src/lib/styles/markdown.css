@@ -1,6 +1,7 @@
 html {
     .shiki,
     .shiki span {
+        @apply select-text;
         color: var(--shiki-light);
         background-color: var(--shiki-light-bg);
         font-style: var(--shiki-light-font-style);
