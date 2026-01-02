@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@dotenvx/dotenvx": "^1.51.2",
+    "@dotenvx/dotenvx": "^1.51.4",
     "@prtty/print": "^1.1.0",
     "@prtty/prtty": "^1.1.0",
     "@reciple/utils": "^10.0.1",
@@ -49,16 +49,16 @@
     "pkg-types": "^2.3.0",
     "semver": "^7.7.3",
     "ts-mixer": "^6.0.4",
-    "tsdown": "^0.18.3",
+    "tsdown": "^0.18.4",
     "unrun": "^0.2.21"
   },
   "devDependencies": {
     "@reciple/jsx": "^10.0.1",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.10.4",
+    "@types/node": "^25.0.3",
     "@types/semver": "^7.7.1",
     "nodemon": "^3.1.11",
-    "rolldown": "^1.0.0-beta.57",
+    "rolldown": "^1.0.0-beta.58",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
