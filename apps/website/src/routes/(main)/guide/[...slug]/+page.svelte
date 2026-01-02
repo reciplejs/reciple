@@ -16,14 +16,10 @@
         metadata.description = data.metadata?.description;
     });
 
-    let searchData: SearchData[] = $state([]);
-    let fuse: Fuse<SearchData> = $derived(new Fuse(searchData, {
+    let searchIndex: SearchData[] = $derived(toSearchData(data.sidebarData.content?.groups ?? []));
+    let fuse: Fuse<SearchData> = $derived(new Fuse(searchIndex, {
         keys: ['title', 'description'],
     }));
-
-    $effect(() => {
-        searchData = toSearchData(data.sidebarData.content?.groups ?? []);
-    });
 
     function toSearchData(groups: Exclude<SidebarData['content'], undefined>['groups']): SearchData[] {
         const data: SearchData[] = [];
@@ -48,10 +44,10 @@
 <MetaTags titleTemplate="reciple | %s" {...data.metadata}/>
 <SearchDialog
     bind:open={searchState.open}
-    data={searchData}
+    data={searchIndex}
     onFilter={async (value) => {
         value = value.trim();
-        if (!value) return searchData;
+        if (!value) return searchIndex;
 
         const results = fuse.search(value);
 

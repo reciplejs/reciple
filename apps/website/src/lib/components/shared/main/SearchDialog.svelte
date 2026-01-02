@@ -9,10 +9,12 @@
     let {
         open = $bindable(false),
         data = $bindable(),
+        debounce = 500,
         onFilter
     }: {
         open?: boolean;
         data: SearchData[];
+        debounce?: number;
         onFilter: (value: string) => Awaitable<SearchData[]>;
     } = $props();
 
@@ -31,7 +33,7 @@
     const _filter = useDebounce(async (value: string) => {
         data = await Promise.resolve(onFilter(value)) ?? [];
         isLoading = false;
-    }, 0);
+    }, () => debounce);
 
     const filter = async (value: string) => {
         isLoading = true;
