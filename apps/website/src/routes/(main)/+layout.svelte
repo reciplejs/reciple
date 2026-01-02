@@ -17,10 +17,10 @@
 
 <SidebarProvider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;">
     <Sidebar collapsible='icon'/>
-    <SidebarInset>
+    <SidebarInset class="w-[calc(100%-var(--sidebar-width))]">
         <Header title={metadata.title}/>
         <div class="flex justify-center size-full">
-            <div class="container size-full max-w-7xl">
+            <div class="container max-w-7xl size-full">
                 {@render children?.()}
             </div>
         </div>

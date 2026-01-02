@@ -15,7 +15,7 @@
 
 <MetaTags titleTemplate="reciple | %s" {...data.metadata}/>
 
-<article class="prose prose-neutral prose-sm md:prose-base prose-table:overflow-auto prose-table:max-w-full dark:prose-invert max-w-none p-4">
+<article class="prose prose-neutral prose-sm md:prose-base dark:prose-invert max-w-none p-4">
     <data.component/>
 </article>
 

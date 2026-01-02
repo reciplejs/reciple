@@ -1,13 +1,17 @@
 import type { Component } from 'svelte';
 
-export type MarkdownMetadata = {
+export interface MarkdownMetadata {
 	title?: string;
 	description?: string;
 };
 
-export type MarkdownModules<Metadata = MarkdownMetadata> = {
+export interface MarkdownModules<Metadata = MarkdownMetadata> {
     [key: string]: () => Promise<{
         default: Component;
         metadata?: Metadata;
     }>
 };
+
+export interface SidebarData {
+    
+}
