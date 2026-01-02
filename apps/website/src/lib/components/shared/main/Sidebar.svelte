@@ -12,6 +12,7 @@
     import type { HTMLAttributes } from 'svelte/elements';
     import type { Snippet } from 'svelte';
     import { sidebarData } from '../../../helpers/contexts';
+    import { page } from '$app/state';
 
     let {
         header,
@@ -176,8 +177,15 @@
                                             <CollapsibleContent>
                                                 <SidebarMenuSub>
                                                     {#each category.links as item (item.label + item.href)}
+                                                        {@const isActive = !!page.params.slug && item.href.endsWith(page.params.slug)}
                                                         <SidebarMenuSubItem>
-                                                            <SidebarMenuSubButton href={item.href} target={item.external ? '_blank' : undefined}>
+                                                            <SidebarMenuSubButton
+                                                                href={item.href}
+                                                                target={item.external ? '_blank' : undefined}
+                                                                class={[
+                                                                    isActive && "text-primary! font-medium bg-primary/10!"
+                                                                ]}
+                                                            >
                                                                 {#if item.icon}
                                                                     <item.icon/>
                                                                 {/if}

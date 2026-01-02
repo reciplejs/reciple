@@ -2,6 +2,7 @@ import type { MarkdownModules, SidebarData } from '$lib/helpers/types.js';
 import { error } from '@sveltejs/kit';
 import { normalizeGuideCategoryId, normalizeGuidePageId } from '$lib/helpers/utils.js';
 import { resolve } from '$app/paths';
+import BoxIcon from '@lucide/svelte/icons/box';
 
 export const prerender = true;
 export const ssr = true;
@@ -30,6 +31,7 @@ export async function load(data) {
         component,
         metadata,
         modules,
+        activeSlug: `${categoryId}/${pageId}`,
         sidebarData: await createSidebarData(modules)
     };
 }
@@ -47,7 +49,10 @@ async function createSidebarData(modules: MarkdownModules): Promise<SidebarData>
 
         if (!pageId || !categoryId) continue;
 
-        const category = categories[metadata.category ?? categoryId] ??= { links: [] };
+        const category = categories[metadata.category ?? categoryId] ??= {
+            links: [],
+            icon: BoxIcon,
+        };
 
         category.links.push({
             label: metadata.title ?? pageId,
