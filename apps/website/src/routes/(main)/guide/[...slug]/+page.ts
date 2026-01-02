@@ -7,12 +7,12 @@ export async function load(data) {
     const pageId = parts.pop();
     const categoryId = parts.pop();
 
-    const modules = import.meta.glob(`$lib/guide/*/*.md`) as MarkdownModules;
+    const modules = import.meta.glob(`$lib/guide/*/*{.md,.svx}`) as MarkdownModules;
     const markdown = Object
         .entries(modules)
         .find(([path]) => {
             const parts = path.split('/');
-            const page = parts.pop()?.split('-').pop()?.replace('.md', '');
+            const page = parts.pop()?.split('-').pop()?.replace('.md', '').replace('.svx', '');
             const category = parts.pop()?.split('-').pop();
 
             return category === categoryId && page === pageId;
@@ -38,7 +38,7 @@ async function createSidebarData(modules: MarkdownModules): Promise<SidebarData>
         if (!metadata) continue;
 
         const parts = path.split('/');
-        const pageId = parts.pop()?.split('-').pop()?.replace('.md', '');
+        const pageId = parts.pop()?.split('-').pop()?.replace('.md', '').replace('.svx', '');
         const categoryId = parts.pop()?.split('-').pop();
 
         if (!pageId || !categoryId) continue;
