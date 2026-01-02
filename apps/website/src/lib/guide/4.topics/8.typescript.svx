@@ -1,0 +1,59 @@
+---
+title: TypeScript
+---
+
+# TypeScript
+If you want type safety, you should probably consider TypeScript. Reciple supports TypeScript because it was written in TypeScript!
+
+## Project Structure
+You can create a TypeScript project automatically by choosing TypeScript as the programming language when setting up your bot using `npm create reciple@latest`. This process will generate a directory structure similar to that used in JavaScript.
+
+```
+mybot/
+├── reciple.mjs
+├── tsconfig.json
+├── package.json
+├── package-lock.json
+├── node_modules
+└── src/
+    ├── addons/
+    │   └── ....
+    ├── commands/
+    │   └── PingCommand.ts
+    ├── events/
+    │   └── WelcomeEvent.ts
+    ├── halts/
+    │   └── CommandErrorHalt.ts
+    └── preconditions/
+        └── ExamplePrecondition.ts
+```
+
+When you used the JavaScript project, you'll notice that the `modules` folder is replaced with `src`, that's because TypeScript will automatically generate the JavaScript version of your modules into that directory during transpilation.
+
+## Writting Modules
+
+When writting modules, your modules directory by default is set to `src` and instead of `.js` we will use `.ts`.
+
+The way you code your modules may change, but not significantly. For example, here's how to write a Ping command in TypeScript.
+```ts
+import { AnyCommandResolvable, RecipleModuleData, SlashCommandBuilder } from 'reciple';
+
+export class PingCommand implements RecipleModuleData {
+    public commands: AnyCommandResolvable[] = [
+        new SlashCommandBuilder()
+            .setName('ping')
+            .setDescription('Ping command')
+            .setExecute(async ({ interaction }) => {
+                await interaction.reply('Pong!');
+            })
+    ];
+
+    public async onStart(): Promise<boolean> {
+        return true;
+    }
+}
+
+export default new PingCommand();
+```
+
+As you can see, it is best to explicitly type your properties and returns of a function.

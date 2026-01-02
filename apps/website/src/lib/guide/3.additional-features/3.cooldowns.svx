@@ -1,0 +1,76 @@
+---
+title: Cooldowns
+---
+
+# Cooldowns
+Cooldowns are useful for preventing users from repeating the same actions in a short period of time. This guide will explain how to use Reciple cooldowns.
+
+Cooldowns are set by adding the [`.setCooldown()`](/docs/core/main/classes:BaseCommandBuilder#setcooldown) to your command builder when creating your command. For example if you want to make a ping slash command with 5 seconds cooldown we will code it like:
+```js
+import { SlashCommandBuilder } from 'reciple';
+
+export class MyModule {
+    commands = [
+        new SlashCommandBuilder()
+            .setName('ping')
+            .setDescription('Pong command')
+            .setCooldown(5 * 1_000)
+            .setExecute(async ({ interaction }) => {
+                await interaction.reply('Pong!');
+            })
+    ];
+
+    async onStart() {
+        return true;
+    }
+}
+
+export default new MyModule();
+```
+
+> You can use <a href="/docs/core/main/classes:BaseCommandBuilder#setcooldown"><code>.setCooldown()</code></a> on all command builders.
+
+By default, when a user has been cooled-down, the interaction/message is ignored without replying to the command. You can add a cooldown message by using the command halt.
+
+Create a new file in a folder that is **not** your `modules` folder. In this case we will use `./halts/cooldowns.js`. Inside that file, create your command halt object.
+
+```js
+import { CommandHaltReason, CommandType } from 'reciple';
+import { time } from 'discord.js';
+
+export default {
+    id: 'my.cooldowns',
+    commandTypes: [CommandType.ContextMenuCommand, CommandType.MessageCommand, CommandType.SlashCommand],
+    halt: async data => {
+        if (data.reason !=== CommandHaltReason.Cooldown) return;
+
+        const executeData = data.executeData;
+        const cooldown = data.cooldown;
+        const createResponse = data.commandType === CommandType.MessageCommand
+            ? options => executeData.message.reply(options)
+            : executeData.interaction.deferred
+                ? options => executeData.interaction.editReply(options)
+                : executeData.interaction.replied
+                    ? options => executeData.interaction.followUp(options)
+                    : options => executeData.interaction.reply(options);
+
+        await createResponse({
+            content: `Slow down! the command can be used again ${time(cooldown.endsAt, 'R')}`,
+            ephemeral: true
+        });
+    }
+};
+```
+
+To use that command halt, you can add it to your global command halts or add it to every single commands using command builder's [`.addHalts()`](/docs/core/main/classes:BaseCommandBuilder#addhalts).
+
+<discord-messages>
+    <discord-message profile="bot">
+        <discord-command slot="reply" profile="cat" command="/ping"></discord-command>
+        Pong!
+    </discord-message>
+    <discord-message profile="bot" ephemeral>
+        <discord-command slot="reply" profile="cat" command="/ping"></discord-command>
+        You can execute this command again in <discord-time>4 seconds</discord-time>
+    </discord-message>
+</discord-messages>

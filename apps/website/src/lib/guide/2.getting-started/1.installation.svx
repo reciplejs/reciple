@@ -1,0 +1,142 @@
+---
+title: Installation
+---
+
+# Installation
+
+Before we begin, there are different ways to install Reciple with Discord.js. In this case we're going to use our [`create-reciple`](https://www.npmjs.com/package/create-reciple) cli. Initialize your project by using `npm create` in your terminal.
+
+```sh
+npm create reciple@latest ./mybot
+```
+
+> `./mybot` will be the root directory of your Reciple bot
+> You need at least **Node.js version 18.x** to be able to use Reciple
+
+Once you enter the command, the program will ask you to set up your bot. First, it will prompt you to select whether you want to use Typescript, and in this case, we will only use JavaScript by pressing `Enter`.
+```
+┌  create-reciple
+│
+◆  Would you like to use typescript?
+│  ○ Yes / ● No
+└
+```
+
+After that, you can select an optional addons for Reciple. These addons are just pre-made Reciple modules.
+### Addons
+- `reciple-interaction-events` [**Guide**](/guide/getting-started/event-handling). Add property in Reciple modules to listen to interaction events.
+- `reciple-anticrash` [**Guide**](/guide/topics/error-handling). Catch errors and report it in a Discord channel.
+- `reciple-dev-commands` [**NPM**](https://www.npmjs.com/package/reciple-dev-commands). Create dev only commands.
+- `reciple-registry-cache` [**NPM**](https://www.npmjs.com/package/reciple-registry-cache). Cache application commands to prevent API spam.
+
+To continue, press `Enter`.
+```
+┌  create-reciple v8.6.2
+│
+◇  Would you like to use typescript?
+│  No
+│
+◆  Select a addons from Reciple (Press space to select, and enter to submit)
+│  ◻ reciple-interaction-events
+│  ◻ reciple-anticrash
+│  ◻ reciple-dev-commands
+│  ◻ reciple-registry-cache
+└
+```
+
+After that, you will need to choose a package manager. Usually the current package manager is listed first. In this case we will use `npm`, but you are allowed to choose any package manager.
+> `none` will not install anything. This is useful for custom package managers
+
+```
+┌  create-reciple v8.6.2
+│
+◇  Would you like to use typescript?
+│  No
+│
+◇  Select a addons from Reciple (Press space to select, and enter to submit)
+│  none
+│
+◆  Select your preferred package manager
+│  ● npm (Uses npm as package manager)
+│  ○ yarn
+│  ○ pnpm
+│  ○ none
+└
+```
+
+And lastly, your Discord Bot token. You can obtain your token from [Discord Developer Portal](https://discord.com/developers/applications). You can always change the token in your `reciple.mjs` config.
+> Refer to [Setting up an application](https://guide.discordjs.dev/guide/getting-started/setting-up-an-application) to learn how to create a Discord bot in Discord Developer Portal.
+
+```
+┌  create-reciple v8.6.2
+│
+◇  Would you like to use typescript?
+│  No
+│
+◇  Select a addons from Reciple (Press space to select, and enter to submit)
+│  none
+│
+◇  Select your preferred package manager
+│  npm
+│
+◆  Enter your Discord bot token from Developers Portal
+│   _
+└
+```
+
+> By default a template is chosen for your project, but **sometimes** you can choose different versions of templates depending on your setup config.
+```
+┌  create-reciple v8.6.2
+│
+◇  Would you like to use typescript?
+│  No
+│
+◇  Select a addons from Reciple (Press space to select, and enter to submit)
+│  none
+│
+◇  Select your preferred package manager
+│  npm
+│
+◆  Enter your Discord bot token from Developers Portal
+│   _
+│
+◇  Select a template
+│  Javascript
+└
+```
+
+After the setup, your package manager will install the dependencies for you, and your project will be ready. Use the `cd` command in your terminal to navigate to your bot's root directory:
+```sh
+cd mybot
+```
+
+Your project directory should look like this
+```
+mybot/
+├── reciple.mjs
+├── package.json
+├── package-lock.json
+├── node_modules
+└── modules/
+    ├── addons/
+    │   └── ....
+    ├── commands/
+    │   └── PingCommand.js
+    ├── events/
+    │   └── WelcomeEvent.js
+    ├── halts/
+    │   └── CommandErrorHalt.js
+    └── preconditions/
+        └── ExamplePrecondition.js
+```
+
+> Reciple is an ESM only package, this means we will be using <code>import</code> statements instead of <code>require</code>
+> All modules folder (excluding the <code>halts</code> and <code>preconditions</code>) can contain any module that handles command or events. The folder names are just for categorization.
+
+As you can see, there is no `index.js` or main file because the Reciple CLI handles everything for you. You can start your bot with these `npm` scripts. Except for `halts` and `preconditions`, all folders inside the modules folder are treated as module folders and subfolders by default.
+```sh
+npm run dev # Will start a watch mode with nodemon
+npm run start # Starts the bot
+```
+
+### Everything is all set!

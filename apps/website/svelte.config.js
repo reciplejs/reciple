@@ -27,6 +27,11 @@ const highlighter = await createHighlighter({
         "properties",
         "sh",
         "powershell",
+        "diff",
+        "json",
+        "jsonc",
+        "yaml",
+        "css"
     ]
 });
 

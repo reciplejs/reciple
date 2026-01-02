@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { slug } from 'github-slugger';
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -11,3 +12,15 @@ export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
 export type WithoutChildren<T> = T extends { children?: any } ? Omit<T, "children"> : T;
 export type WithoutChildrenOrChild<T> = WithoutChildren<WithoutChild<T>>;
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: U | null };
+
+export function normalizeGuidePageId(id: string) {
+    const [_, ...parts] = id.split('.');
+
+    return slug(parts.join('.').replace('.md', '').replace('.svx', ''));
+}
+
+export function normalizeGuideCategoryId(id: string) {
+    const [_, ...parts] = id.split('.');
+
+    return slug(parts.join('.'));
+}

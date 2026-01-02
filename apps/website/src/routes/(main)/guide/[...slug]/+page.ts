@@ -1,6 +1,10 @@
-import { resolve } from '$app/paths';
 import type { MarkdownModules, SidebarData } from '$lib/helpers/types.js';
 import { error } from '@sveltejs/kit';
+import { normalizeGuideCategoryId, normalizeGuidePageId } from '$lib/helpers/utils.js';
+import { resolve } from '$app/paths';
+
+export const prerender = true;
+export const ssr = true;
 
 export async function load(data) {
     const parts = data.params.slug.split('/');
@@ -12,8 +16,8 @@ export async function load(data) {
         .entries(modules)
         .find(([path]) => {
             const parts = path.split('/');
-            const page = parts.pop()?.split('-').pop()?.replace('.md', '').replace('.svx', '');
-            const category = parts.pop()?.split('-').pop();
+            const page = normalizeGuidePageId(parts.pop() ?? '');
+            const category = normalizeGuideCategoryId(parts.pop() ?? '');
 
             return category === categoryId && page === pageId;
         });
@@ -38,8 +42,8 @@ async function createSidebarData(modules: MarkdownModules): Promise<SidebarData>
         if (!metadata) continue;
 
         const parts = path.split('/');
-        const pageId = parts.pop()?.split('-').pop()?.replace('.md', '').replace('.svx', '');
-        const categoryId = parts.pop()?.split('-').pop();
+        const pageId = normalizeGuidePageId(parts.pop() ?? '');
+        const categoryId = normalizeGuideCategoryId(parts.pop() ?? '');
 
         if (!pageId || !categoryId) continue;
 

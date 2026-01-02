@@ -1,0 +1,109 @@
+---
+title: Module Splitting
+---
+
+# Module Splitting
+
+Working on a big and growing project, putting your commands, event handlers, and more in a single file is not a very smart idea. Module Splitting is when you split the parts of your module into another modules.
+
+To get started, configure your modules directory in your `reciple.mjs` to also scan the sub directory of your `modules` folder.
+
+```js
+export const config = {
+    // ...other config...
+    modules: {
+        dirs: ['./modules', './modules/*', './modules/*/*'],
+        exclude: ['halts', 'preconditions', '_*'],
+    }
+};
+```
+
+We can now create a subdirectory for our every modules. For example, we can create a module for handling advanced ping command with refresh button.
+
+Create a new folder inside your `modules` folder. In this case we will name it `Ping`. Now create a new module named `ping.js` inside that will contain the commands.
+
+```js
+import { SlashCommandBuilder } from 'reciple';
+import { ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } from 'discord.js';
+
+export class Ping {
+    commands = [
+        new SlashCommandBuilder()
+            .setName('ping')
+            .setDescription('Replies with Pong!')
+            .setExecute(async ({ interaction, client }) => {
+                await interaction.reply({ embeds: [this.createPingEmbed(client)] });
+            })
+    ];
+
+    createPingMessageOptions(client) {
+        return {
+            embeds: [
+                new EmbedBuilder()
+                    .setColor('Blue')
+                    .setAuthor({ name: `Pong!` })
+                    .setDescription(`🏓 ${client.ws.ping} ms`)
+            ],
+            components: [
+                {
+                    type: ComponentType.ActionRow,
+                    components: [
+                        new ButtonBuilder()
+                            .setCustomId('refresh-ping')
+                            .setLabel('Refresh')
+                            .setStyle(ButtonStyle.Secondary)
+                    ]
+                }
+            ]
+        };
+    }
+
+    onStart() {
+        return true;
+    }
+}
+
+export default new Ping();
+```
+
+To handle the button interaction, we will use the `reciple-interaction-events` for handling interactions from `interactionEvents` property. Create a new module named `ping-button.js` in the same directory as the `ping.js`, then inside we will create the button listener to refresh the ping status.
+
+```js
+import { InteractionListenerType } from 'reciple-interaction-events';
+import Ping from './ping.js';
+
+export class PingButton {
+    interactionEvents = [
+        {
+            type: InteractionListenerType.Button,
+            customId: 'refresh-ping',
+            execute: async interaction => {
+                await interaction.deferUpdate();
+                await interaction.message.edit(Ping.createPingMessageOptions(interaction.client));
+            }
+        }
+    ];
+
+    onStart() {
+        return true;
+    }
+}
+
+export default new PingButton();
+```
+
+Now `ping.js` will be handling the command execution and the `ping-button.js` will handle the button interactions of the ping command.
+
+<discord-messages>
+    <discord-message profile="bot" edited>
+        <discord-command slot="reply" profile="cat" command="reply"></discord-command>
+        <discord-embed slot="embeds" color="#3498db" author-name="Pong!">
+            <discord-embed-description slot="description">
+                🏓 300 ms
+            </discord-embed-description>
+        </discord-embed>
+        <discord-action-row slot="components">
+            <discord-button type="secondary">Refresh</discord-button>
+        </discord-action-row>
+    </discord-message>
+</discord-messages>

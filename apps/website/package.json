@@ -39,6 +39,7 @@
 	},
 	"dependencies": {
 		"@reciple/docgen": "^10.0.1",
+		"github-slugger": "^2.0.0",
 		"mode-watcher": "^1.1.0",
 		"runed": "^0.37.1",
 		"shiki": "^3.20.0",
