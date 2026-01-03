@@ -1,11 +1,12 @@
 <script lang="ts">
     import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandLinkItem, CommandList, CommandLoading } from '$lib/components/ui/command';
-    import { SearchIcon, type Icon } from '@lucide/svelte';
-    import { Skeleton } from '../../ui/skeleton';
+    import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../ui/empty';
+    import { Skeleton } from '$lib/components/ui/skeleton';
+    import SearchIcon from '@lucide/svelte/icons/search';
+    import { type Icon } from '@lucide/svelte';
     import type { Awaitable } from 'shiki';
     import { useDebounce } from 'runed';
-    import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../ui/empty';
-
+    
     let {
         open = $bindable(false),
         data = $bindable(),
