@@ -66,7 +66,7 @@
 
 <article
     class={[
-        "prose prose-neutral prose-sm md:prose-base dark:prose-invert max-w-none p-4",
+        "prose prose-neutral prose-sm @3xl:prose-base dark:prose-invert max-w-none p-4",
         "prose-code:after:content-none prose-code:before:content-none prose-code:bg-foreground/15 prose-code:py-0.5 prose-code:px-1 prose-code:rounded-md",
         "prose-pre:prose-code:rounded-none prose-pre:prose-code:p-0 prose-pre:prose-code:bg-transparent prose-pre:leading-tight",
         "prose-blockquote:prose-p:before:content-none prose-blockquote:prose-p:after:content-none",

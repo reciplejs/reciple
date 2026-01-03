@@ -17,11 +17,11 @@
     let next = $derived(current >= 0 ? items.at(current + 1) : undefined);
 </script>
 
-<div class="grid sm:grid-cols-2 gap-2 p-4">
+<div class="grid @lg:grid-cols-2 gap-2 p-4">
     {#if previous}
-        <Button variant="outline" size="lg" class="sm:justify-start text-start items-center h-fit py-4" href={previous.href}>
+        <Button variant="outline" size="lg" class="@lg:justify-start text-start items-center h-fit py-4" href={previous.href}>
             <ArrowLeftIcon class="size-6 mr-2"/>
-            <div class="grid justify-items-center sm:justify-items-start leading-tight overflow-hidden w-full mr-8">
+            <div class="grid justify-items-center @lg:justify-items-start leading-tight overflow-hidden w-full mr-8">
                 <span class="font-semibold">{previous?.label}</span>
                 <span class="text-xs text-muted-foreground truncate text-nowrap">{previous?.metadata?.description ?? previous.href.replace('/guide/', '')}</span>
             </div>
@@ -30,8 +30,8 @@
         <span></span>
     {/if}
     {#if next}
-        <Button variant="outline" size="lg" class="sm:justify-end text-end items-center h-fit py-4" href={next?.href}>
-            <div class="grid justify-items-center sm:justify-items-end leading-tight overflow-hidden w-full ml-8">
+        <Button variant="outline" size="lg" class="@lg:justify-end text-end items-center h-fit py-4" href={next?.href}>
+            <div class="grid justify-items-center @lg:justify-items-end leading-tight overflow-hidden w-full ml-8">
                 <span class="font-semibold">{next?.label}</span>
                 <span class="text-xs text-muted-foreground truncate text-nowrap">{next?.metadata?.description ?? next.href.replace('/guide/', '')}</span>
             </div>

@@ -28,7 +28,7 @@
     <SidebarInset class="w-[calc(100%-var(--sidebar-width))]">
         <Header title={metadata.title}/>
         <div class="flex justify-center size-full">
-            <div class="container max-w-7xl size-full">
+            <div class="container @container max-w-7xl size-full">
                 {@render children?.()}
             </div>
         </div>
