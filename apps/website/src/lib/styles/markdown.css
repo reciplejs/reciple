@@ -52,7 +52,6 @@ html {
         & h5,
         & h6,
         & blockquote,
-        & pre,
         & td {
             white-space: break-spaces;
             word-wrap: break-word;
@@ -67,6 +66,8 @@ html {
 
         & pre.shiki {
             @apply border;
+            word-wrap: ;
+            overflow: auto;
         }
 
         & pre,
