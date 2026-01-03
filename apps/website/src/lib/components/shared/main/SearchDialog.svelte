@@ -63,7 +63,7 @@
     }
 }}/>
 
-<CommandDialog shouldFilter={false} loop bind:open>
+<CommandDialog shouldFilter={false} loop bind:open class="z-50">
     <CommandInput placeholder="Search..." oninput={e => filter(e.currentTarget.value)}/>
     <CommandList>
         {#if isLoading}

@@ -1,5 +1,12 @@
 ---
 title: TypeScript
+description: Learn how to use TypeScript with Reciple
+keywords:
+    - typescript
+    - javascript
+    - reciple
+    - tsconfig
+category: Topics
 ---
 
 # TypeScript

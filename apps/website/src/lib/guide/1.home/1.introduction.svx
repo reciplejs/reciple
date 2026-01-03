@@ -1,5 +1,7 @@
 ---
 title: Introduction
+description: Introduction to reciple guide
+category: Home
 ---
 
 # Introduction

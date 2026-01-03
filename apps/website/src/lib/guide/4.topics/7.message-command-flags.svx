@@ -1,5 +1,13 @@
 ---
 title: Message Command Flags
+description: Learn how to use Reciple message command flags
+keywords:
+    - message
+    - command
+    - flag
+    - argument
+    - parser
+category: Topics
 ---
 
 # Message Command Flags

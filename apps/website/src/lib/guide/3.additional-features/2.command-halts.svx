@@ -1,5 +1,7 @@
 ---
 title: Command Halts
+description: Learn how to create and use command halts
+category: Additional Features
 ---
 
 # Command Halts

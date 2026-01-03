@@ -1,5 +1,7 @@
 ---
 title: Module Splitting
+description: Learn how splitting your modules helps you to keep your project clean
+category: Topics
 ---
 
 # Module Splitting

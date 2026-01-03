@@ -17,7 +17,7 @@
 
     let searchState: { open: boolean; } = $state({
         open: false
-    })
+    });
 
     pageMetadata.set(metadata);
     sidebarData.set(page.data.sidebarData);

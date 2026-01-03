@@ -1,5 +1,11 @@
 ---
 title: Sharding
+description: Learn how to integrate Reciple with sharding
+keywords:
+    - client
+    - cluster
+    - worker
+category: Topics
 ---
 
 # Sharding

@@ -1,5 +1,15 @@
 ---
 title: Creating Commands
+description: Learn how to create slash commands, context menu commands, and message commands
+keywords:
+  - command
+  - slash
+  - message
+  - context menu
+  - builder
+  - interaction
+  - message
+category: Getting Started
 ---
 
 # Creating Commands

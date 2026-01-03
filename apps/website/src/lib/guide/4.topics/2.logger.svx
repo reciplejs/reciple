@@ -1,5 +1,11 @@
 ---
 title: Logger
+description: Learn how to use Reciple's logger
+keywords:
+    - logger
+    - console
+    - print
+category: Topics
 ---
 
 # Logger

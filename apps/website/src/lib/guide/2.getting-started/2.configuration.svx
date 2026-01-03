@@ -1,5 +1,12 @@
 ---
 title: Configuration
+description: Learn how to configure Reciple
+keywords:
+  - env
+  - config
+  - setup
+  - token
+category: Getting Started
 ---
 
 # Configuration

@@ -1,5 +1,11 @@
 ---
 title: Migrating from v8
+description: A guide on how to migrate from Reciple v8 to v9
+keywords:
+  - migrating
+  - v8
+  - v9
+category: Home
 ---
 
 # Migrating from v8

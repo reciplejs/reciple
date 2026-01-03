@@ -1,5 +1,12 @@
 ---
-title: "Troubleshooting"
+title: Troubleshooting
+description: A list of common issues and how to fix them.
+keywords:
+  - problem
+  - fix
+  - bug
+  - error
+category: Topics
 ---
 
 # Troubleshooting

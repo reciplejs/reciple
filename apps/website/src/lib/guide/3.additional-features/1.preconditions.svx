@@ -1,5 +1,7 @@
 ---
 title: Preconditions
+description: Learn how to create and use preconditions
+category: Additional Features
 ---
 
 # Preconditions

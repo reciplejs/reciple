@@ -1,5 +1,7 @@
 ---
-title: "Decorators"
+title: Decorators
+description: Learn how to use typescript decorators in Reciple
+category: Topics
 ---
 
 

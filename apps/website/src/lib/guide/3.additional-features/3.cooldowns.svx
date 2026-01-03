@@ -1,5 +1,7 @@
 ---
 title: Cooldowns
+description: Learn how to use Reciple cooldowns
+category: Additional Features
 ---
 
 # Cooldowns

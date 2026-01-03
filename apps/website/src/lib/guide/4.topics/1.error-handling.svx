@@ -1,5 +1,10 @@
 ---
 title: Error Handling
+description: Learn how to handle errors in Reciple
+keywords:
+    - error
+    - crash
+category: Topics
 ---
 
 # Error Handling

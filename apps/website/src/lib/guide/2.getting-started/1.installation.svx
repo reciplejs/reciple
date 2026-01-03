@@ -1,5 +1,14 @@
 ---
 title: Installation
+description: Learn how to install Reciple
+keywords:
+  - install
+  - reciple
+  - typescript
+  - javascript
+  - version
+  - setup
+category: Getting Started
 ---
 
 # Installation

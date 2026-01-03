@@ -1,5 +1,18 @@
 ---
 title: Event Handling
+description: Learn how to handle events in Reciple
+keywords:
+    - event
+    - buttons
+    - modals
+    - select menus
+    - autocompletes
+    - slash commands
+    - context menus
+    - components
+    - message
+    - interactions
+category: Getting Started
 ---
 
 # Event Handling

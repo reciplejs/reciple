@@ -1,5 +1,7 @@
 ---
 title: Discord Message Components
+description: Discord Message Components
+category: Topics
 ---
 
 <discord-messages>
