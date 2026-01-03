@@ -8,6 +8,7 @@
     import { setConfig } from '@skyra/discord-components-core';
     import { page } from '$app/state';
     import { onMount } from 'svelte';
+    import { DiscordComponentConfig } from '$lib/helpers/constants';
 
     let { children } = $props();
 
@@ -25,7 +26,7 @@
     searchDialogState.set(searchState);
 
     onMount(() => {
-        setConfig({});
+        setConfig(DiscordComponentConfig);
     });
 </script>
 

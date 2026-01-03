@@ -3,7 +3,7 @@
     import { pageMetadata, searchDialogState } from '$lib/helpers/contexts.js';
     import { MetaTags } from 'svelte-meta-tags';
     import SearchDialog, { type SearchData } from '$lib/components/shared/main/SearchDialog.svelte';
-    import type { SidebarData } from '../../../../lib/helpers/types.js';
+    import type { SidebarData } from '$lib/helpers/types.js';
     import Fuse from 'fuse.js';
 
     let { data } = $props();
