@@ -4,8 +4,8 @@
     import { MetaTags } from 'svelte-meta-tags';
     import SearchDialog, { type SearchData } from '$lib/components/shared/main/SearchDialog.svelte';
     import type { SidebarData } from '$lib/helpers/types.js';
-    import Fuse from 'fuse.js';
     import Pagination from '$lib/components/shared/main/guide/Pagination.svelte';
+    import Fuse from 'fuse.js';
 
     let { data } = $props();
 

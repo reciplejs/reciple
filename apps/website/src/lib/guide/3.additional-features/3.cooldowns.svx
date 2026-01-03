@@ -68,11 +68,11 @@ To use that command halt, you can add it to your global command halts or add it 
 
 <discord-messages>
     <discord-message profile="bot">
-        <discord-command slot="reply" profile="cat" command="/ping"></discord-command>
+        <discord-command slot="reply" profile="cat" command="ping"></discord-command>
         Pong!
     </discord-message>
     <discord-message profile="bot" ephemeral>
-        <discord-command slot="reply" profile="cat" command="/ping"></discord-command>
+        <discord-command slot="reply" profile="cat" command="ping"></discord-command>
         You can execute this command again in <discord-time>4 seconds</discord-time>
     </discord-message>
 </discord-messages>

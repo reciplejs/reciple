@@ -3,9 +3,8 @@
     import Header from '$lib/components/shared/main/Header.svelte';
     import { SidebarInset, SidebarProvider } from '$lib/components/ui/sidebar';
     import { pageMetadata, searchDialogState, sidebarData } from '$lib/helpers/contexts';
-    import { DiscordComponentConfig } from '$lib/helpers/constants';
     import type { MarkdownMetadata } from '$lib/helpers/types';
-    import { setConfig } from '@skyra/discord-components-core';
+    import '@skyra/discord-components-core';
     import { page } from '$app/state';
 
     let { children } = $props();
@@ -22,10 +21,6 @@
     pageMetadata.set(metadata);
     sidebarData.set(page.data.sidebarData);
     searchDialogState.set(searchState);
-
-    $effect(() => {
-        setConfig(DiscordComponentConfig);
-    });
 </script>
 
 <SidebarProvider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;">

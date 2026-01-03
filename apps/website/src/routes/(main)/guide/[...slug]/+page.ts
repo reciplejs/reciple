@@ -4,9 +4,6 @@ import { normalizeGuideCategoryId, normalizeGuidePageId } from '$lib/helpers/uti
 import { resolve } from '$app/paths';
 import BoxIcon from '@lucide/svelte/icons/box';
 
-export const prerender = true;
-export const ssr = true;
-
 export async function load(data) {
     const parts = data.params.slug.split('/');
     const pageId = parts.pop();

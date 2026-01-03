@@ -123,5 +123,6 @@ html {
     discord-messages * {
         margin: revert-layer;
         padding: revert-layer;
+        user-select: text;
     }
 }
