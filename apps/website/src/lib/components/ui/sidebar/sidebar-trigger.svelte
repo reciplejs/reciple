@@ -31,7 +31,7 @@
 	}}
 	{...restProps}
 >
-	{#if sidebar.open}
+	{#if sidebar.open || sidebar.openMobile}
         <PanelLeftCloseIcon/>
     {:else}
         <PanelLeftOpenIcon/>

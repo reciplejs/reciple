@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SidebarTrigger } from "$lib/components/ui/sidebar";
+    import { SidebarTrigger, useSidebar } from "$lib/components/ui/sidebar";
     import { Separator } from '$lib/components/ui/separator';
     import ButtonLinks from '../ButtonLinks.svelte';
     import DropdownLinks from '../../DropdownLinks.svelte';
@@ -9,6 +9,8 @@
     }: {
         title?: string;
     } = $props();
+
+    let sidebar = useSidebar();
 </script>
 
 <header
@@ -19,8 +21,10 @@
     ]}
 >
     <div class="flex items-center gap-2 px-4 overflow-hidden w-full">
-        <SidebarTrigger class="-ms-1"/>
-        <Separator orientation="vertical" class="me-2 data-[orientation=vertical]:h-4"/>
+        {#if !sidebar.isMobile}
+            <SidebarTrigger class="-ms-1"/>
+            <Separator orientation="vertical" class="me-2 data-[orientation=vertical]:h-4"/>
+        {/if}
         <h3 class="text-lg font-semibold w-full truncate overflow-hidden text-nowrap shrink">{title}</h3>
         <ButtonLinks/>
         <DropdownLinks/>

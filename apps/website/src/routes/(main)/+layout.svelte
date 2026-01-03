@@ -6,6 +6,7 @@
     import type { MarkdownMetadata } from '$lib/helpers/types';
     import '@skyra/discord-components-core';
     import { page } from '$app/state';
+    import FloatingBar from '$lib/components/shared/main/FloatingBar.svelte';
 
     let { children } = $props();
 
@@ -32,5 +33,6 @@
                 {@render children?.()}
             </div>
         </div>
+        <FloatingBar/>
     </SidebarInset>
 </SidebarProvider>
