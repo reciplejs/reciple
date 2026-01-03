@@ -10,7 +10,7 @@
     let {
         open = $bindable(false),
         data = $bindable(),
-        debounce = 100,
+        debounce = 300,
         onFilter
     }: {
         open?: boolean;

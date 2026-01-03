@@ -19,7 +19,13 @@
 
     let searchIndex: SearchData[] = $derived(toSearchData(data.sidebarData.content?.groups ?? []));
     let fuse: Fuse<SearchData> = $derived(new Fuse(searchIndex, {
-        keys: ['title', 'keywords', 'description', 'category'],
+        keys: [
+            { name: 'title', weight: 0.8 },
+            { name: 'keywords', weight: 0.5 },
+            { name: 'description', weight: 0.3 },
+            { name: 'category', weight: 0.1 },
+        ],
+        threshold: 0.3
     }));
 
     function toSearchData(groups: SidebarData.Group[]): SearchData[] {
