@@ -1,5 +1,29 @@
 @reference "./app.css";
 
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Book.woff') format('woff');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Medium.woff') format('woff');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Semibold.woff') format('woff');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Bold.woff') format('woff');
+  font-weight: 700;
+}
+
 html {
     .shiki,
     .shiki span {
@@ -79,5 +103,25 @@ html {
                 filter: invert(1);
             }
         }
+    }
+}
+
+@layer base {
+    discord-messages {
+        @apply border rounded-lg p-4;
+        position: relative;
+        overflow: auto;
+
+        &[no-background] {
+            @apply bg-transparent border-0;
+        }
+    }
+
+    discord-messages,
+    discord-messages *::before,
+    discord-messages *::after,
+    discord-messages * {
+        margin: revert-layer;
+        padding: revert-layer;
     }
 }

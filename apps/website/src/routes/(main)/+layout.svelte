@@ -4,7 +4,10 @@
     import { SidebarInset, SidebarProvider } from '$lib/components/ui/sidebar';
     import { pageMetadata, searchDialogState, sidebarData } from '$lib/helpers/contexts';
     import type { MarkdownMetadata } from '$lib/helpers/types';
+    import '@skyra/discord-components-core';
+    import { setConfig } from '@skyra/discord-components-core';
     import { page } from '$app/state';
+    import { onMount } from 'svelte';
 
     let { children } = $props();
 
@@ -20,6 +23,10 @@
     pageMetadata.set(metadata);
     sidebarData.set(page.data.sidebarData);
     searchDialogState.set(searchState);
+
+    onMount(() => {
+        setConfig({});
+    });
 </script>
 
 <SidebarProvider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;">

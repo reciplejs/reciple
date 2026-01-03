@@ -39,6 +39,7 @@
 	},
 	"dependencies": {
 		"@reciple/docgen": "^10.0.1",
+		"@skyra/discord-components-core": "^4.0.2",
 		"fuse.js": "^7.1.0",
 		"github-slugger": "^2.0.0",
 		"mode-watcher": "^1.1.0",
