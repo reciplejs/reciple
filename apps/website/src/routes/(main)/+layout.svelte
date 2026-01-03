@@ -3,12 +3,10 @@
     import Header from '$lib/components/shared/main/Header.svelte';
     import { SidebarInset, SidebarProvider } from '$lib/components/ui/sidebar';
     import { pageMetadata, searchDialogState, sidebarData } from '$lib/helpers/contexts';
+    import { DiscordComponentConfig } from '$lib/helpers/constants';
     import type { MarkdownMetadata } from '$lib/helpers/types';
-    import '@skyra/discord-components-core';
     import { setConfig } from '@skyra/discord-components-core';
     import { page } from '$app/state';
-    import { onMount } from 'svelte';
-    import { DiscordComponentConfig } from '$lib/helpers/constants';
 
     let { children } = $props();
 
@@ -25,7 +23,7 @@
     sidebarData.set(page.data.sidebarData);
     searchDialogState.set(searchState);
 
-    onMount(() => {
+    $effect(() => {
         setConfig(DiscordComponentConfig);
     });
 </script>

@@ -108,7 +108,7 @@ html {
 
 @layer base {
     discord-messages {
-        @apply border rounded-lg;
+        @apply border rounded-lg bg-neutral-800 mb-2!;
         position: relative;
         overflow: auto;
 
