@@ -19,10 +19,10 @@
 
     let searchIndex: SearchData[] = $derived(toSearchData(data.sidebarData.content?.groups ?? []));
     let fuse: Fuse<SearchData> = $derived(new Fuse(searchIndex, {
-        keys: ['title', 'description'],
+        keys: ['title', 'keywords', 'description', 'category'],
     }));
 
-    function toSearchData(groups: Exclude<SidebarData['content'], undefined>['groups']): SearchData[] {
+    function toSearchData(groups: SidebarData.Group[]): SearchData[] {
         const data: SearchData[] = [];
 
         for (const group of groups) {
@@ -30,6 +30,8 @@
                 for (const link of categoryData.links) {
                     data.push({
                         title: link.label,
+                        description: link.metadata?.description,
+                        keywords: link.metadata?.keywords,
                         href: link.href,
                         category,
                         icon: link.icon

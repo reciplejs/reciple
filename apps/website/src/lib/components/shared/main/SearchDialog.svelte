@@ -48,6 +48,7 @@
         title: string;
         description?: string;
         category?: string;
+        keywords?: string[];
         href: string;
         external?: boolean;
     }
