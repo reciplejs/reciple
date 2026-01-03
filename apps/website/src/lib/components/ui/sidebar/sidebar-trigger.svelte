@@ -5,14 +5,19 @@
 	import PanelLeftOpenIcon from "@lucide/svelte/icons/panel-left-open";
 	import type { ComponentProps } from "svelte";
 	import { useSidebar } from "./context.svelte.js";
+	import type { Icon } from '@lucide/svelte';
 
 	let {
 		ref = $bindable(null),
 		class: className,
 		onclick,
+        closeIcon,
+        openIcon,
 		...restProps
 	}: ComponentProps<typeof Button> & {
 		onclick?: (e: MouseEvent) => void;
+        closeIcon?: typeof Icon;
+        openIcon?: typeof Icon;
 	} = $props();
 
 	const sidebar = useSidebar();
@@ -31,10 +36,12 @@
 	}}
 	{...restProps}
 >
-	{#if sidebar.open || sidebar.openMobile}
-        <PanelLeftCloseIcon/>
+	{#if sidebar.isMobile ? sidebar.openMobile : sidebar.open}
+        {@const CloseIcon = closeIcon ?? PanelLeftCloseIcon}
+        <CloseIcon/>
     {:else}
-        <PanelLeftOpenIcon/>
+        {@const OpenIcon = openIcon ?? PanelLeftOpenIcon}
+        <OpenIcon/>
     {/if}
 	<span class="sr-only">Toggle Sidebar</span>
 </Button>

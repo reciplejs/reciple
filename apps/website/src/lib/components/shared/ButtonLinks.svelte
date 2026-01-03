@@ -26,6 +26,7 @@
         rel="noopener noreferrer"
     >
         <SiDiscord/>
+        <span class="sr-only">Go to discord</span>
     </Button>
     <Button
         size="icon"
@@ -36,6 +37,7 @@
         rel="noopener noreferrer"
     >
         <SiGithub/>
+        <span class="sr-only">Go to github</span>
     </Button>
     <Button
         size="icon"
@@ -47,5 +49,6 @@
         {:else}
             <MoonIcon fill="currentColor"/>
         {/if}
+        <span class="sr-only">Toggle theme</span>
     </Button>
 </ButtonGroup>

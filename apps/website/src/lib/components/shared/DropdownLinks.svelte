@@ -24,10 +24,12 @@
         <DropdownMenuItem onclick={() => window.open(Links.discord, '_blank')}>
             <SiDiscord/>
             Discord
+            <span class="sr-only">Go to discord</span>
         </DropdownMenuItem>
         <DropdownMenuItem onclick={() => window.open(Links.github, '_blank')}>
             <SiGithub/>
             Github
+            <span class="sr-only">Go to github</span>
         </DropdownMenuItem>
         <DropdownMenuItem onclick={toggleMode}>
             {#if mode.current === 'dark'}
@@ -37,6 +39,7 @@
                 <MoonIcon fill="currentColor"/>
                 Dark Mode
             {/if}
+            <span class="sr-only">Toggle theme</span>
         </DropdownMenuItem>
     </DropdownMenuContent>
 </DropdownMenu>

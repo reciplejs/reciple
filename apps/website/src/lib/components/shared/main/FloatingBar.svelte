@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MoonIcon, SearchIcon, SunIcon } from '@lucide/svelte';
+    import { ListIndentDecreaseIcon, MoonIcon, SearchIcon, SunIcon, TextAlignStartIcon } from '@lucide/svelte';
     import { Button } from '$lib/components/ui/button';
     import { ButtonGroup } from '$lib/components/ui/button-group';
     import { SidebarTrigger, useSidebar } from '$lib/components/ui/sidebar';
@@ -11,8 +11,13 @@
 </script>
 
 <div class="fixed bottom-0 left-0 w-full flex justify-center p-4" class:hidden={!sidebar.isMobile}>
-    <ButtonGroup class="container w-fit bg-background/70 dark:bg-background/50 backdrop-blur-sm border rounded-full p-1 gap-0 shadow-sm">
-        <SidebarTrigger size="icon-lg" class="size-10 rounded-full!"/>
+    <ButtonGroup class="container w-fit bg-background/80 dark:bg-background/60 backdrop-blur-sm border rounded-full p-1 gap-0 shadow-sm">
+        <SidebarTrigger
+            size="icon-lg"
+            class="size-10 rounded-full!"
+            openIcon={TextAlignStartIcon}
+            closeIcon={ListIndentDecreaseIcon}
+        />
         {#if searchState !== undefined}
             <Button
                 variant="ghost"
@@ -21,6 +26,7 @@
                 onclick={() => searchState.open = true}
             >
                 <SearchIcon/>
+                <span class="sr-only">Open search</span>
             </Button>
         {/if}
         <Button
@@ -34,6 +40,7 @@
             {:else}
                 <MoonIcon/>
             {/if}
+            <span class="sr-only">Toggle theme</span>
         </Button>
     </ButtonGroup>
 </div>
