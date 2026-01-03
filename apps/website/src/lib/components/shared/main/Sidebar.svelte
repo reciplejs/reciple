@@ -62,7 +62,6 @@
             </SidebarMenu>
         {/if}
         {@render header?.()}
-        <SidebarSeparator/>
     </SidebarHeader>
     <SidebarContent>
         {#if data.content?.groups}
