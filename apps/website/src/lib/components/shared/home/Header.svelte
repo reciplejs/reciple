@@ -1,7 +1,7 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
     import ButtonLinks from '../ButtonLinks.svelte';
-    import DropdownLinks from '../../DropdownLinks.svelte';
+    import DropdownLinks from '../DropdownLinks.svelte';
 
     let {
         scrolling = $bindable(false)

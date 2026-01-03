@@ -16,10 +16,10 @@
 	} = $props();
 </script>
 
-<ButtonGroup class="sm:flex hidden" {...props}>
+<ButtonGroup class="sm:flex hidden **:first:rounded-lg" {...props}>
     <Button
         size="icon"
-        variant="outline"
+        variant="secondary"
         class="border-r-0"
         href={Links.discord}
         target="_blank"
@@ -29,7 +29,7 @@
     </Button>
     <Button
         size="icon"
-        variant="outline"
+        variant="secondary"
         class="border-x-0"
         href={Links.github}
         target="_blank"
@@ -39,7 +39,7 @@
     </Button>
     <Button
         size="icon"
-        variant="outline"
+        variant="secondary"
         onclick={toggleMode}
     >
         {#if mode.current === 'dark'}

@@ -15,7 +15,7 @@
 <DropdownMenu>
     <DropdownMenuTrigger>
         {#snippet child({ props })}
-            <Button {...props} class="sm:hidden" variant="outline" size="icon" {...btnProps}>
+            <Button {...props} class="sm:hidden rounded-lg" variant="secondary" size="icon" {...btnProps}>
                 <EqualIcon class="size-6"/>
             </Button>
         {/snippet}

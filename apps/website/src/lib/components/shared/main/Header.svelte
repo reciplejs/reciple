@@ -2,7 +2,7 @@
     import { SidebarTrigger, useSidebar } from "$lib/components/ui/sidebar";
     import { Separator } from '$lib/components/ui/separator';
     import ButtonLinks from '../ButtonLinks.svelte';
-    import DropdownLinks from '../../DropdownLinks.svelte';
+    import DropdownLinks from '../DropdownLinks.svelte';
 
     let {
         title
