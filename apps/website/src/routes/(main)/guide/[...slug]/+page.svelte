@@ -5,6 +5,7 @@
     import SearchDialog, { type SearchData } from '$lib/components/shared/main/SearchDialog.svelte';
     import type { SidebarData } from '$lib/helpers/types.js';
     import Fuse from 'fuse.js';
+    import Pagination from '$lib/components/shared/main/guide/Pagination.svelte';
 
     let { data } = $props();
 
@@ -65,3 +66,5 @@
 >
     <data.component/>
 </article>
+<Pagination/>
+

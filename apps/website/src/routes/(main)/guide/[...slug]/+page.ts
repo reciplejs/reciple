@@ -37,7 +37,7 @@ export async function load(data) {
 }
 
 async function createSidebarData(modules: MarkdownModules): Promise<SidebarData> {
-    const categories: Exclude<SidebarData['content'], undefined>['groups'][0]['categories'] = {};
+    const categories: Record<string, SidebarData.GroupCategory> = {};
 
     for (const [path, module] of Object.entries(modules)) {
         const { metadata } = await module();
@@ -56,6 +56,7 @@ async function createSidebarData(modules: MarkdownModules): Promise<SidebarData>
 
         category.links.push({
             label: metadata.title ?? pageId,
+            metadata,
             href: resolve(`/(main)/guide/[...slug]`, {
                 slug: `${categoryId}/${pageId}`
             })

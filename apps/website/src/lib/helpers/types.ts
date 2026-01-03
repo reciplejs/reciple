@@ -17,19 +17,28 @@ export interface MarkdownModules<Metadata = MarkdownMetadata> {
 
 export interface SidebarData {
     content?: {
-        groups: {
-            label?: string;
-            icon?: typeof Icon;
-            categories: Record<string, {
-                open?: boolean;
-                icon?: typeof Icon;
-                links: {
-                    label: string;
-                    href: string;
-                    external?: boolean;
-                    icon?: typeof Icon;
-                }[];
-            }>;
-        }[];
+        groups: SidebarData.Group[];
+    }
+}
+
+export namespace SidebarData {
+    export interface Group {
+        label?: string;
+        icon?: typeof Icon;
+        categories: Record<string, GroupCategory>;
+    }
+
+    export interface GroupCategory {
+        open?: boolean;
+        icon?: typeof Icon;
+        links: GroupCategoryItem[];
+    }
+
+    export interface GroupCategoryItem {
+        label: string;
+        metadata?: MarkdownMetadata;
+        href: string;
+        external?: boolean;
+        icon?: typeof Icon;
     }
 }
