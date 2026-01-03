@@ -6,11 +6,11 @@
     import { type Icon } from '@lucide/svelte';
     import type { Awaitable } from 'shiki';
     import { useDebounce } from 'runed';
-    
+
     let {
         open = $bindable(false),
         data = $bindable(),
-        debounce = 300,
+        debounce = 200,
         onFilter
     }: {
         open?: boolean;
