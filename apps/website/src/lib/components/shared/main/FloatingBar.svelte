@@ -10,7 +10,7 @@
     let searchState = searchDialogState.getOr(undefined);
 </script>
 
-<div class="fixed bottom-0 left-0 w-full flex justify-center p-4" class:hidden={!sidebar.isMobile}>
+<div class="fixed z-50 bottom-0 left-0 w-full flex justify-center p-4" class:hidden={!sidebar.isMobile}>
     <ButtonGroup class="container w-fit bg-background/80 dark:bg-background/60 backdrop-blur-sm border rounded-full p-1 gap-0 shadow-sm">
         <SidebarTrigger
             size="icon-lg"
