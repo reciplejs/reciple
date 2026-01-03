@@ -56,8 +56,9 @@
 
 <svelte:window onkeydown={event => {
     const meta = event.metaKey || event.ctrlKey;
+    const focusedInput = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
 
-    if (meta && event.key === 'k') {
+    if ((meta && event.key === 'k') || (event.key === '/' && !focusedInput)) {
         event.preventDefault();
         open = true;
     }
