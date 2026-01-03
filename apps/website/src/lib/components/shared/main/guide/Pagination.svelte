@@ -23,7 +23,7 @@
             <ArrowLeftIcon class="size-6 mr-2"/>
             <div class="grid justify-items-center sm:justify-items-start leading-tight overflow-hidden w-full mr-8">
                 <span class="font-semibold">{previous?.label}</span>
-                <span class="text-xs text-muted-foreground truncate text-nowrap">{previous?.metadata?.description ?? previous.href}</span>
+                <span class="text-xs text-muted-foreground truncate text-nowrap">{previous?.metadata?.description ?? previous.href.replace('/guide/', '')}</span>
             </div>
         </Button>
     {:else}
@@ -33,7 +33,7 @@
         <Button variant="outline" size="lg" class="sm:justify-end text-end items-center h-fit py-4" href={next?.href}>
             <div class="grid justify-items-center sm:justify-items-end leading-tight overflow-hidden w-full ml-8">
                 <span class="font-semibold">{next?.label}</span>
-                <span class="text-xs text-muted-foreground truncate text-nowrap">{next?.metadata?.description ?? next.href}</span>
+                <span class="text-xs text-muted-foreground truncate text-nowrap">{next?.metadata?.description ?? next.href.replace('/guide/', '')}</span>
             </div>
             <ArrowRightIcon class="size-6 ml-2"/>
         </Button>
