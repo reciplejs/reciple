@@ -18,7 +18,7 @@
             openIcon={TextAlignStartIcon}
             closeIcon={ListIndentDecreaseIcon}
         />
-        {#if searchState !== undefined}
+        {#if searchState?.open !== undefined}
             <Button
                 variant="ghost"
                 size="icon-lg"

@@ -28,12 +28,11 @@ export async function load(data) {
         component,
         metadata,
         modules,
-        activeSlug: `${categoryId}/${pageId}`,
-        sidebarData: await createSidebarData(modules)
+        sidebarData: await getSidebarData(modules)
     };
 }
 
-async function createSidebarData(modules: MarkdownModules): Promise<SidebarData> {
+async function getSidebarData(modules: MarkdownModules): Promise<SidebarData> {
     const categories: Record<string, SidebarData.GroupCategory> = {};
 
     for (const [path, module] of Object.entries(modules)) {

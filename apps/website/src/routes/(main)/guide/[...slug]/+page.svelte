@@ -6,6 +6,7 @@
     import type { SidebarData } from '$lib/helpers/types.js';
     import Pagination from '$lib/components/shared/main/guide/Pagination.svelte';
     import Fuse from 'fuse.js';
+    import { onMount } from 'svelte';
 
     let { data } = $props();
 
@@ -48,6 +49,10 @@
 
         return data;
     }
+
+    onMount(() => {
+        searchState.open = false;
+    });
 </script>
 
 <MetaTags titleTemplate="reciple | %s" {...data.metadata}/>

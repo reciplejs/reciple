@@ -48,7 +48,7 @@
             <SidebarSeparator/>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    {#if searchState !== undefined}
+                    {#if searchState.open !== undefined}
                         <SidebarMenuButton
                             tooltipContent="Search"
                             class="w-full rounded-md justify-start overflow-hidden bg-sidebar-accent/50 border border-sidebar-border"

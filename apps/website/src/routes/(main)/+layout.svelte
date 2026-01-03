@@ -15,8 +15,8 @@
         description: undefined
     });
 
-    let searchState: { open: boolean; } = $state({
-        open: false
+    let searchState: { open?: boolean; } = $state({
+        open: undefined
     });
 
     pageMetadata.set(metadata);
