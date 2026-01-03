@@ -11,7 +11,7 @@
 </script>
 
 <div class="fixed bottom-0 left-0 w-full flex justify-center p-4" class:hidden={!sidebar.isMobile}>
-    <ButtonGroup class="container w-fit bg-background/50 backdrop-blur-md border rounded-full p-1 gap-0 shadow-sm">
+    <ButtonGroup class="container w-fit bg-background/70 dark:bg-background/50 backdrop-blur-sm border rounded-full p-1 gap-0 shadow-sm">
         <SidebarTrigger size="icon-lg" class="size-10 rounded-full!"/>
         {#if searchState !== undefined}
             <Button
