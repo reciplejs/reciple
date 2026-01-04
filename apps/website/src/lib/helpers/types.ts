@@ -1,5 +1,4 @@
-import type { Component } from 'svelte';
-import { Icon } from '@lucide/svelte';
+import type { Component, ComponentType } from 'svelte';
 
 export interface MarkdownMetadata {
 	title?: string;
@@ -24,13 +23,12 @@ export interface SidebarData {
 export namespace SidebarData {
     export interface Group {
         label?: string;
-        icon?: typeof Icon;
         categories: Record<string, GroupCategory>;
     }
 
     export interface GroupCategory {
         open?: boolean;
-        icon?: typeof Icon;
+        icon?: Component|ComponentType;
         links: GroupCategoryItem[];
     }
 
@@ -39,6 +37,6 @@ export namespace SidebarData {
         metadata?: MarkdownMetadata;
         href: string;
         external?: boolean;
-        icon?: typeof Icon;
+        icon?: Component|ComponentType;
     }
 }

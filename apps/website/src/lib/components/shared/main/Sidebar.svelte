@@ -69,9 +69,6 @@
                 <SidebarGroup>
                     {#if group.label}
                         <SidebarGroupLabel>
-                            {#if group.icon}
-                                <group.icon/>
-                            {/if}
                             {group.label}
                         </SidebarGroupLabel>
                     {/if}

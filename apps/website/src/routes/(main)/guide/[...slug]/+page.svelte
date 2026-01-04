@@ -56,18 +56,21 @@
 </script>
 
 <MetaTags titleTemplate="reciple | %s" {...data.metadata}/>
-<SearchDialog
-    bind:open={searchState.open}
-    data={searchIndex}
-    onFilter={async (value) => {
-        value = value.trim();
-        if (!value) return searchIndex;
 
-        const results = fuse.search(value);
+{#if searchState.open !== undefined}
+    <SearchDialog
+        bind:open={searchState.open}
+        data={searchIndex}
+        onFilter={async (value) => {
+            value = value.trim();
+            if (!value) return searchIndex;
 
-        return results.map(result => result.item);
-    }}
-/>
+            const results = fuse.search(value);
+
+            return results.map(result => result.item);
+        }}
+    />
+{/if}
 
 <article
     class={[
