@@ -1,8 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
-import type { SidebarData } from '$lib/helpers/types.js';
-import HouseIcon from '@lucide/svelte/icons/house';
-import { SymbolClass, SymbolEnum, SymbolInterface, SymbolMethod, SymbolVariable } from 'svelte-codicons';
+import { DocType, type SidebarData } from '$lib/helpers/types.js';
 import { resolve } from '$app/paths';
+import { DocTypeIcons } from '$lib/helpers/constants.js';
 
 export async function load(data) {
     const pkg = data.params.package;
@@ -30,7 +29,7 @@ export async function load(data) {
                         label: `${pkg}@${tag}`,
                         categories: {
                             Home: {
-                                icon: HouseIcon,
+                                icon: DocTypeIcons[DocType.Home],
                                 links: [
                                     {
                                         label: 'Readme',
@@ -43,23 +42,31 @@ export async function load(data) {
                                 ]
                             },
                             Classes: {
-                                icon: SymbolClass,
+                                icon: DocTypeIcons[DocType.Class],
+                                links: []
+                            },
+                            Namespaces: {
+                                icon: DocTypeIcons[DocType.Namespace],
                                 links: []
                             },
                             Functions: {
-                                icon: SymbolMethod,
+                                icon: DocTypeIcons[DocType.Function],
                                 links: []
                             },
                             Variables: {
-                                icon: SymbolVariable,
+                                icon: DocTypeIcons[DocType.Variable],
                                 links: []
                             },
                             Enums: {
-                                icon: SymbolEnum,
+                                icon: DocTypeIcons[DocType.Enum],
                                 links: []
                             },
                             Interfaces: {
-                                icon: SymbolInterface,
+                                icon: DocTypeIcons[DocType.Interface],
+                                links: []
+                            },
+                            Types: {
+                                icon: DocTypeIcons[DocType.Type],
                                 links: []
                             }
                         }

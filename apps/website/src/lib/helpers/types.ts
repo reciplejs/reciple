@@ -1,3 +1,4 @@
+import type { Icon } from '@lucide/svelte';
 import type { Component, ComponentType } from 'svelte';
 
 export interface MarkdownMetadata {
@@ -14,6 +15,17 @@ export interface MarkdownModules<Metadata = MarkdownMetadata> {
     }>
 };
 
+export enum DocType {
+    Home = 'home',
+    Class = 'class',
+    Namespace = 'namespace',
+    Function = 'function',
+    Variable = 'variable',
+    Enum = 'enum',
+    Interface = 'interface',
+    Type = 'type'
+}
+
 export interface SidebarData {
     content?: {
         groups: SidebarData.Group[];
@@ -28,7 +40,7 @@ export namespace SidebarData {
 
     export interface GroupCategory {
         open?: boolean;
-        icon?: Component|ComponentType;
+        icon?: typeof Icon|ComponentType;
         links: GroupCategoryItem[];
     }
 
@@ -37,6 +49,6 @@ export namespace SidebarData {
         metadata?: MarkdownMetadata;
         href: string;
         external?: boolean;
-        icon?: Component|ComponentType;
+        icon?: typeof Icon|ComponentType;
     }
 }
