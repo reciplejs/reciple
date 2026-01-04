@@ -90,7 +90,7 @@
                                                     </SidebarMenuButton>
                                                 {/snippet}
                                             </CollapsibleTrigger>
-                                            <CollapsibleContent>
+                                            <CollapsibleContent class="data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-90 data-[state=open]:zoom-in-90">
                                                 <SidebarMenuSub>
                                                     {#each category.links as item (item.label + item.href)}
                                                         {@const isActive = !!page.params.slug && item.href.endsWith(page.params.slug)}
