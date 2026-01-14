@@ -42,7 +42,7 @@
     };
 </script>
 
-<script module>
+<script lang="ts" module>
     export interface SearchData {
         icon?: typeof Icon;
         title: string;
