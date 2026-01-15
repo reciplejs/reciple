@@ -1,21 +1,25 @@
 <script lang="ts">
     import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandLinkItem, CommandList, CommandLoading } from '$lib/components/ui/command';
-    import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../ui/empty';
+    import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '$lib/components/ui/empty';
     import { Skeleton } from '$lib/components/ui/skeleton';
     import SearchIcon from '@lucide/svelte/icons/search';
     import { type Icon } from '@lucide/svelte';
     import type { Awaitable } from 'shiki';
-    import { useDebounce } from 'runed';
+    import { useDebounce, useThrottle } from 'runed';
+    import type { ComponentType } from 'svelte';
+    import type { SidebarData } from '$lib/helpers/types';
 
     let {
         open = $bindable(false),
         data = $bindable(),
-        debounce = 200,
+        delay = 200,
+        delayType = 'debounce',
         onFilter
     }: {
         open?: boolean;
         data: SearchData[];
-        debounce?: number;
+        delay?: number;
+        delayType?: 'debounce'|'throttle'|null;
         onFilter: (value: string) => Awaitable<SearchData[]>;
     } = $props();
 
@@ -31,26 +35,61 @@
         }, {} as Record<string, SearchData[]>)
     );
 
-    const _filter = useDebounce(async (value: string) => {
+    const _debouncedFilter = useDebounce(async (value: string) => {
         data = await Promise.resolve(onFilter(value)) ?? [];
         isLoading = false;
-    }, () => debounce);
+    }, () => delay);
+
+    const _throttledFilter = useThrottle(async (value: string) => {
+        data = await Promise.resolve(onFilter(value)) ?? [];
+        isLoading = false;
+    }, () => delay);
 
     const filter = async (value: string) => {
-        isLoading = true;
-        await _filter(value);
+        isLoading = delayType !== null;
+
+        switch (delayType) {
+            case 'debounce':
+                return _debouncedFilter(value);
+            case 'throttle':
+                return _throttledFilter(value);
+            case null:
+                data = await Promise.resolve(onFilter(value)) ?? [];
+                return;
+        }
     };
 </script>
 
 <script lang="ts" module>
     export interface SearchData {
-        icon?: typeof Icon;
+        icon?: typeof Icon|ComponentType;
         title: string;
         description?: string;
         category?: string;
         keywords?: string[];
         href: string;
         external?: boolean;
+    }
+
+    export function fromSidebarGroups(groups: SidebarData.Group[]): SearchData[] {
+        const data: SearchData[] = [];
+
+        for (const group of groups) {
+            for (const [category, categoryData] of Object.entries(group.categories)) {
+                for (const link of categoryData.links) {
+                    data.push({
+                        title: link.label,
+                        description: link.metadata?.description,
+                        keywords: link.metadata?.keywords,
+                        href: link.href,
+                        category,
+                        icon: link.icon
+                    });
+                }
+            }
+        }
+
+        return data;
     }
 </script>
 
