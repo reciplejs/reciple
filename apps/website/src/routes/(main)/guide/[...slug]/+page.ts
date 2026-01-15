@@ -60,6 +60,9 @@ async function getSidebarData(modules: MarkdownModules): Promise<SidebarData> {
     }
 
     return {
+        header: {
+            title: 'Guide'
+        },
         content: {
             groups: [
                 {

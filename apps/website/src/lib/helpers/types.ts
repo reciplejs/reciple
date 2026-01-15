@@ -27,6 +27,9 @@ export enum DocType {
 }
 
 export interface SidebarData {
+    header?: {
+        title: string;
+    }
     content?: {
         groups: SidebarData.Group[];
     }

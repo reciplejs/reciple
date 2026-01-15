@@ -23,10 +23,12 @@ export async function load(data) {
         type: type || null,
         name: name || null,
         sidebarData: {
+            header: {
+                title: pkg
+            },
             content: {
                 groups: [
                     {
-                        label: `${pkg}@${tag}`,
                         categories: {
                             Home: {
                                 icon: DocTypeIcons[DocType.Home],

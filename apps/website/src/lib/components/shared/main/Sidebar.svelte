@@ -39,7 +39,7 @@
                         <SparklesIcon class="size-5"/>
                     </div>
                     <div class="grid flex-1 text-start text-lg leading-tight font-bold">
-                        reciple
+                        {data.header?.title ?? 'reciple'}
                     </div>
                 </SidebarMenuButton>
             </SidebarMenuItem>
