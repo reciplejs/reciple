@@ -29,7 +29,10 @@
     "directory": "packages/docgen"
   },
   "dependencies": {
-    "typedoc": "^0.28.16"
+    "@catplvsplus/typedoc-json-parser": "^10.2.1",
+    "typedoc": "^0.26.0",
+    "typedoc-plugin-mdn-links": "^4.0.15",
+    "typedoc-plugin-rename-defaults": "^0.7.3"
   },
   "publishConfig": {
     "access": "public"
