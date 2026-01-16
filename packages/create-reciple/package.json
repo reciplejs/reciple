@@ -13,7 +13,7 @@
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
     "check": "tsc --noEmit",
-    "prepack": "npm run build"
+    "prepack": "bun run build"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "directory": "packages/create-reciple"
   },
   "dependencies": {
-    "reciple": "^10.0.1"
+    "reciple": "workspace:^"
   },
   "publishConfig": {
     "access": "public"

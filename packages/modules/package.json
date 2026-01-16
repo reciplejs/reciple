@@ -19,8 +19,9 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
+    "docs": "../docgen/dist/bin/docgen.js",
     "check": "tsc --noEmit",
-    "prepack": "npm run build"
+    "prepack": "bun run build"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,7 @@
   },
   "peerDependencies": {
     "discord.js": "^14.25.1",
-    "reciple": "^10.0.0 || >=10.0.1-next.0"
+    "reciple": "workspace:^"
   },
   "peerDependenciesMeta": {
     "discord.js": {

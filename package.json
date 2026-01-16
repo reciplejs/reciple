@@ -12,13 +12,13 @@
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
     "build": "turbo run build",
+    "docs": "turbo run docs",
     "check": "turbo run check",
-    "test": "npm run dev -w example",
+    "test": "bun run dev -w example",
     "publish-pre": "changeset publish --tag next",
     "publish-latest": "changeset publish",
-    "docs": "turbo run docs",
-    "test-create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
-    "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
+    "test-create": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
+    "test-create:default": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
@@ -28,5 +28,8 @@
     "turbo": "^2.7.4",
     "typescript": "^5.9.3"
   },
-  "packageManager": "npm@11.6.2"
+  "packageManager": "bun@1.3.8",
+  "dependencies": {
+    "@catplvsplus/typedoc-json-parser": "^10.2.2"
+  }
 }

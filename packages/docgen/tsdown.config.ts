@@ -1,5 +1,7 @@
 import { createTsdownConfig } from '../../tsdown.config.js';
 
 export default createTsdownConfig({
-    platform: 'neutral'
+    entry: './src/**/*.ts',
+    platform: 'neutral',
+    unbundle: true
 });

@@ -19,8 +19,9 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
+    "docs": "../docgen/dist/bin/docgen.js",
     "check": "tsc --noEmit",
-    "prepack": "npm run build"
+    "prepack": "bun run build"
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,7 @@
     "directory": "packages/core"
   },
   "dependencies": {
-    "@reciple/utils": "^10.0.1",
+    "@reciple/utils": "workspace:^",
     "@sapphire/shapeshift": "^4.0.0",
     "@sapphire/snowflake": "^3.5.3",
     "split-string": "^6.1.0",

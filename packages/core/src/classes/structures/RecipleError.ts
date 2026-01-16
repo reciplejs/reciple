@@ -46,6 +46,10 @@ export namespace RecipleError {
             name: 'NotImplemented',
             message: 'This functionality is not yet implemented.',
         }),
+        UnknownCommandType: (type: string) => ({
+            name: 'UnknownCommandType',
+            message: `The command type (${type}) is unknown.`,
+        }),
         ClientNotReady: () => ({
             name: 'ClientNotReady',
             message: 'The client is not yet ready. Please wait until the client is logged in before using this functionality.',
