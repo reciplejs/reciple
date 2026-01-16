@@ -33,7 +33,7 @@
     "directory": "packages/docgen"
   },
   "dependencies": {
-    "@catplvsplus/typedoc-json-parser": "^10.2.3",
+    "@catplvsplus/typedoc-json-parser": "^10.2.4",
     "typedoc": "^0.27.9",
     "typedoc-plugin-mdn-links": "^4.0.15",
     "typedoc-plugin-rename-defaults": "^0.7.3"
