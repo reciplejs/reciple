@@ -12,19 +12,24 @@ const app = await Application.bootstrapWithPlugins({},[
 ]);
 
 const project = await app.convert();
+const out = process.argv[2];
+const root = app.options.getValue('basePath') || '.';
+
+if (!project) {
+    console.error('No project found');
+    process.exit(1);
+}
 
 const json = new ProjectParser({
-    data: app.serializer.toObject(project)!,
+    data: app.serializer.projectToObject(project, root),
     dependencies: {}
 });
 
-const out = app.options.getValue('json');
+process.stdout.write(JSON.stringify(json));
 
 if (out) {
     mkdir(path.dirname(out), { recursive: true });
     writeFile(out, JSON.stringify(json));
-    process.exit(0);
 }
 
-process.stdout.write(JSON.stringify(json));
 process.exit(0);

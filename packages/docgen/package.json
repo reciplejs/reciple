@@ -23,7 +23,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
-    "docs": "../docgen/dist/bin/docgen.js",
+    "docs": "../docgen/dist/bin/docgen.js ../../docs/docgen/docs.json",
     "check": "tsc --noEmit",
     "prepack": "bun run build"
   },
