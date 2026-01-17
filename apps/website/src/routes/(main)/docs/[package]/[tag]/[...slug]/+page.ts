@@ -4,11 +4,12 @@ import { resolve } from '$app/paths';
 import { DocTypeIcons } from '$lib/helpers/constants.js';
 import { Documentation } from '../../../../../../lib/helpers/classes/Documentation.svelte.js';
 import { markdownToTxt } from 'markdown-to-txt';
+import type { DocNodeKind } from '@deno/doc';
 
 export async function load(data) {
     const pkg = data.params.package;
     const tag = data.params.tag;
-    const [type, name] = data.params.slug.split('/');
+    const [type, name] = data.params.slug.split('/') as [DocNodeKind|'home'|undefined, string|undefined];
 
     if (!type !== !name) error(404, 'Not found');
     if (!type && !name) {
@@ -24,8 +25,12 @@ export async function load(data) {
         tag
     }).fetch();
 
+    const symbol = documentation.data.find(n => n.kind === type && n.name === name);
+
+    if (!symbol && type !== 'home') error(404, 'Not found');
+
     const metadata: MarkdownMetadata = {
-        title: `${pkg}@${tag}`,
+        title: symbol ? symbol.name : `${pkg}@${tag}`,
         description: markdownToTxt(documentation.readme)
     };
 
@@ -130,7 +135,7 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `type/${n.name}`
+                                        slug: `typeAlias/${n.name}`
                                     })
                                 }))
                             }
