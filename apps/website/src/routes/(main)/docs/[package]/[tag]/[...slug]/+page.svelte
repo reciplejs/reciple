@@ -10,5 +10,3 @@
         searchState.open = false;
     });
 </script>
-
-<pre>{JSON.stringify(data, null, 2)}</pre>
