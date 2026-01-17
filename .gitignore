@@ -20,6 +20,7 @@ pids
 lib-cov
 
 # Docs files
+docs
 docs.json
 
 # Coverage directory used by tools like istanbul
