@@ -12,7 +12,7 @@
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
     "build": "turbo run build",
-    "docs": "bun ./scripts/createDocs.ts",
+    "docs": "bun ./scripts/docs.ts",
     "check": "turbo run check",
     "test": "bun run dev -w example",
     "publish-pre": "changeset publish --tag next",
