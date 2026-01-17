@@ -1,5 +1,6 @@
+import { resolve } from '$app/paths';
 import { Documentation } from '$lib/helpers/classes/Documentation.svelte';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 export async function load(data) {
     const pkg = (await Documentation.fetchPackages()).includes(data.params.package) ? data.params.package : null;
@@ -7,12 +8,12 @@ export async function load(data) {
 
     const tags = await Documentation.fetchTags(pkg);
 
-    // if (tags.length === 1) {
-    //     redirect(302, resolve('/(main)/docs/[package]/[tag]', {
-    //         package: pkg,
-    //         tag: tags[0]
-    //     }));
-    // }
+    if (tags.length === 1) {
+        redirect(302, resolve('/(main)/docs/[package]/[tag]', {
+            package: pkg,
+            tag: tags[0]
+        }));
+    }
 
     return {
         package: pkg,
