@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { ListIndentDecreaseIcon, MoonIcon, SearchIcon, SunIcon, TextAlignStartIcon } from '@lucide/svelte';
+    import { HouseIcon, ListIndentDecreaseIcon, MoonIcon, SearchIcon, SunIcon, TextAlignStartIcon } from '@lucide/svelte';
     import { Button } from '$lib/components/ui/button';
     import { ButtonGroup } from '$lib/components/ui/button-group';
     import { SidebarTrigger, useSidebar } from '$lib/components/ui/sidebar';
     import { searchDialogState } from '$lib/helpers/contexts';
     import { mode, toggleMode } from 'mode-watcher';
+    import { resolve } from '$app/paths';
 
     let sidebar = useSidebar();
     let searchState = searchDialogState.getOr(undefined);
@@ -29,6 +30,15 @@
                 <span class="sr-only">Open search</span>
             </Button>
         {/if}
+        <Button
+            variant="ghost"
+            size="icon-lg"
+            class="size-10 rounded-full!"
+            href={resolve('/(home)')}
+        >
+            <HouseIcon/>
+            <span class="sr-only">Go to home</span>
+        </Button>
         <Button
             variant="ghost"
             size="icon-lg"

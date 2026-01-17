@@ -21,6 +21,14 @@ export class Documentation {
     public data: DocNode[] = $state([]);
     public readme: string = $state('');
 
+    get classes() { return this.data.filter(node => node.kind === "class"); }
+    get namespaces() { return this.data.filter(node => node.kind === "namespace"); }
+    get functions() { return this.data.filter(node => node.kind === "function"); }
+    get variables() { return this.data.filter(node => node.kind === "variable"); }
+    get enums() { return this.data.filter(node => node.kind === "enum"); }
+    get interfaces() { return this.data.filter(node => node.kind === "interface"); }
+    get types() { return this.data.filter(node => node.kind === "typeAlias"); }
+
     constructor(options: Documentation.Options) {
         this.package = options.package;
         this.tag = options.tag;
