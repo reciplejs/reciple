@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { slug } from 'github-slugger';
+import { createHighlighter } from 'shiki';
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -24,3 +25,32 @@ export function normalizeGuideCategoryId(id: string) {
 
     return slug(parts.join('.'));
 }
+
+export const themes: Record<string, import('shiki').BundledTheme> = {
+    light: 'github-light',
+    dark: 'dark-plus'
+};
+
+export const highlighter = await createHighlighter({
+    themes: Object.values(themes),
+    langAlias: {
+        js: 'javascript',
+        ts: 'typescript',
+        md: 'markdown',
+    },
+    langs: [
+        "javascript",
+        "typescript",
+        "svelte",
+        "html",
+        "markdown",
+        "properties",
+        "sh",
+        "powershell",
+        "diff",
+        "json",
+        "jsonc",
+        "yaml",
+        "css"
+    ]
+});

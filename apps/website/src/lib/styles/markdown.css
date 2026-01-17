@@ -53,7 +53,7 @@ html {
         & h6,
         & blockquote,
         & td {
-            white-space: break-spaces;
+            /* white-space: break-spaces; */
             word-wrap: break-word;
         }
 
@@ -126,4 +126,14 @@ html {
         padding: revert-layer;
         user-select: text;
     }
+}
+
+@layer utilities {
+  .prose a {
+    & :where(img):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      margin-top: 0;
+      margin-bottom: 0;
+      display: inline;
+    }
+  }
 }

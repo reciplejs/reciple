@@ -19,28 +19,42 @@ export class Documentation {
     public readonly tag: string;
 
     public data: DocNode[] = $state([]);
+    public readme: string = $state('');
 
     constructor(options: Documentation.Options) {
         this.package = options.package;
         this.tag = options.tag;
     }
 
-    public async fetch() {}
+    public async fetch(): Promise<this> {
+        const { files } = await Documentation.fetchFiles();
+
+        const file = files.find(file => file.path === path.join(this.package, `${this.tag}.json`));
+
+        if (!file) throw new Error('File not found');
+
+        const content: Documentation.APIDocJSONResponse = await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/${file.path}`).then(res => res.json());
+
+        this.data = content.nodes;
+        this.readme = content.readme || '';
+
+        return this;
+    }
 
     public static async fetchTags(pkg: string): Promise<string[]> {
-        const files = await this.fetchFiles();
+        const { files } = await this.fetchFiles();
 
-        return files.files
+        return files
             .filter(file => file.path.startsWith(pkg))
             .map(file => path.basename(file.path).split('.')[0]);
     }
 
     public static async fetchPackages(): Promise<string[]> {
-        const files = await this.fetchFiles();
+        const { files } = await this.fetchFiles();
 
         return Array.from(
             new Set(
-                files.files
+                files
                     .filter(file => file.path.endsWith('.json'))
                     .map(file => path.dirname(file.path).split('/').shift()!)
             ).values()
@@ -75,5 +89,11 @@ export namespace Documentation {
             sha: string;
             size: number;
         }[];
+    }
+
+    export interface APIDocJSONResponse {
+        version: string;
+        readme?: string;
+        nodes: DocNode[];
     }
 }

@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { DocType, type SidebarData } from '$lib/helpers/types.js';
 import { resolve } from '$app/paths';
 import { DocTypeIcons } from '$lib/helpers/constants.js';
+import { Documentation } from '../../../../../../lib/helpers/classes/Documentation.svelte.js';
 
 export async function load(data) {
     const pkg = data.params.package;
@@ -22,9 +23,13 @@ export async function load(data) {
         tag,
         type: type || null,
         name: name || null,
+        documentation: await new Documentation({
+            package: pkg,
+            tag
+        }).fetch(),
         sidebarData: {
             header: {
-                title: pkg
+                title: `${pkg}@${tag}`
             },
             content: {
                 groups: [
