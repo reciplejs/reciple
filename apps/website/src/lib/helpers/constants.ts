@@ -23,5 +23,5 @@ export const DocTypeIcons: Record<DocType, typeof Icon> = {
     [DocType.Variable]: VariableIcon,
     [DocType.Enum]: ScrollTextIcon,
     [DocType.Interface]: BlocksIcon,
-    [DocType.Type]: WorkflowIcon
+    [DocType.TypeAlias]: WorkflowIcon
 };

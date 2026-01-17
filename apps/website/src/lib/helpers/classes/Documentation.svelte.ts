@@ -34,8 +34,8 @@ export class Documentation {
         this.tag = options.tag;
     }
 
-    public async fetch(): Promise<this> {
-        const { files } = await Documentation.fetchFiles();
+    public async fetch(fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<this> {
+        const { files } = await Documentation.fetchFiles(false, fetch);
 
         const file = files.find(file => file.path === path.join(this.package, `${this.tag}.json`));
 
@@ -49,16 +49,16 @@ export class Documentation {
         return this;
     }
 
-    public static async fetchTags(pkg: string): Promise<string[]> {
-        const { files } = await this.fetchFiles();
+    public static async fetchTags(pkg: string, fetch?: Documentation.FetchClient): Promise<string[]> {
+        const { files } = await this.fetchFiles(false, fetch);
 
         return files
             .filter(file => file.path.startsWith(pkg))
             .map(file => path.basename(file.path).split('.')[0]);
     }
 
-    public static async fetchPackages(): Promise<string[]> {
-        const { files } = await this.fetchFiles();
+    public static async fetchPackages(fetch?: Documentation.FetchClient): Promise<string[]> {
+        const { files } = await this.fetchFiles(false, fetch);
 
         return Array.from(
             new Set(
@@ -69,7 +69,7 @@ export class Documentation {
         );
     }
 
-    public static async fetchFiles(force: boolean = false) {
+    public static async fetchFiles(force: boolean = false, fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<Documentation.APIFilesResponse> {
         return Documentation.files && !force
             ? Documentation.files
             : Documentation.files = await (await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/`)).json() as Documentation.APIFilesResponse;
@@ -77,6 +77,10 @@ export class Documentation {
 }
 
 export namespace Documentation {
+    export const defaultFetch = fetch;
+
+    export type FetchClient = typeof fetch;
+
     export interface Options {
         package: string;
         tag: string;

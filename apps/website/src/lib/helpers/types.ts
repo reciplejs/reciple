@@ -23,7 +23,7 @@ export enum DocType {
     Variable = 'variable',
     Enum = 'enum',
     Interface = 'interface',
-    Type = 'type'
+    TypeAlias = 'typeAlias'
 }
 
 export interface SidebarData {

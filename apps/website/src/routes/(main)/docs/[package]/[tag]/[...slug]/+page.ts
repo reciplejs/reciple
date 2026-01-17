@@ -23,14 +23,14 @@ export async function load(data) {
     const documentation =  await new Documentation({
         package: pkg,
         tag
-    }).fetch();
+    }).fetch(data.fetch);
 
-    const symbol = documentation.data.find(n => n.kind === type && n.name === name);
+    const node = documentation.data.find(n => n.kind === type && n.name === name);
 
-    if (!symbol && type !== 'home') error(404, 'Not found');
+    if (!node && type !== 'home') error(404, 'Not found');
 
     const metadata: MarkdownMetadata = {
-        title: symbol ? symbol.name : `${pkg}@${tag}`,
+        title: node ? node.name : `${pkg}@${tag}`,
         description: markdownToTxt(documentation.readme)
     };
 
@@ -57,7 +57,7 @@ export async function load(data) {
                                         href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                             package: pkg,
                                             tag,
-                                            slug: 'home/readme'
+                                            slug: `${DocType.Home}/readme`
                                         })
                                     }
                                 ]
@@ -69,7 +69,7 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `class/${n.name}`
+                                        slug: `${DocType.Class}/${n.name}`
                                     })
                                 }))
                             },
@@ -80,7 +80,7 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `namespace/${n.name}`
+                                        slug: `${DocType.Namespace}/${n.name}`
                                     })
                                 }))
                             },
@@ -91,7 +91,7 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `function/${n.name}`
+                                        slug: `${DocType.Function}/${n.name}`
                                     })
                                 }))
                             },
@@ -102,7 +102,7 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `variable/${n.name}`
+                                        slug: `${DocType.Variable}/${n.name}`
                                     })
                                 }))
                             },
@@ -113,7 +113,7 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `enum/${n.name}`
+                                        slug: `${DocType.Enum}/${n.name}`
                                     })
                                 }))
                             },
@@ -124,18 +124,18 @@ export async function load(data) {
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `interface/${n.name}`
+                                        slug: `${DocType.Interface}/${n.name}`
                                     })
                                 }))
                             },
                             Types: {
-                                icon: DocTypeIcons[DocType.Type],
+                                icon: DocTypeIcons[DocType.TypeAlias],
                                 links: documentation.types.map(n => ({
                                     label: n.name,
                                     href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
                                         package: pkg,
                                         tag,
-                                        slug: `typeAlias/${n.name}`
+                                        slug: `${DocType.TypeAlias}/${n.name}`
                                     })
                                 }))
                             }
