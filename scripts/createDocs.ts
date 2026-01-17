@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdir, readdir, stat, copyFile, rm } from "node:fs/promises";
+import { mkdir, readdir, stat, rm, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = path.join(import.meta.dirname, '../');
@@ -30,7 +30,9 @@ for (const pkg of packages) {
     const exists = await stat(entry).then(r => r.isFile()).catch(() => false);
     if (!exists) continue;
 
-    await mkdir(newDir, { recursive: true });
-    await copyFile(entry, path.join(newDir, 'docs.json'));
+    const data = await readFile(entry, 'utf-8').then(data => data.replaceAll(`file://${path.join(root, 'packages/')}`, './'));
+
     await rm(entry);
+    await mkdir(newDir, { recursive: true });
+    await writeFile(path.join(newDir, 'docs.json'), data);
 }

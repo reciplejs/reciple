@@ -19,7 +19,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
-    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
+    "docs": "deno doc --json --sloppy-imports --name=core ./src/index.ts > docs.json",
     "check": "tsc --noEmit",
     "prepack": "bun run build"
   },
