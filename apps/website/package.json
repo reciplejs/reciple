@@ -38,7 +38,7 @@
 		"vite-plugin-pwa": "^1.2.0"
 	},
 	"dependencies": {
-		"@reciple/docgen": "^10.0.1",
+		"@deno/doc": "npm:@jsr/deno__doc",
 		"@skyra/discord-components-core": "^4.0.2",
 		"fuse.js": "^7.1.0",
 		"github-slugger": "^2.0.0",
