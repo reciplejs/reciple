@@ -2,5 +2,11 @@
   "extends": ["../../typedoc.json"],
   "entryPoints": ["./src/index.ts"],
   "tsconfig": "./tsconfig.json",
+  "outputs": [
+    {
+      "name": "json",
+      "path": "../../docs/core/docs.json"
+    }
+  ],
   "json": "../../docs/core/docs.json"
 }

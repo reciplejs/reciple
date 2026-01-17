@@ -25,7 +25,7 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
-    "docs": "../docgen/dist/bin/docgen.js ../../docs/reciple/docs.json",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
     "check": "tsc --noEmit",
     "prepack": "bun run build"
   },
