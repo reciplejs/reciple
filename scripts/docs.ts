@@ -33,9 +33,15 @@ for (const pkg of packages) {
     const exists = await stat(entry).then(r => r.isFile()).catch(() => false);
     if (!exists) continue;
 
-    const data = await readFile(entry, 'utf-8').then(data => data.replaceAll(`file://${path.join(root, 'packages/')}`, './'));
+    const data = JSON.parse(await readFile(entry, 'utf-8').then(data => data.replaceAll(`file://${path.join(root, 'packages/')}`, './')));
+
+    const readme = path.join("./packages", pkg, "README.md");
+
+    if (await stat(readme).then(r => r.isFile()).catch(() => false)) {
+        data.readme = await readFile(readme, 'utf-8');
+    }
 
     await rm(entry);
     await mkdir(newDir, { recursive: true });
-    await writeFile(path.join(newDir, `${tag}.json`), data);
+    await writeFile(path.join(newDir, `${tag}.json`), JSON.stringify(data, null, 2));
 }
