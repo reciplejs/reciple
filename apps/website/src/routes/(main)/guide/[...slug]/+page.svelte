@@ -33,7 +33,12 @@
     });
 </script>
 
-<MetaTags titleTemplate="reciple | %s" {...data.metadata}/>
+<MetaTags
+    titleTemplate="reciple | %s"
+    {...data.metadata}
+    openGraph={data.metadata}
+    twitter={data.metadata}
+/>
 
 {#if searchState.open !== undefined}
     <SearchDialog

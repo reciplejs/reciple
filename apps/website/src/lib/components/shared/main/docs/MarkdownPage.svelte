@@ -6,12 +6,17 @@
     import rehypeSlug from 'rehype-slug';
     import rehypeExternalLinks from 'rehype-external-links';
     import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+    import { pageMetadata } from '../../../../helpers/contexts';
+    import { onMount } from 'svelte';
+    import markdownToTxt from 'markdown-to-txt';
 
     let {
         content,
+        name,
         ...props
     }: {
         content: string;
+        name?: string;
     } & HTMLAttributes<HTMLElement> = $props();
 
     let markdown = $derived(compile(content, {
@@ -36,6 +41,15 @@
             }
         }
     }));
+
+    const meta = pageMetadata.get()
+
+    onMount(() => {
+        if (!name) return;
+
+        meta.title = name;
+        meta.description = markdownToTxt(content);
+    });
 </script>
 
 <article

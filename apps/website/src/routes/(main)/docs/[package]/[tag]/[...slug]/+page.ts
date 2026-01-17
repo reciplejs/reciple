@@ -1,8 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
-import { DocType, type SidebarData } from '$lib/helpers/types.js';
+import { DocType, type MarkdownMetadata, type SidebarData } from '$lib/helpers/types.js';
 import { resolve } from '$app/paths';
 import { DocTypeIcons } from '$lib/helpers/constants.js';
 import { Documentation } from '../../../../../../lib/helpers/classes/Documentation.svelte.js';
+import { markdownToTxt } from 'markdown-to-txt';
 
 export async function load(data) {
     const pkg = data.params.package;
@@ -23,12 +24,18 @@ export async function load(data) {
         tag
     }).fetch();
 
+    const metadata: MarkdownMetadata = {
+        title: `${pkg}@${tag}`,
+        description: markdownToTxt(documentation.readme)
+    };
+
     return {
         package: pkg,
         tag,
         type: type || null,
         name: name || null,
         documentation,
+        metadata,
         sidebarData: {
             header: {
                 title: `${pkg}@${tag}`
