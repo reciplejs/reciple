@@ -7,7 +7,7 @@ const packages = await readdir(path.join(root, "./packages"));
 const outDir = path.join(root, './docs');
 
 await new Promise((res, rej) => {
-    const child = spawn(`bun run docs`, {
+    const child = spawn(`turbo run docs`, {
         env: process.env,
         shell: true,
         stdio: 'inherit'
