@@ -3,7 +3,7 @@
     import { DocTypeIcons } from '$lib/helpers/constants';
     import { DocType } from '$lib/helpers/types';
     import ClassReference from './ClassReference.svelte';
-    import TypeDefReference from './TypeDefReference.svelte';
+    import TypeDef from './TypeDef.svelte';
 
     let {
         node
@@ -24,10 +24,10 @@
         {#if node.kind === 'class' && node.classDef.extends}
             extends <ClassReference name={node.classDef.extends}/>
         {:else if node.kind === 'interface' && node.interfaceDef.extends}
-            extends <TypeDefReference types={node.interfaceDef.extends}/>
+            extends <TypeDef types={node.interfaceDef.extends}/>
         {/if}
         {#if node.kind === 'class' && node.classDef.implements.length}
-            implements <TypeDefReference types={node.classDef.implements}/>
+            implements <TypeDef types={node.classDef.implements}/>
         {/if}
     </p>
 </div>

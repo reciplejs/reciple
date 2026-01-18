@@ -6,7 +6,7 @@
     let {
         types
     }: {
-        types: TsTypeDef[];
+        types: TsTypeDef|TsTypeDef[];
     } = $props();
 
     const docs = documentationState.get();
@@ -18,12 +18,10 @@
     {#if type.kind === 'array'}
         <span>{@render TypeDef(type.array)}[]</span>
     {:else if type.kind === 'typeRef'}
-        <span class="inline-flex flex-wrap">
-            {@render TypeLink(type.typeRef)}
-            <span class="inline-flex flex-wrap">
+        <span>
+            {@render TypeLink(type.typeRef)}<span>
                 {#if type.typeRef.typeParams?.length}
-                    <span>&lt;</span>
-                    <span>{@render TypeParam(type.typeRef.typeParams)}</span><span>&gt;</span>
+                    <span>&lt;</span><span>{@render TypeParam(type.typeRef.typeParams)}</span><span>&gt;</span>
                 {/if}
             </span>
         </span>
@@ -40,11 +38,30 @@
     {:else if type.kind === 'union'}
         <span>
             {#each type.union as subType, i}
-                {#if i > 0}<span>|</span>{/if}{@render TypeDef(subType)}
+                {#if i > 0}
+                    <span>|</span>
+                {/if}{@render TypeDef(subType)}
             {/each}
         </span>
+    {:else if type.kind === 'typePredicate'}
+        {#if type.typePredicate.asserts}
+            <span>assets</span>
+        {/if}
+        <span>{type.typePredicate.param.name || type.typePredicate.param.type}</span>
+        <span>is</span>
+        <span>{@render TypeDef(type.typePredicate.type!)}</span>
+    {:else if type.kind === 'tuple'}
+        <span>
+            <span>[</span>
+            {#each type.tuple as subType, i}
+                {#if i > 0}<span>,</span>{/if}{@render TypeDef(subType)}
+            {/each}
+            <span>]</span>
+        </span>
+    {:else if type.kind === 'literal' && type.literal.kind === 'string'}
+        <span>{`"${type.literal.string}"`}</span>
     {:else}
-        <span>{type.repr}</span>
+        <span>{type.repr}<i class="hidden">{type.kind}</i></span>
     {/if}
 {/snippet}
 
@@ -52,14 +69,17 @@
     {#each types as type, i}
         {#if i > 0}
             <span>,</span>
+            {@render TypeDef(type)}
+        {:else}
+            {@render TypeDef(type)}
         {/if}
-        {@render TypeDef(type)}
     {/each}
 {/snippet}
 
 {#snippet TypeLink(type: TsTypeRefDef)}
-    {@const name = type.typeName.split('.')[0]}
-    {@const prop = type.typeName.split('.')[1]}
+    {@const normalized = type.typeName.startsWith('[') && type.typeName.endsWith(']') ? type.typeName.slice(1, -1) : type.typeName}
+    {@const name = normalized.split('.')[0]}
+    {@const prop = normalized.split('.')[1]}
     {@const node = prop ? docs.documentation.findProperty(name, prop) : docs.documentation.find(name)}
     {@const href = node && resolve('/(main)/docs/[package]/[tag]/[...slug]', {
         package: docs.documentation.package,
@@ -78,7 +98,7 @@
 {/snippet}
 
 <span>
-    {#each types as type, i}
+    {#each Array.isArray(types) ? types : [types] as type, i}
         {#if i > 0}<span>|</span>{/if}{@render TypeDef(type)}
     {/each}
 </span>
