@@ -48,6 +48,18 @@ export class Documentation {
         return this.data.find(node => node.name === name && (!type || node.kind === type)) || null;
     }
 
+    public findProperty(name: string, property: string, type?: DocNodeKind): DocNode|null {
+        return this.data.find(node => 
+            node.name === name
+            && (!type || node.kind === type)
+            && (
+                (node.kind === 'class' && node.classDef.properties.some(prop => prop.name === property))
+                || (node.kind === 'interface' && node.interfaceDef.properties.some(prop => prop.name === property))
+                || (node.kind === 'namespace' && node.namespaceDef.elements.some(prop => prop.name === property))
+            )
+        ) || null;
+    }
+
     public async fetch(fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<this> {
         const { files } = await Documentation.fetchFiles(false, fetch);
 

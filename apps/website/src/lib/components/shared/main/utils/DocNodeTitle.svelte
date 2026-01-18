@@ -26,5 +26,8 @@
         {:else if node.kind === 'interface' && node.interfaceDef.extends}
             extends <TypeDefReference types={node.interfaceDef.extends}/>
         {/if}
+        {#if node.kind === 'class' && node.classDef.implements.length}
+            implements <TypeDefReference types={node.classDef.implements}/>
+        {/if}
     </p>
 </div>
