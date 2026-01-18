@@ -2,7 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { DocType, type MarkdownMetadata, type SidebarData } from '$lib/helpers/types.js';
 import { resolve } from '$app/paths';
 import { DocTypeIcons } from '$lib/helpers/constants.js';
-import { Documentation } from '../../../../../../lib/helpers/classes/Documentation.svelte.js';
+import { Documentation } from '$lib/helpers/classes/Documentation.svelte.js';
 import { markdownToTxt } from 'markdown-to-txt';
 import type { DocNodeKind } from '@deno/doc';
 import { PackageIcon, TagIcon } from '@lucide/svelte';
@@ -24,11 +24,11 @@ export async function load(data) {
     const documentation =  await new Documentation({
         package: pkg,
         tag
-    }).fetch(data.fetch);
+    }).fetch(data.fetch).catch(() => null);
 
-    const node = documentation.data.find(n => n.kind === type && n.name === name);
+    const node = documentation?.data.find(n => n.kind === type && n.name === name);
 
-    if (!node && type !== 'home') error(404, 'Not found');
+    if (!documentation || !node && type !== 'home') error(404, 'Not found');
 
     const metadata: MarkdownMetadata = {
         title: node ? node.name : `${pkg}@${tag}`,
@@ -94,77 +94,49 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Class],
                                 links: documentation.classes.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.Class}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             },
                             Namespaces: {
                                 icon: DocTypeIcons[DocType.Namespace],
                                 links: documentation.namespaces.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.Namespace}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             },
                             Functions: {
                                 icon: DocTypeIcons[DocType.Function],
                                 links: documentation.functions.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.Function}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             },
                             Variables: {
                                 icon: DocTypeIcons[DocType.Variable],
                                 links: documentation.variables.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.Variable}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             },
                             Enums: {
                                 icon: DocTypeIcons[DocType.Enum],
                                 links: documentation.enums.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.Enum}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             },
                             Interfaces: {
                                 icon: DocTypeIcons[DocType.Interface],
                                 links: documentation.interfaces.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.Interface}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             },
                             Types: {
                                 icon: DocTypeIcons[DocType.TypeAlias],
                                 links: documentation.types.map(n => ({
                                     label: n.name,
-                                    href: resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-                                        package: pkg,
-                                        tag,
-                                        slug: `${DocType.TypeAlias}/${n.name}`
-                                    })
+                                    href: documentation.resolveNodeLink(n)
                                 }))
                             }
                         }

@@ -1,3 +1,4 @@
+import { resolve } from '$app/paths';
 import type { DocNode, DocNodeKind } from '@deno/doc';
 import path from 'pathe';
 
@@ -64,15 +65,22 @@ export class Documentation {
         const { files } = await Documentation.fetchFiles(false, fetch);
 
         const file = files.find(file => file.path === path.join(this.package, `${this.tag}.json`));
+        const filePath = file?.path ?? `${this.package}/${this.tag}.json`;
 
-        if (!file) throw new Error('File not found');
-
-        const content: Documentation.APIDocJSONResponse = await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/${file.path}`).then(res => res.json());
+        const content: Documentation.APIDocJSONResponse = await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/${filePath}`).then(res => res.json());
 
         this.data = content.nodes;
         this.readme = content.readme || '';
 
         return this;
+    }
+
+    public resolveNodeLink(node: DocNode): string {
+        return resolve('/(main)/docs/[package]/[tag]/[...slug]', {
+            package: this.package,
+            tag: this.tag,
+            slug: `${node.kind}/${node.name}`
+        });
     }
 
     public static async fetchTags(pkg: string, fetch?: Documentation.FetchClient): Promise<string[]> {
