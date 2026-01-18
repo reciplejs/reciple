@@ -74,7 +74,6 @@
                                     <SidebarMenuButton
                                         {...props}
                                         size="lg"
-                                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                                         tooltipContent={menu.label}
                                     >
                                         <div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
@@ -85,7 +84,7 @@
                                             {/if}
                                         </div>
                                         <div class="grid flex-1 text-start text-sm leading-tight">
-                                            <span class="truncate font-medium">{menu.label}</span>
+                                            <span class="truncate font-medium">{active?.name || menu.label}</span>
                                         </div>
                                         <ChevronsUpDownIcon class="ms-auto" />
                                     </SidebarMenuButton>
