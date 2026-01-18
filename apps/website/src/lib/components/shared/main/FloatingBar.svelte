@@ -66,4 +66,4 @@
         </Button>
     </ButtonGroup>
 </div>
-<div class="h-16" class:hidden={!sidebar.isMobile}></div>
+<div class="h-20" class:hidden={!sidebar.isMobile}></div>
