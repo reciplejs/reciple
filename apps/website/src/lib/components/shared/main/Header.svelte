@@ -17,7 +17,7 @@
     class={[
         "sticky top-0 z-50 flex h-16 border-b shrink-0 items-center gap-2",
         "transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12",
-        "bg-background/90 dark:bg-background/70 backdrop-blur-sm"
+        "bg-background/80 dark:bg-background/60 backdrop-blur-sm backdrop-saturate-150"
     ]}
 >
     <div class="flex items-center gap-2 px-4 overflow-hidden w-full">
