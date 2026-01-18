@@ -11,6 +11,8 @@
     import { page } from '$app/state';
     import { resolve } from '$app/paths';
     import { goto } from '$app/navigation';
+    import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../ui/dropdown-menu';
+    import { ChevronDownIcon } from '@lucide/svelte';
 
     let {
         header,
@@ -59,6 +61,46 @@
                         </SidebarMenuButton>
                     {/if}
                 </SidebarMenuItem>
+            </SidebarMenu>
+        {/if}
+        {#if data.header?.menus?.length}
+            <SidebarMenu>
+                {#each data.header.menus as menu}
+                    {@const active = menu.active ? menu.items.find(i => i.name === menu.active) : null}
+                    <SidebarMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                {#snippet child({ props })}
+                                    <SidebarMenuButton {...props} class="border">
+                                        {#if active?.icon}
+                                            <active.icon/>
+                                        {:else if menu.icon}
+                                            <menu.icon/>
+                                        {/if}
+                                        <span>{active?.name || menu.label}</span>
+                                        <ChevronDownIcon class="ms-auto" />
+                                    </SidebarMenuButton>
+                                {/snippet}
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent class="w-(--bits-dropdown-menu-anchor-width)">
+                                {#each menu.items as item}
+                                    {@const isActive = item.name === active?.name}
+                                    <DropdownMenuItem
+                                        class={[
+                                            isActive && "text-primary! font-medium bg-primary/10! dark:bg-primary! dark:text-primary-foreground!",
+                                        ]}
+                                        onclick={() => item.external ? window.open(item.href, '_blank') : goto(item.href)}
+                                    >
+                                        {#if item.icon}
+                                            <item.icon/>
+                                        {/if}
+                                        <span>{item.name}</span>
+                                    </DropdownMenuItem>
+                                {/each}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </SidebarMenuItem>
+                {/each}
             </SidebarMenu>
         {/if}
         {@render header?.()}

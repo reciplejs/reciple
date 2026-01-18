@@ -5,6 +5,7 @@ import { DocTypeIcons } from '$lib/helpers/constants.js';
 import { Documentation } from '../../../../../../lib/helpers/classes/Documentation.svelte.js';
 import { markdownToTxt } from 'markdown-to-txt';
 import type { DocNodeKind } from '@deno/doc';
+import { PackageIcon, TagIcon } from '@lucide/svelte';
 
 export async function load(data) {
     const pkg = data.params.package;
@@ -43,7 +44,32 @@ export async function load(data) {
         metadata,
         sidebarData: {
             header: {
-                title: `${pkg}@${tag}`
+                title: `${pkg}@${tag}`,
+                menus: [
+                    {
+                        label: 'Packages',
+                        active: pkg,
+                        icon: PackageIcon,
+                        items: Documentation.packages.map(pkg => ({
+                            name: pkg,
+                            href: resolve('/(main)/docs/[package]', {
+                                package: pkg
+                            })
+                        }))
+                    },
+                    {
+                        label: 'Tags',
+                        active: tag,
+                        icon: TagIcon,
+                        items: (await Documentation.fetchTags(pkg)).map(tag => ({
+                            name: tag,
+                            href: resolve('/(main)/docs/[package]/[tag]', {
+                                package: pkg,
+                                tag
+                            })
+                        }))
+                    }
+                ]
             },
             content: {
                 groups: [

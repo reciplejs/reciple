@@ -29,6 +29,7 @@ export enum DocType {
 export interface SidebarData {
     header?: {
         title: string;
+        menus?: SidebarData.Menu[];
     }
     content?: {
         groups: SidebarData.Group[];
@@ -36,6 +37,20 @@ export interface SidebarData {
 }
 
 export namespace SidebarData {
+    export interface Menu {
+        label: string;
+        icon?: typeof Icon|ComponentType;
+        active?: string;
+        items: MenuItem[];
+    }
+
+    export interface MenuItem {
+        name: string;
+        href: string;
+        external?: boolean;
+        icon?: typeof Icon|ComponentType;
+    }
+
     export interface Group {
         label?: string;
         categories: Record<string, GroupCategory>;

@@ -1,4 +1,4 @@
-import type { DocNode } from '@deno/doc';
+import type { DocNode, DocNodeKind } from '@deno/doc';
 import path from 'pathe';
 
 export class Documentation {
@@ -11,8 +11,18 @@ export class Documentation {
         path: '/'
     };
 
-    public static get repo() {
+    public static get repo(): string {
         return path.join(Documentation.repository.owner, Documentation.repository.name);
+    }
+
+    public static get packages(): string[] {
+        return Array.from(
+            new Set(
+                Documentation.files?.files
+                    .filter(file => file.path.endsWith('.json'))
+                    .map(file => path.dirname(file.path).split('/').shift()!)
+            ).values()
+        );
     }
 
     public readonly package: string;
@@ -32,6 +42,10 @@ export class Documentation {
     constructor(options: Documentation.Options) {
         this.package = options.package;
         this.tag = options.tag;
+    }
+
+    public find(name: string, type?: DocNodeKind): DocNode|null {
+        return this.data.find(node => node.name === name && (!type || node.kind === type)) || null;
     }
 
     public async fetch(fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<this> {
@@ -58,15 +72,9 @@ export class Documentation {
     }
 
     public static async fetchPackages(fetch?: Documentation.FetchClient): Promise<string[]> {
-        const { files } = await this.fetchFiles(false, fetch);
+        await this.fetchFiles(false, fetch);
 
-        return Array.from(
-            new Set(
-                files
-                    .filter(file => file.path.endsWith('.json'))
-                    .map(file => path.dirname(file.path).split('/').shift()!)
-            ).values()
-        );
+        return Documentation.packages;
     }
 
     public static async fetchFiles(force: boolean = false, fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<Documentation.APIFilesResponse> {

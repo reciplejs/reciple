@@ -3,7 +3,7 @@
     import Header from '$lib/components/shared/main/Header.svelte';
     import { SidebarInset, SidebarProvider } from '$lib/components/ui/sidebar';
     import { pageMetadata, searchDialogState, sidebarData } from '$lib/helpers/contexts';
-    import type { MarkdownMetadata } from '$lib/helpers/types';
+    import type { MarkdownMetadata, SidebarData } from '$lib/helpers/types';
     import '@skyra/discord-components-core';
     import { page } from '$app/state';
     import FloatingBar from '$lib/components/shared/main/FloatingBar.svelte';
@@ -19,9 +19,16 @@
         open: undefined
     });
 
+    let sidebar: SidebarData = $state({});
+
     pageMetadata.set(metadata);
-    sidebarData.set(page.data.sidebarData);
+    sidebarData.set(sidebar);
     searchDialogState.set(searchState);
+
+    $effect(() => {
+        sidebar.header = page.data.sidebarData.header;
+        sidebar.content = page.data.sidebarData.content;
+    });
 </script>
 
 <SidebarProvider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem;">
