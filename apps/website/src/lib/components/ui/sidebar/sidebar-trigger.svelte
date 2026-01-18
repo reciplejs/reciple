@@ -3,7 +3,7 @@
 	import { cn } from "$lib/helpers/utils.js";
 	import PanelLeftCloseIcon from "@lucide/svelte/icons/panel-left-close";
 	import PanelLeftOpenIcon from "@lucide/svelte/icons/panel-left-open";
-	import type { ComponentProps } from "svelte";
+	import type { ComponentProps, Snippet } from "svelte";
 	import { useSidebar } from "./context.svelte.js";
 	import type { Icon } from '@lucide/svelte';
 
@@ -13,11 +13,13 @@
 		onclick,
         closeIcon,
         openIcon,
+        children,
 		...restProps
 	}: ComponentProps<typeof Button> & {
 		onclick?: (e: MouseEvent) => void;
         closeIcon?: typeof Icon;
         openIcon?: typeof Icon;
+        children?: Snippet;
 	} = $props();
 
 	const sidebar = useSidebar();
@@ -43,5 +45,6 @@
         {@const OpenIcon = openIcon ?? PanelLeftOpenIcon}
         <OpenIcon/>
     {/if}
+    {@render children?.()}
 	<span class="sr-only">Toggle Sidebar</span>
 </Button>
