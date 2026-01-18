@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { TsTypeDef, TsTypeRefDef } from '@deno/doc';
+    import type { TsTypeDef } from '@deno/doc';
     import { documentationState } from '../../../../helpers/contexts';
     import { resolve } from '$app/paths';
 
@@ -12,6 +12,12 @@
     const docs = documentationState.get();
 </script>
 
+<style>
+    span {
+        word-break: break-word;
+    }
+</style>
+
 <!-- TODO: Fix types in here -->
 
 {#snippet TypeDef(type: TsTypeDef)}
@@ -19,7 +25,7 @@
         <span>{@render TypeDef(type.array)}[]</span>
     {:else if type.kind === 'typeRef'}
         <span>
-            {@render TypeLink(type.typeRef)}<span>
+            {@render TypeLink(type.typeRef.typeName)}<span>
                 {#if type.typeRef.typeParams?.length}
                     <span>&lt;</span><span>{@render TypeParam(type.typeRef.typeParams)}</span><span>&gt;</span>
                 {/if}
@@ -43,6 +49,17 @@
                 {/if}{@render TypeDef(subType)}
             {/each}
         </span>
+    {:else if type.kind === 'importType'}
+        <span>
+            <span>import</span>
+            <span>(</span>
+            {type.importType.specifier}
+            <span>)</span>
+            {#if type.importType.qualifier}
+                <span>.</span>
+                <span>{@render TypeLink(type.importType.qualifier)}</span>
+            {/if}
+        </span>
     {:else if type.kind === 'typePredicate'}
         {#if type.typePredicate.asserts}
             <span>assets</span>
@@ -61,7 +78,7 @@
     {:else if type.kind === 'literal' && type.literal.kind === 'string'}
         <span>{`"${type.literal.string}"`}</span>
     {:else}
-        <span>{type.repr}<i class="hidden">{type.kind}</i></span>
+        <span>{type.repr}</span>
     {/if}
 {/snippet}
 
@@ -76,8 +93,8 @@
     {/each}
 {/snippet}
 
-{#snippet TypeLink(type: TsTypeRefDef)}
-    {@const normalized = type.typeName.startsWith('[') && type.typeName.endsWith(']') ? type.typeName.slice(1, -1) : type.typeName}
+{#snippet TypeLink(type: string)}
+    {@const normalized = type.startsWith('[') && type.endsWith(']') ? type.slice(1, -1) : type}
     {@const name = normalized.split('.')[0]}
     {@const prop = normalized.split('.')[1]}
     {@const node = prop ? docs.documentation.findProperty(name, prop) : docs.documentation.find(name)}
@@ -93,11 +110,11 @@
             </a>
         </span>
     {:else}
-        <span>{type.typeName}</span>
+        <span>{type}</span>
     {/if}
 {/snippet}
 
-<span>
+<span class="typedef">
     {#each Array.isArray(types) ? types : [types] as type, i}
         {#if i > 0}<span>|</span>{/if}{@render TypeDef(type)}
     {/each}
