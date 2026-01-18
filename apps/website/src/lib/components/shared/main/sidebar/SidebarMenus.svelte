@@ -54,7 +54,7 @@
                             onclick={() => item.external ? window.open(item.href, '_blank') : goto(item.href)}
                         >
                             {#if item.icon}
-                                <item.icon/>
+                                <item.icon class="size-4 mr-1 ml-1 text-current"/>
                             {/if}
                             <span>{item.name}</span>
                         </DropdownMenuItem>

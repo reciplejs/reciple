@@ -52,6 +52,7 @@ export async function load(data) {
                         icon: PackageIcon,
                         items: Documentation.packages.map(pkg => ({
                             name: pkg,
+                            icon: PackageIcon,
                             href: resolve('/(main)/docs/[package]', {
                                 package: pkg
                             })
@@ -63,6 +64,7 @@ export async function load(data) {
                         icon: TagIcon,
                         items: (await Documentation.fetchTags(pkg)).map(tag => ({
                             name: tag,
+                            icon: TagIcon,
                             href: resolve('/(main)/docs/[package]/[tag]', {
                                 package: pkg,
                                 tag
