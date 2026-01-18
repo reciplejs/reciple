@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarSeparator } from "$lib/components/ui/sidebar";
+    import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem, SidebarSeparator, useSidebar } from "$lib/components/ui/sidebar";
     import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '$lib/components/ui/collapsible';
     import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
     import SparklesIcon from '@lucide/svelte/icons/sparkles';
@@ -64,6 +64,7 @@
             </SidebarMenu>
         {/if}
         {#if data.header?.menus?.length}
+            {@const sidebar = useSidebar()}
             <SidebarMenu>
                 {#each data.header.menus as menu}
                     {@const active = menu.active ? menu.items.find(i => i.name === menu.active) : null}
@@ -90,7 +91,11 @@
                                     </SidebarMenuButton>
                                 {/snippet}
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent class="w-(--bits-dropdown-menu-anchor-width) text-nowrap min-w-2xs mx-2">
+                            <DropdownMenuContent
+                                class="w-(--bits-dropdown-menu-anchor-width) text-nowrap min-w-2xs mx-2"
+                                side={sidebar.open ? "bottom" : "right"}
+                                align={sidebar.open ? "center" : "start"}
+                            >
                                 {#each menu.items as item}
                                     {@const isActive = item.name === active?.name}
                                     <DropdownMenuItem
