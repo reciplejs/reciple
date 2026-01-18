@@ -11,8 +11,8 @@
     import { page } from '$app/state';
     import { resolve } from '$app/paths';
     import { goto } from '$app/navigation';
-    import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../ui/dropdown-menu';
-    import { ChevronDownIcon } from '@lucide/svelte';
+    import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '$lib/components/ui/dropdown-menu';
+    import { ChevronsUpDownIcon } from '@lucide/svelte';
 
     let {
         header,
@@ -71,18 +71,27 @@
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                 {#snippet child({ props })}
-                                    <SidebarMenuButton {...props} class="border">
-                                        {#if active?.icon}
-                                            <active.icon/>
-                                        {:else if menu.icon}
-                                            <menu.icon/>
-                                        {/if}
-                                        <span>{active?.name || menu.label}</span>
-                                        <ChevronDownIcon class="ms-auto" />
+                                    <SidebarMenuButton
+                                        {...props}
+                                        size="lg"
+                                        class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                                        tooltipContent={menu.label}
+                                    >
+                                        <div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                                            {#if active?.icon}
+                                                <active.icon class="size-4.5"/>
+                                            {:else if menu.icon}
+                                                <menu.icon class="size-4.5"/>
+                                            {/if}
+                                        </div>
+                                        <div class="grid flex-1 text-start text-sm leading-tight">
+                                            <span class="truncate font-medium">{menu.label}</span>
+                                        </div>
+                                        <ChevronsUpDownIcon class="ms-auto" />
                                     </SidebarMenuButton>
                                 {/snippet}
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent class="w-(--bits-dropdown-menu-anchor-width)">
+                            <DropdownMenuContent class="w-(--bits-dropdown-menu-anchor-width) text-nowrap min-w-2xs mx-2">
                                 {#each menu.items as item}
                                     {@const isActive = item.name === active?.name}
                                     <DropdownMenuItem

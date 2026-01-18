@@ -20,14 +20,20 @@
             {/each}
         </span>
     {:else if type.kind === 'typeRef'}
-        {type.typeRef.typeName}{#if type.typeRef.typeParams?.length}&lt;{#each type.typeRef.typeParams as typeParam, i}
-            {#if i > 0}
-                <span>,
-                    <span></span>
+        <span>
+            {type.typeRef.typeName}
+            {#if type.typeRef.typeParams?.length}
+                <span>
+                    &lt;{#each type.typeRef.typeParams as typeParam, i}
+                        {#if i > 0}
+                            <span>,
+                                <span></span>
+                            </span>
+                        {/if}{@render TypeDef(typeParam)}
+                    {/each}&gt;
                 </span>
-            {/if}{@render TypeDef(typeParam)}
-        {/each}&gt;
-        {/if}
+            {/if}
+        </span>
     {:else}
         <span>{type.repr}</span>
     {/if}
@@ -35,9 +41,6 @@
 
 <span>
     {#each types as type, i}
-        {#if i > 0}
-            <span>|</span>
-        {/if}
-        {@render TypeDef(type)}
+        {#if i > 0}<span>|</span>{/if}{@render TypeDef(type)}
     {/each}
 </span>
