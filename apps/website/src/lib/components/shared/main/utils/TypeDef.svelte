@@ -24,8 +24,9 @@
     {#if type.kind === 'array'}
         <span>{@render TypeDef(type.array)}[]</span>
     {:else if type.kind === 'typeRef'}
+        {@const name = type.typeRef.typeName.startsWith('[') && type.typeRef.typeName.endsWith(']') ? type.typeRef.typeName.slice(1, -1) : type.typeRef.typeName}
         <span>
-            {@render TypeLink(type.typeRef.typeName)}<span>
+            {@render TypeLink(name)}<span>
                 {#if type.typeRef.typeParams?.length}
                     <span>&lt;</span><span>{@render TypeParam(type.typeRef.typeParams)}</span><span>&gt;</span>
                 {/if}
@@ -94,9 +95,8 @@
 {/snippet}
 
 {#snippet TypeLink(type: string)}
-    {@const normalized = type.startsWith('[') && type.endsWith(']') ? type.slice(1, -1) : type}
-    {@const name = normalized.split('.')[0]}
-    {@const prop = normalized.split('.')[1]}
+    {@const name = type.split('.')[0]}
+    {@const prop = type.split('.')[1]}
     {@const node = prop ? docs.documentation.findProperty(name, prop) : docs.documentation.find(name)}
     {@const href = node && resolve('/(main)/docs/[package]/[tag]/[...slug]', {
         package: docs.documentation.package,

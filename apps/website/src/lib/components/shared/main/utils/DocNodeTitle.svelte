@@ -20,10 +20,10 @@
         <Icon class="shrink-0"/>
         <h1 class="text-2xl font-bold truncate">{node.name}</h1>
     </div>
-    <p class="ml-8 text-sm font-normal text-muted-foreground">
+    <p class="ml-8 text-xs font-normal text-muted-foreground">
         {#if node.kind === 'class' && node.classDef.extends}
             extends <ClassReference name={node.classDef.extends}/>
-        {:else if node.kind === 'interface' && node.interfaceDef.extends}
+        {:else if node.kind === 'interface' && node.interfaceDef.extends.length}
             extends <TypeDef types={node.interfaceDef.extends}/>
         {/if}
         {#if node.kind === 'class' && node.classDef.implements.length}
