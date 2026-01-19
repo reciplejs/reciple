@@ -37,5 +37,5 @@
     </p>
 </div>
 
-<pre class="border border-foreground/15 rounded px-4 py-2"><code><HumanizedTokens tokens={new HumanizedNode(docState).humanize(node).tokens}/></code></pre>
+<pre class="border border-foreground/15 rounded px-4 py-2 whitespace-normal" style="word-wrap: break-word;"><code><HumanizedTokens tokens={new HumanizedNode(docState).humanize(node).tokens}/></code></pre>
 

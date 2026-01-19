@@ -14,8 +14,6 @@
         {@const href = typeof token === 'string' ? undefined : token.href}
         {#if href}
             <span><a href={href} class="hover:underline text-primary">{value}</a></span>
-        {:else if value === ' '}
-            <span>&nbsp;</span>
         {:else}
             <span>{value}</span>
         {/if}
