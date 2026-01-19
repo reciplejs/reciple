@@ -2,6 +2,7 @@ import type { DocNode, DocNodeClass, DocNodeEnum, DocNodeFunction, DocNodeInterf
 import { BaseHumanized } from './BaseHumanized';
 import { HumanizedTypeParams } from './HumanizedTypeParams';
 import { HumanizedTypeDef } from './HumanizedTypeDef';
+import { HumanizedParams } from './HumanizedParams';
 
 export class HumanizedNode extends BaseHumanized {
     public humanize(type: DocNode): this {
@@ -16,7 +17,7 @@ export class HumanizedNode extends BaseHumanized {
 
         switch (type.kind) {
             case 'function':
-                this.humanizeFunctioon(type);
+                this.humanizeFunction(type);
                 break;
             case 'class':
                 this.humanizeClass(type);
@@ -44,7 +45,7 @@ export class HumanizedNode extends BaseHumanized {
         return this;
     }
 
-    public humanizeFunctioon(type: DocNodeFunction): void {
+    public humanizeFunction(type: DocNodeFunction): void {
         if (type.functionDef.isAsync) this.addToken('async');
 
         this.addToken(type.functionDef.isGenerator ? 'function*' : 'function');
@@ -54,9 +55,7 @@ export class HumanizedNode extends BaseHumanized {
             this.addToken(new HumanizedTypeParams(this).humanize(type.functionDef.typeParams), true);
         }
 
-        this.addToken('(', true);
-        // TODO: add params
-        this.addToken(')', true);
+        this.addToken(new HumanizedParams(this).humanize(type.functionDef.params), true);
 
         if (type.functionDef.returnType) {
             this.addToken(':', true);

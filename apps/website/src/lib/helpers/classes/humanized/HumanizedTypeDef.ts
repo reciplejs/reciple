@@ -12,9 +12,7 @@ export class HumanizedTypeDef extends BaseHumanized {
                 this.addToken(type.literal.kind === 'string' ? `"${type.literal.string}"` : type.repr);
                 break;
             case 'typeRef':
-                const typeRefName = type.typeRef.typeName.startsWith('[') && type.typeRef.typeName.endsWith(']')
-                    ? type.typeRef.typeName.slice(1, -1)
-                    : type.typeRef.typeName;
+                const typeRefName = this.normalizeBracketedName(type.typeRef.typeName);
 
                 this.addToken({ value: typeRefName, href: this.getTypeLink(typeRefName, true) });
 
@@ -29,7 +27,7 @@ export class HumanizedTypeDef extends BaseHumanized {
                 for (const i in nOru) {
                     const subType = nOru[Number(i)];
 
-                    this.humanize(subType);
+                    this.addToken(new HumanizedTypeDef(this).humanize(subType), true);
 
                     if (nOru.length > 1 && Number(i) < nOru.length - 1) {
                         this.addToken(type.kind === 'union' ? '|' : '&', true);
@@ -37,7 +35,7 @@ export class HumanizedTypeDef extends BaseHumanized {
                 }
                 break;
             case 'array':
-                this.humanize(type.array);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.array));
                 this.addToken('[]');
                 break;
             case 'tuple':
@@ -46,7 +44,7 @@ export class HumanizedTypeDef extends BaseHumanized {
                 for (const i in type.tuple) {
                     const subType = type.tuple[Number(i)];
 
-                    this.humanize(subType);
+                    this.addToken(new HumanizedTypeDef(this).humanize(subType));
 
                     if (type.tuple.length > 1 && Number(i) < type.tuple.length - 1) {
                         this.addToken([',', ' '], true);
@@ -56,14 +54,40 @@ export class HumanizedTypeDef extends BaseHumanized {
                 this.addToken(']');
                 break
             case 'conditional':
-                this.humanize(type.conditionalType.checkType);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.conditionalType.checkType));
                 this.addToken('?');
-                this.humanize(type.conditionalType.trueType);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.conditionalType.trueType));
                 this.addToken(':');
-                this.humanize(type.conditionalType.falseType);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.conditionalType.falseType));
+                break;
+            case 'typeLiteral':
+                this.addToken('{');
+
+                for (const i in type.typeLiteral.properties) {
+                    const property = type.typeLiteral.properties[Number(i)];
+
+                    this.addToken(property.name);
+                    this.addToken(':', true);
+
+                    if (property.tsType) {
+                        this.addToken(new HumanizedTypeDef(this).humanize(property.tsType));
+                    } else {
+                        this.addToken('unknown');
+                    }
+
+                    this.addToken(';', true);
+                }
+
+                // TODO: some other literals
+
+                this.addToken('}');
+                break;
+            case 'parenthesized':
+                this.addToken('(');
+                this.addToken(new HumanizedTypeDef(this).humanize(type.parenthesized), true);
+                this.addToken(')', true);
                 break;
             case 'typeOperator':
-            case 'parenthesized':
             case 'rest':
             case 'optional':
             case 'typeQuery':
@@ -73,9 +97,8 @@ export class HumanizedTypeDef extends BaseHumanized {
             case 'infer':
             case 'indexedAccess':
             case 'mapped':
-            case 'typeLiteral':
             case 'typePredicate':
-                this.addToken(type.repr);
+                this.addToken(`$${type.kind}`);
                 break;
         }
 

@@ -48,6 +48,12 @@ export abstract class BaseHumanized {
                 .flat()
         );
     }
+
+    protected normalizeBracketedName(name: string): string {
+        return name.startsWith('[') && name.endsWith(']')
+            ? name.slice(1, -1)
+            : name
+    }
 }
 
 export namespace BaseHumanized {
