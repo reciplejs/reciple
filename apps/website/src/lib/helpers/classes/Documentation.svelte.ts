@@ -88,7 +88,7 @@ export class Documentation {
 
         return files
             .filter(file => file.path.startsWith(pkg))
-            .map(file => path.basename(file.path).split('.')[0]);
+            .map(file => path.basename(file.path).replace('.json', ''));
     }
 
     public static async fetchPackages(fetch?: Documentation.FetchClient): Promise<string[]> {
