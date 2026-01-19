@@ -49,7 +49,7 @@
                         {@const isActive = item.name === active?.name}
                         <DropdownMenuItem
                             class={[
-                                isActive && "text-primary! font-medium bg-primary/10! dark:bg-primary! dark:text-primary-foreground!",
+                                isActive && "text-primary! font-medium bg-primary/10! dark:bg-primary/15! dark:text-primary!",
                             ]}
                             onclick={() => item.external ? window.open(item.href, '_blank') : goto(item.href)}
                         >
