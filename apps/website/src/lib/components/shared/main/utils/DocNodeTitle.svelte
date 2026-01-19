@@ -4,13 +4,17 @@
     import { DocType } from '$lib/helpers/types';
     import ClassRef from './ClassRef.svelte';
     import TypeDefRef from './TypeDefRef.svelte';
-    import { humanizeNode } from '$lib/helpers/docs';
+    import HumanizedTokens from './HumanizedTokens.svelte';
+    import { HumanizedNode } from '$lib/helpers/classes/humanized/HumanizedNode';
+    import { documentationState } from '$lib/helpers/contexts';
 
     let {
         node
     }: {
         node: DocNode;
     } = $props();
+
+    const docState = documentationState.get();
 
     let Icon = $derived(DocTypeIcons[node.kind as DocType]);
 </script>
@@ -33,5 +37,5 @@
     </p>
 </div>
 
-<pre class="border border-foreground/15 rounded px-4 py-2"><code>{humanizeNode(node)}</code></pre>
+<pre class="border border-foreground/15 rounded px-4 py-2"><code><HumanizedTokens tokens={new HumanizedNode(docState).humanize(node).tokens}/></code></pre>
 

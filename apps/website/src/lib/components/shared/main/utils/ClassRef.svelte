@@ -1,6 +1,7 @@
 <script lang="ts">
     import { documentationState } from '$lib/helpers/contexts';
-    import { Humanized } from '$lib/helpers/classes/HumanizedNode.svelte';
+    import { HumanizedNode } from '$lib/helpers/classes/humanized/HumanizedNode';
+    import HumanizedTokens from './HumanizedTokens.svelte';
 
     let {
         name,
@@ -14,18 +15,7 @@
 </script>
 
 {#if classRef}
-    {@const humanized = new Humanized({ documentation: docState.documentation }).humanizeNode(classRef)}
-    <span>
-        {#each humanized.tokens as token}
-            {@const value = typeof token === 'string' ? token : token.value}
-            {@const href = typeof token === 'string' ? undefined : token.href}
-            {#if href}
-                <span><a href={href} class="hover:underline text-primary">{value}</a></span>
-            {:else}
-                <span>{value}</span>
-            {/if}
-        {/each}
-    </span>
+    <HumanizedTokens tokens={new HumanizedNode(docState).humanize(classRef).tokens}/>
 {:else}
     <span>{name}</span>
 {/if}
