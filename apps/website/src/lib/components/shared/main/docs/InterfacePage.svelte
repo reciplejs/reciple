@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { DocNodeInterface } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
+    import TableOfContents from '../utils/TableOfContents.svelte';
 
     let {
         node
@@ -9,4 +10,7 @@
     } = $props();
 </script>
 
-<NodeDocHeader {node}/>
+<section class="mt-2">
+    <NodeDocHeader {node}/>
+    <TableOfContents {node}/>
+</section>
