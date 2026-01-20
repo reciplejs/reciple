@@ -41,6 +41,7 @@ export namespace BaseHumanized {
     export interface Token {
         value: string;
         href?: string;
+        external?: boolean;
     }
 
     export function stringifyTokens(tokens: AnyToken[]): string {
