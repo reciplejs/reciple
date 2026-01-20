@@ -14,7 +14,7 @@ export class HumanizedTypeDef extends BaseHumanized {
             case 'typeRef':
                 const typeRefName = this.normalizeBracketedName(type.typeRef.typeName);
 
-                this.addToken({ value: typeRefName, href: this.getTypeLink(typeRefName, true) });
+                this.addToken({ value: typeRefName, href: this.documentation?.getTypeLink(typeRefName) });
 
                 if (type.typeRef.typeParams?.length) {
                     this.addToken(new HumanizedTypeParams(this).humanize(type.typeRef.typeParams), true);

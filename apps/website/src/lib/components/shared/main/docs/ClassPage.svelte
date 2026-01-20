@@ -8,12 +8,15 @@
     import ParamsTable from '../utils/ParamsTable.svelte';
     import { HumanizedParams } from '../../../../helpers/classes/humanized/HumanizedParams';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
+    import { documentationState } from '../../../../helpers/contexts';
 
     let {
         node
     }: {
         node: DocNodeClass;
     } = $props();
+
+    const docState = documentationState.get();
 </script>
 
 <NodeDocHeader {node}/>
@@ -29,7 +32,7 @@
                 <div class={proseClasses}>
                     <Markdown content={constructor.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
                     {#if constructor.params.length > 0}
-                        {@const humanized = new HumanizedParams().humanize(constructor.params)}
+                        {@const humanized = new HumanizedParams(docState).humanize(constructor.params)}
                         <TokensCodeBlock tokens={humanized.tokens}/>
                         <ParamsTable params={constructor.params}/>
                     {/if}

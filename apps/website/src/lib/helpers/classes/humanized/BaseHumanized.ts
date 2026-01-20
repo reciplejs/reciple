@@ -1,4 +1,3 @@
-import type { DocNode } from '@deno/doc';
 import type { Documentation } from '../Documentation.svelte';
 
 export abstract class BaseHumanized {
@@ -13,24 +12,6 @@ export abstract class BaseHumanized {
 
     public toString(): string {
         return BaseHumanized.stringifyTokens(this.tokens);
-    }
-
-    protected getTypeLink(type: string|DocNode, withProp?: boolean): string|undefined {
-        let node: DocNode|null = null;
-        let name = '';
-        let prop = '';
-
-        if (typeof type === 'string') {
-            name = type.split('.')[0];
-            prop = type.split('.')[1];
-            node = (prop ? this.documentation?.findProperty(name, prop) : this.documentation?.find(name)) ?? null;
-        } else {
-            node = type;
-        }
-
-        const href = node ? this.documentation?.resolveNodeLink(node) : undefined;
-
-        return href ? href + (withProp ? `#${prop}` : '') : undefined;
     }
 
     protected addToken(token: BaseHumanized.AnyToken|BaseHumanized|(BaseHumanized.AnyToken|BaseHumanized)[], removeLeadingSpace: boolean = false) {

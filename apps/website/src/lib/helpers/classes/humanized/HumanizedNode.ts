@@ -49,7 +49,7 @@ export class HumanizedNode extends BaseHumanized {
         if (type.functionDef.isAsync) this.addToken('async');
 
         this.addToken(type.functionDef.isGenerator ? 'function*' : 'function');
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
 
         if (type.functionDef.typeParams.length) {
             this.addToken(new HumanizedTypeParams(this).humanize(type.functionDef.typeParams), true);
@@ -67,7 +67,7 @@ export class HumanizedNode extends BaseHumanized {
         if (type.classDef.isAbstract) this.addToken('abstract');
 
         this.addToken('class');
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
 
         if (type.classDef.typeParams.length) {
             this.addToken(new HumanizedTypeParams(this).humanize(type.classDef.typeParams), true);
@@ -75,7 +75,7 @@ export class HumanizedNode extends BaseHumanized {
 
         if (type.classDef.extends) {
             this.addToken('extends');
-            this.addToken({ value: type.classDef.extends, href: this.getTypeLink(type.classDef.extends) });
+            this.addToken({ value: type.classDef.extends, href: this.documentation?.getTypeLink(type.classDef.extends) });
         }
 
         if (type.classDef.implements.length) {
@@ -93,7 +93,7 @@ export class HumanizedNode extends BaseHumanized {
 
     public humanizeVariable(type: DocNodeVariable): void {
         this.addToken(type.variableDef.kind);
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
 
         if (type.variableDef.tsType) {
             this.addToken(':', true);
@@ -103,13 +103,13 @@ export class HumanizedNode extends BaseHumanized {
 
     public humanizeEnum(type: DocNodeEnum): void {
         this.addToken('enum');
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
         // Doesn't support multi line
     }
 
     public humanizeTypeAlias(type: DocNodeTypeAlias): void {
         this.addToken('type');
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
 
         if (type.typeAliasDef.typeParams.length) {
             this.addToken(new HumanizedTypeParams(this).humanize(type.typeAliasDef.typeParams), true);
@@ -121,13 +121,13 @@ export class HumanizedNode extends BaseHumanized {
 
     public humanizeNamespace(type: DocNodeNamespace): void {
         this.addToken('namespace');
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
         // Doesn't support multi line
     }
 
     public humanizeInterface(type: DocNodeInterface): void {
         this.addToken('interface');
-        this.addToken({ value: type.name, href: this.getTypeLink(type) });
+        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
 
         if (type.interfaceDef.typeParams.length) {
             this.addToken(new HumanizedTypeParams(this).humanize(type.interfaceDef.typeParams), true);

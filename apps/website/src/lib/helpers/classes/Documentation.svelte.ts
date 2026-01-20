@@ -1,5 +1,6 @@
 import { resolve } from '$app/paths';
-import type { DocNode, DocNodeKind, JsDoc, JsDocTagDoc, JsDocTagDocRequired, JsDocTagKind, JsDocTagNamed, JsDocTagNamedTyped, JsDocTagOnly, JsDocTagParam, JsDocTagReturn, JsDocTagTags, JsDocTagTyped, JsDocTagUnsupported, JsDocTagValued } from '@deno/doc';
+import type { ClassMethodDef, ClassPropertyDef, DocNode, DocNodeKind, EnumMemberDef, InterfaceMethodDef, InterfacePropertyDef, JsDoc, JsDocTagDoc, JsDocTagDocRequired, JsDocTagKind, JsDocTagNamed, JsDocTagNamedTyped, JsDocTagOnly, JsDocTagParam, JsDocTagReturn, JsDocTagTags, JsDocTagTyped, JsDocTagUnsupported, JsDocTagValued } from '@deno/doc';
+import { slug } from 'github-slugger';
 import path from 'pathe';
 
 export class Documentation {
@@ -49,16 +50,93 @@ export class Documentation {
         return this.data.find(node => node.name === name && (!type || node.kind === type)) || null;
     }
 
-    public findProperty(name: string, property: string, type?: DocNodeKind): DocNode|null {
-        return this.data.find(node => 
-            node.name === name
-            && (!type || node.kind === type)
-            && (
-                (node.kind === 'class' && node.classDef.properties.some(prop => prop.name === property))
-                || (node.kind === 'interface' && node.interfaceDef.properties.some(prop => prop.name === property))
-                || (node.kind === 'namespace' && node.namespaceDef.elements.some(prop => prop.name === property))
-            )
-        ) || null;
+    public getTypeLink(type: string|DocNode): string|undefined {
+        let node: DocNode|null = null;
+        let element: Documentation.DocNodeElement|null = null;
+
+        if (typeof type === 'string') {
+            let name = type.split('.')[0];
+            let prop = type.split('.')[1];
+
+            const data = prop ? this.findNodeWithElement(name, prop) : { node: this.find(name), element: null };
+
+            node = data?.node ?? null;
+            element = data?.element ?? null;
+        } else {
+            node = type;
+        }
+
+        return node ? this.resolveNodeLink(node, element) : undefined;
+    }
+
+    public findNodeWithElement(name: string, elementName: string, type?: DocNodeKind): { node: DocNode; element: Documentation.DocNodeElement|null; }|null {
+        let node: DocNode|null = null;
+        let element: Documentation.DocNodeElement|null = null;
+
+        node = this.data.find(n => 
+            n.name === name
+            && (!type || n.kind === type)
+            && !!(element = this.getNodeElement(n, elementName))
+        ) ?? null;
+
+        if (!node) return null;
+
+        return {
+            node,
+            element
+        };
+    }
+
+    public getNodeElement(node: DocNode, elementName: string): Documentation.DocNodeElement|null {
+        switch (node.kind) {
+            case 'class':
+                return node.classDef.properties.find(prop => prop.name === elementName)
+                    ?? node.classDef.methods.find(method => method.name === elementName)
+                    ?? null;
+            case 'interface':
+                return node.interfaceDef.properties.find(prop => prop.name === elementName)
+                    ?? node.interfaceDef.methods.find(method => method.name === elementName)
+                    ?? null;
+            case 'namespace':
+                return node.namespaceDef.elements.find(prop => prop.name === elementName) ?? null;
+            case 'enum':
+                return node.enumDef.members.find(prop => prop.name === elementName) ?? null;
+        }
+
+        return null;
+    }
+
+    public resolveNodeLink(node: DocNode, element: Documentation.DocNodeElement|null = null): string {
+        const link = resolve('/(main)/docs/[package]/[tag]/[...slug]', {
+            package: this.package,
+            tag: this.tag,
+            slug: `${node.kind}/${node.name}`
+        });
+
+        return link + (element ? `#${this.getElementSlug(element)}` : '');
+    }
+
+    public getElementSlug(element: Documentation.DocNodeElement): string {
+        let result = '';
+
+        if ('isStatic' in element && element.isStatic) {
+            result += 'static-';
+        }
+
+        if ('kind' in element) {
+            switch (element.kind) {
+                case 'method':
+                case 'getter':
+                case 'setter':
+                    result += `${element.kind}`;
+            }
+        }
+
+        return `${result ? result + ':' : ''}${slug(element.name, true)}`;
+    }
+
+    public getJsdocTag<T extends JsDocTagKind>(type: { jsDoc?: JsDoc }, tag: T): Documentation.JsDocTagFromKind<T>|null {
+        return type.jsDoc?.tags?.find((t): t is Documentation.JsDocTagFromKind<T> => t.kind === tag) ?? null;
     }
 
     public async fetch(fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<this> {
@@ -73,18 +151,6 @@ export class Documentation {
         this.readme = content.readme || '';
 
         return this;
-    }
-
-    public resolveNodeLink(node: DocNode): string {
-        return resolve('/(main)/docs/[package]/[tag]/[...slug]', {
-            package: this.package,
-            tag: this.tag,
-            slug: `${node.kind}/${node.name}`
-        });
-    }
-
-    public getJsdocTag<T extends JsDocTagKind>(type: { jsDoc?: JsDoc }, tag: T): Documentation.JsDocTagFromKind<T>|null {
-        return type.jsDoc?.tags?.find((t): t is Documentation.JsDocTagFromKind<T> => t.kind === tag) ?? null;
     }
 
     public static async fetchTags(pkg: string, fetch?: Documentation.FetchClient): Promise<string[]> {
@@ -112,6 +178,7 @@ export namespace Documentation {
     export const defaultFetch = fetch;
 
     export type FetchClient = typeof fetch;
+    export type DocNodeElement = ClassPropertyDef|ClassMethodDef|InterfacePropertyDef|InterfaceMethodDef|DocNode|EnumMemberDef;
 
     export interface Options {
         package: string;
