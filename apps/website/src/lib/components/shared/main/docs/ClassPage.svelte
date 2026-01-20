@@ -6,9 +6,9 @@
     import { proseClasses } from '$lib/helpers/constants';
     import Markdown from '../utils/Markdown.svelte';
     import ParamsTable from '../utils/ParamsTable.svelte';
-    import { HumanizedParams } from '../../../../helpers/classes/humanized/HumanizedParams';
+    import { HumanizedParams } from '$lib/helpers/classes/humanized/HumanizedParams';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
-    import { documentationState } from '../../../../helpers/contexts';
+    import { documentationState } from '$lib/helpers/contexts';
     import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
 
     let {

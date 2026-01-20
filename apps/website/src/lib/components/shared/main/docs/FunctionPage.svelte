@@ -1,12 +1,12 @@
 <script lang="ts">
     import type { DocNodeFunction } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
-    import { proseClasses } from '../../../../helpers/constants';
+    import { proseClasses } from '$lib/helpers/constants';
     import ParamsTable from '../utils/ParamsTable.svelte';
-    import { documentationState } from '../../../../helpers/contexts';
+    import { documentationState } from '$lib/helpers/contexts';
     import DocAccordion from '../utils/DocAccordion.svelte';
     import { ParenthesesIcon } from '@lucide/svelte';
-    import { HumanizedTypeDef } from '../../../../helpers/classes/humanized/HumanizedTypeDef';
+    import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
     import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
 

@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends any">
     import type { Snippet } from 'svelte';
-    import { Select, SelectContent, SelectItem, SelectTrigger } from '../../../ui/select';
+    import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 
     let {
         data,
