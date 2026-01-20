@@ -56,7 +56,9 @@
                     contentClass="border-b-0"
                 >
                     {#each methods as method}
-                        <a href={`#${docState.documentation.getElementSlug(method)}`} class="block">{method.name}</a>
+                        <a href={`#${docState.documentation.getElementSlug(method)}`} class="block text-primary text-base py-1 w-fit">
+                            {method.name}{method.optional ? '?' : ''}
+                        </a>
                     {/each}
                 </DocAccordion>
             {/if}
@@ -66,7 +68,9 @@
                     contentClass="border-b-0"
                 >
                     {#each properties as property}
-                        <a href={`#${docState.documentation.getElementSlug(property)}`} class="block">{property.name}</a>
+                        <a href={`#${docState.documentation.getElementSlug(property)}`} class="block text-primary text-base py-1 w-fit">
+                            {property.name}{property.optional ? '?' : ''}
+                        </a>
                     {/each}
                 </DocAccordion>
             {/if}
