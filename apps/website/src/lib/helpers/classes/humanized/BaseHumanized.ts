@@ -12,13 +12,7 @@ export abstract class BaseHumanized {
     public abstract humanize(...args: any): this;
 
     public toString(): string {
-        return this.tokens
-            .map(t => typeof t === 'string'
-                ? t
-                : t instanceof BaseHumanized
-                    ? t.toString()
-                    : t.value
-            ).join('');
+        return BaseHumanized.stringifyTokens(this.tokens);
     }
 
     protected getTypeLink(type: string|DocNode, withProp?: boolean): string|undefined {
@@ -66,5 +60,15 @@ export namespace BaseHumanized {
     export interface Token {
         value: string;
         href?: string;
+    }
+
+    export function stringifyTokens(tokens: AnyToken[]): string {
+        return tokens
+            .map(t => typeof t === 'string'
+                ? t
+                : t instanceof BaseHumanized
+                    ? t.toString()
+                    : t.value
+            ).join('');
     }
 }

@@ -21,38 +21,68 @@ export class HumanizedParams extends BaseHumanized {
         return this;
     }
 
-    public addParamTypes(param: ParamDef): void {
+    public addParamTypes(param: ParamDef): this {
         if ('optional' in param && param.optional) this.addToken('?', true);
 
         if (param.tsType) {
             this.addToken(':', true);
             this.addToken(new HumanizedTypeDef(this).humanize(param.tsType));
         }
+
+        return this;
     }
 
-    public humanizeParam(param: ParamDef, removeLeadingSpace = false): void {
+    public humanizeParam(param: ParamDef, removeLeadingSpace = false, removeTypes = false): this {
         switch (param.kind) {
             case 'identifier':
                 this.addToken(param.name, removeLeadingSpace);
-                this.addParamTypes(param);
+
+                if (!removeTypes) {
+                    this.addParamTypes(param);
+                }
                 break;
             case 'object':
                 this.humanizeParamObject(param, removeLeadingSpace);
+
+                if (!removeTypes) {
+                    this.addParamTypes(param);
+                }
                 break;
             case 'array':
                 this.humanizeParamArray(param, removeLeadingSpace);
+
+                if (!removeTypes) {
+                    this.addParamTypes(param);
+                }
                 break;
             case 'assign':
-                this.humanizeParam(param.left, removeLeadingSpace);
-                this.addParamTypes(param);
-                this.addToken('=');
-                this.addToken(this.normalizeBracketedName(param.right));
+                this.humanizeParam(param.left, removeLeadingSpace, removeTypes);
+
+                if (!removeTypes) {
+                    this.addParamTypes(param);
+                }
+
+                const assignedValue = this.normalizeBracketedName(param.right);
+
+                if (assignedValue) {
+                    this.addToken('=');
+                    this.addToken(assignedValue === 'UNSUPPORTED' ? '{}' : assignedValue);
+                }
                 break;
             case 'rest':
+                this.addToken('...');
+                this.humanizeParam(param.arg, removeLeadingSpace, removeTypes);
+
+                if (!removeTypes) {
+                    this.addParamTypes(param);
+                }
+                break;
         }
+
+        return this;
     }
 
-    public humanizeParamObject(param: ParamObjectDef, removeLeadingSpace = false): void {
+    public humanizeParamObject(param: ParamObjectDef, removeLeadingSpace = false): this {
         this.addToken('{', removeLeadingSpace);
 
         for (const j in param.props) {
@@ -61,8 +91,11 @@ export class HumanizedParams extends BaseHumanized {
             switch (prop.kind) {
                 case 'assign':
                     this.addToken(prop.key);
-                    this.addToken('=', true);
-                    this.addToken(prop.value ?? 'unknown');
+
+                    if (prop.value) {
+                        this.addToken('=');
+                        this.addToken(prop.value ?? 'unknown');
+                    }
                     break;
                 case 'rest':
                     this.addToken('...');
@@ -74,13 +107,17 @@ export class HumanizedParams extends BaseHumanized {
                     this.humanizeParam(prop.value);
                     break;
             }
+
+            if (param.props.length > 1 && Number(j) < param.props.length - 1) {
+                this.addToken([',', ' '], true);
+            }
         }
 
-        this.addToken('}', true);
-        this.addParamTypes(param);
+        this.addToken('}');
+        return this;
     }
 
-    public humanizeParamArray(param: ParamArrayDef, removeLeadingSpace: boolean = false): void {
+    public humanizeParamArray(param: ParamArrayDef, removeLeadingSpace: boolean = false): this {
         this.addToken('[', removeLeadingSpace);
 
         for (const i in param.elements) {
@@ -98,5 +135,7 @@ export class HumanizedParams extends BaseHumanized {
         }
 
         this.addToken(']', true);
+
+        return this;
     }
 }

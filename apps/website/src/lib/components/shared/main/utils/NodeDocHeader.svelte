@@ -2,12 +2,12 @@
     import type { DocNode } from '@deno/doc';
     import { DocTypeIcons, proseClasses } from '$lib/helpers/constants';
     import { DocType } from '$lib/helpers/types';
-    import HumanizedTokens from './HumanizedTokens.svelte';
     import { HumanizedNode } from '$lib/helpers/classes/humanized/HumanizedNode';
     import { documentationState } from '$lib/helpers/contexts';
     import DocAccordion from './DocAccordion.svelte';
     import { TextAlignStartIcon } from '@lucide/svelte';
     import Markdown from './Markdown.svelte';
+    import TokensCodeBlock from './TokensCodeBlock.svelte';
 
     let {
         node
@@ -28,7 +28,7 @@
             <h1 class="text-2xl font-bold truncate">{node.name}</h1>
         </div>
     </div>
-    <pre class="text-sm border border-foreground/15 rounded px-4 py-2 whitespace-normal" style="word-wrap: break-word;"><code><HumanizedTokens tokens={new HumanizedNode(docState).humanize(node).tokens}/></code></pre>
+    <TokensCodeBlock tokens={new HumanizedNode(docState).humanize(node).tokens}/>
     <DocAccordion
         open
         title="Summary"
