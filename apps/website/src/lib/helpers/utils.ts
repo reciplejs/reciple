@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { slug } from 'github-slugger';
 import { createHighlighter } from 'shiki';
 import { twMerge } from "tailwind-merge";
+import type { SidebarData } from './types';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -54,3 +55,7 @@ export const highlighter = await createHighlighter({
         "css"
     ]
 });
+
+export function filterDuplicateSidebarGroupCategoryItem(items: SidebarData.GroupCategoryItem[]): SidebarData.GroupCategoryItem[] {
+    return items.filter((item, index) => items.findIndex(i => i.href === item.href) === index);
+}

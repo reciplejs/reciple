@@ -1,7 +1,7 @@
 export class Test {
-    method(test: number): void
-    method(test: string): void
-    method(test: string|number) {
+    constructor(test: number)
+    constructor(test: string)
+    constructor(test: string|number) {
         console.log(test)
     }
 }

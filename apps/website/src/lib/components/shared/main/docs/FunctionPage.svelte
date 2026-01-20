@@ -8,35 +8,40 @@
     import { ParenthesesIcon } from '@lucide/svelte';
     import { HumanizedTypeDef } from '../../../../helpers/classes/humanized/HumanizedTypeDef';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
+    import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
 
     let {
-        node
+        nodes
     }: {
-        node: DocNodeFunction;
+        nodes: DocNodeFunction[];
     } = $props();
 
     const docState = documentationState.get();
 </script>
 
-<NodeDocHeader {node}/>
+<OverloadSwitcher data={nodes}>
+    {#snippet children({ item })}
+        <NodeDocHeader node={item}/>
 
-<section class="mt-2">
-    {#if node.functionDef.params.length > 0}
-        <DocAccordion
-            icon={ParenthesesIcon}
-            title="Parameters"
-        >
-            <div class={proseClasses}>
-                <ParamsTable params={node.functionDef.params} class="mt-5"/>
-                {#if node.functionDef.returnType}
-                    <div>
-                        <p class="text-muted-foreground text-sm mt-2!">
-                            <b>Returns:</b>
-                            <TokensCodeBlock class="inline-block p-0 border-0" tokens={new HumanizedTypeDef(docState).humanize(node.functionDef.returnType).tokens}/>
-                        </p>
+        <section class="mt-2">
+            {#if item.functionDef.params.length > 0}
+                <DocAccordion
+                    icon={ParenthesesIcon}
+                    title="Parameters"
+                >
+                    <div class={proseClasses}>
+                        <ParamsTable params={item.functionDef.params} class="mt-5"/>
+                        {#if item.functionDef.returnType}
+                            <div>
+                                <p class="text-muted-foreground text-sm mt-2!">
+                                    <b>Returns:</b>
+                                    <TokensCodeBlock class="inline-block p-0 border-0" tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}/>
+                                </p>
+                            </div>
+                        {/if}
                     </div>
-                {/if}
-            </div>
-        </DocAccordion>
-    {/if}
-</section>
+                </DocAccordion>
+            {/if}
+        </section>
+    {/snippet}
+</OverloadSwitcher>

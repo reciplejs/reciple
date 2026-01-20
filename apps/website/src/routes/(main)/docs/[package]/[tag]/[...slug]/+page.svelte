@@ -3,7 +3,6 @@
     import { documentationState, pageMetadata, searchDialogState } from '$lib/helpers/contexts.js';
     import { page } from '$app/state';
     import { MetaTags } from 'svelte-meta-tags';
-    import type { DocNodeKind } from '@deno/doc';
     import ClassPage from '$lib/components/shared/main/docs/ClassPage.svelte';
     import NamespacePage from '$lib/components/shared/main/docs/NamespacePage.svelte';
     import EnumPage from '$lib/components/shared/main/docs/EnumPage.svelte';
@@ -47,10 +46,7 @@
         <Markdown content={data.documentation.readme}/>
     </article>
 {:else}
-    {@const type = page.params.slug.split('/')[0] as DocNodeKind}
-    {@const name = page.params.slug.split('/')[1]}
-    {@const node = documentation.data.find(node => node.kind === type && node.name === name)}
-
+    {@const node = data.nodes?.[0]}
     <div class="size-full p-4">
         {#if node?.kind === 'class'}
             <ClassPage {node}/>
@@ -61,7 +57,7 @@
         {:else if node?.kind === 'interface'}
             <InterfacePage {node}/>
         {:else if node?.kind === 'function'}
-            <FunctionPage {node}/>
+            <FunctionPage nodes={data.nodes!.filter(n => n.kind === 'function')}/>
         {:else if node?.kind === 'typeAlias'}
             <TypeAliasPage {node}/>
         {:else if node?.kind === 'variable'}

@@ -26,12 +26,12 @@ export async function load(data) {
         tag
     }).fetch(data.fetch).catch(() => null);
 
-    const node = documentation?.data.find(n => n.kind === type && n.name === name);
+    const nodes = documentation?.data.filter(n => n.kind === type && n.name === name);
 
-    if (!documentation || !node && type !== 'home') error(404, 'Not found');
+    if (!documentation || !nodes?.length && type !== 'home') error(404, 'Not found');
 
     const metadata: MarkdownMetadata = {
-        title: node ? node.name : `${pkg}@${tag}`,
+        title: nodes?.length ? nodes[0].name : `${pkg}@${tag}`,
         description: markdownToTxt(documentation.readme)
     };
 
@@ -42,6 +42,7 @@ export async function load(data) {
         name: name || null,
         documentation,
         metadata,
+        nodes,
         sidebarData: {
             header: {
                 title: `${pkg}@${tag}`,
