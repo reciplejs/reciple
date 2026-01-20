@@ -30,7 +30,6 @@
     </div>
     <TokensCodeBlock tokens={new HumanizedNode(docState).humanize(node).tokens}/>
     <DocAccordion
-        open
         title="Summary"
         icon={TextAlignStartIcon}
         class="mt-4"

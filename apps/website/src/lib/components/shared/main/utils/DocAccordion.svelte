@@ -4,24 +4,27 @@
     import { buttonVariants } from '$lib/components/ui/button';
     import type { Component, ComponentType, Snippet } from 'svelte';
     import type { ClassValue } from 'svelte/elements';
+    import { cn } from '$lib/helpers/utils';
 
     let {
-        open = $bindable(false),
+        open = $bindable(true),
         children,
         icon,
         title,
         class: className,
+        contentClass,
     }: {
         open?: boolean;
         children?: Snippet;
         icon?: typeof Icon|ComponentType|Component;
         title?: Snippet|string;
         class?: ClassValue;
+        contentClass?: ClassValue;
     } = $props();
 </script>
 
 <Accordion
-    class={[className, '@container/accordion']}
+    class={cn([className, '@container/accordion'])}
     type="single"
     bind:value={
         () => open ? 'item' : '',
@@ -50,7 +53,7 @@
                 </span>
             </span>
         </AccordionTrigger>
-        <AccordionContent class="border-b border-border/60 py-3 px-4 @lg/accordion:pl-10">
+        <AccordionContent class={cn(["border-b border-border/60 py-3 px-4 @lg/accordion:pl-10"], contentClass)}>
             {@render children?.()}
         </AccordionContent>
     </AccordionItem>
