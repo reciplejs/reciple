@@ -4,21 +4,25 @@
     import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
     import { documentationState } from '$lib/helpers/contexts';
     import TokensCodeBlock from './TokensCodeBlock.svelte';
+    import type { ClassValue } from 'svelte/elements';
+    import { cn } from '$lib/helpers/utils';
 
     let {
         params,
-        jsDoc
+        jsDoc,
+        class: className
     }: {
         params: ParamDef[];
         jsDoc?: JsDoc;
+        class?: ClassValue;
     } = $props();
 
     let docState = documentationState.get();
     let hasDescription = $derived(!!jsDoc?.tags?.some(t => t.kind === 'param' && !!t.doc));
 </script>
 
-<div class="w-full overflow-auto">
-    <table class="w-full font-mono table!">
+<div class={cn(["w-full overflow-auto", className])}>
+    <table class="w-full font-mono my-0! table!">
         <thead class="">
             <tr>
                 <th>Param</th>

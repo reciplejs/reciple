@@ -9,6 +9,7 @@
     import { HumanizedParams } from '../../../../helpers/classes/humanized/HumanizedParams';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
     import { documentationState } from '../../../../helpers/contexts';
+    import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
 
     let {
         node
@@ -28,16 +29,18 @@
             icon={BoxIcon}
             title="Constructor"
         >
-            {#each node.classDef.constructors as constructor}
-                <div class={proseClasses}>
-                    <Markdown content={constructor.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
-                    {#if constructor.params.length > 0}
-                        {@const humanized = new HumanizedParams(docState).humanize(constructor.params)}
-                        <TokensCodeBlock tokens={humanized.tokens}/>
-                        <ParamsTable params={constructor.params}/>
-                    {/if}
-                </div>
-            {/each}
+            <OverloadSwitcher data={node.classDef.constructors}>
+                {#snippet children({ item })}
+                    <div class={proseClasses}>
+                        <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
+                        {#if item.params.length > 0}
+                            {@const humanized = new HumanizedParams(docState).humanize(item.params)}
+                            <TokensCodeBlock tokens={humanized.tokens}/>
+                            <ParamsTable params={item.params} class="mt-5"/>
+                        {/if}
+                    </div>
+                {/snippet}
+            </OverloadSwitcher>
         </DocAccordion>
     {/if}
 </section>
