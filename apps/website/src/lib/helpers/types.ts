@@ -67,6 +67,7 @@ export namespace SidebarData {
         metadata?: MarkdownMetadata;
         href: string;
         external?: boolean;
+        deprecated?: boolean;
         icon?: typeof Icon|ComponentType;
     }
 }

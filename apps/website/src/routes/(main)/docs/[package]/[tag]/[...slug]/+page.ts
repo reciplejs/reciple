@@ -94,6 +94,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Class],
                                 links: documentation.classes.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             },
@@ -101,6 +102,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Namespace],
                                 links: documentation.namespaces.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             },
@@ -108,6 +110,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Function],
                                 links: documentation.functions.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             },
@@ -115,6 +118,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Variable],
                                 links: documentation.variables.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             },
@@ -122,6 +126,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Enum],
                                 links: documentation.enums.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             },
@@ -129,6 +134,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.Interface],
                                 links: documentation.interfaces.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             },
@@ -136,6 +142,7 @@ export async function load(data) {
                                 icon: DocTypeIcons[DocType.TypeAlias],
                                 links: documentation.types.map(n => ({
                                     label: n.name,
+                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
                                     href: documentation.resolveNodeLink(n)
                                 }))
                             }

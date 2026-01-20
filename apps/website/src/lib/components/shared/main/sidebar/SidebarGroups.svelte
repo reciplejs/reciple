@@ -49,9 +49,11 @@
                                                         href={item.href}
                                                         target={item.external ? '_blank' : undefined}
                                                         class={[
-                                                            isActive && "text-primary! font-medium bg-primary/15! dark:bg-primary/15! dark:text-primary!"
+                                                            isActive && "text-primary! font-medium bg-primary/15! dark:bg-primary/15! dark:text-primary!",
+                                                            item.deprecated && "line-through opacity-50"
                                                         ]}
                                                         style="content-visibility: auto;"
+                                                        title={item.deprecated ? `(Deprecated) ${item.label}` : item.label}
                                                     >
                                                         {#if item.icon}
                                                             <item.icon/>

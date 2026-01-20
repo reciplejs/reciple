@@ -1,5 +1,5 @@
 import { resolve } from '$app/paths';
-import type { DocNode, DocNodeKind } from '@deno/doc';
+import type { DocNode, DocNodeKind, JsDoc, JsDocTagDoc, JsDocTagDocRequired, JsDocTagKind, JsDocTagNamed, JsDocTagNamedTyped, JsDocTagOnly, JsDocTagParam, JsDocTagReturn, JsDocTagTags, JsDocTagTyped, JsDocTagUnsupported, JsDocTagValued } from '@deno/doc';
 import path from 'pathe';
 
 export class Documentation {
@@ -83,6 +83,10 @@ export class Documentation {
         });
     }
 
+    public getJsdocTag<T extends JsDocTagKind>(type: { jsDoc?: JsDoc }, tag: T): Documentation.JsDocTagFromKind<T>|null {
+        return type.jsDoc?.tags?.find((t): t is Documentation.JsDocTagFromKind<T> => t.kind === tag) ?? null;
+    }
+
     public static async fetchTags(pkg: string, fetch?: Documentation.FetchClient): Promise<string[]> {
         const { files } = await this.fetchFiles(false, fetch);
 
@@ -136,4 +140,30 @@ export namespace Documentation {
         readme?: string;
         nodes: DocNode[];
     }
+
+    // WTF
+    export type JsDocTagFromKind<K extends JsDocTagKind> =
+        K extends "constructor"|"ignore"|"module"|"public"|"private"|"protected"|"readonly"
+            ? JsDocTagOnly
+            : K extends "deprecated"
+                ? JsDocTagDoc
+                : K extends "category"|"example"|"see"
+                    ? JsDocTagDocRequired
+                    : K extends "callback"|"template"
+                        ? JsDocTagNamed
+                        : K extends "default"
+                            ? JsDocTagValued
+                            : K extends "enum"|"extends"|"this"|"type"
+                                ? JsDocTagTyped
+                                : K extends "property"|"typedef"
+                                    ? JsDocTagNamedTyped
+                                    : K extends "param"
+                                        ? JsDocTagParam
+                                        : K extends "return"
+                                            ? JsDocTagReturn
+                                            : K extends "tags"
+                                                ? JsDocTagTags
+                                                : K extends "unsupported"
+                                                    ? JsDocTagUnsupported
+                                                    : never;
 }
