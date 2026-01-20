@@ -23,7 +23,7 @@
 
 <NodeDocHeader {node}/>
 
-<section class="mt-2">
+<section class="mt-2 grid gap-2">
     {#if node.classDef.constructors.length > 0}
         <DocAccordion
             icon={BoxIcon}

@@ -9,4 +9,6 @@
     } = $props();
 </script>
 
-<NodeDocHeader {node}/>
+<section class="mt-2 grid gap-2">
+    <NodeDocHeader {node}/>
+</section>

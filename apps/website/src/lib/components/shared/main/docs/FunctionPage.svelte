@@ -23,7 +23,7 @@
     {#snippet children({ item })}
         <NodeDocHeader node={item}/>
 
-        <section class="mt-2">
+        <section class="mt-2 grid gap-2">
             {#if item.functionDef.params.length > 0}
                 <DocAccordion
                     icon={ParenthesesIcon}
