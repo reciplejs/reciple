@@ -13,6 +13,7 @@
         title,
         class: className,
         contentClass,
+        triggerClass
     }: {
         open?: boolean;
         children?: Snippet;
@@ -20,6 +21,7 @@
         title?: Snippet|string;
         class?: ClassValue;
         contentClass?: ClassValue;
+        triggerClass?: ClassValue;
     } = $props();
 </script>
 
@@ -34,7 +36,7 @@
     <AccordionItem value="item">
         <AccordionTrigger
             class={buttonVariants({
-                class: "justify-between no-underline!",
+                class: cn("justify-between no-underline!", triggerClass),
                 variant: "secondary",
                 size: "lg"
             })}
