@@ -49,8 +49,9 @@
                                                         href={item.href}
                                                         target={item.external ? '_blank' : undefined}
                                                         class={[
-                                                            isActive && "text-primary! font-medium bg-primary/15! dark:bg-primary/15! dark:text-primary!",
+                                                            isActive && "text-primary! font-medium bg-primary/15! dark:bg-primary/15! dark:text-primary!"
                                                         ]}
+                                                        style="content-visibility: auto;"
                                                     >
                                                         {#if item.icon}
                                                             <item.icon/>

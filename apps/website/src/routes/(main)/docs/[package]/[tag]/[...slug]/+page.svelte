@@ -2,7 +2,6 @@
     import { onMount } from 'svelte';
     import { documentationState, pageMetadata, searchDialogState } from '$lib/helpers/contexts.js';
     import { page } from '$app/state';
-    import MarkdownPage from '$lib/components/shared/main/docs/MarkdownPage.svelte';
     import { MetaTags } from 'svelte-meta-tags';
     import type { DocNodeKind } from '@deno/doc';
     import ClassPage from '$lib/components/shared/main/docs/ClassPage.svelte';
@@ -12,6 +11,8 @@
     import FunctionPage from '$lib/components/shared/main/docs/FunctionPage.svelte';
     import TypeAliasPage from '$lib/components/shared/main/docs/TypeAliasPage.svelte';
     import VariablePage from '$lib/components/shared/main/docs/VariablePage.svelte';
+    import { proseClasses } from '$lib/helpers/constants';
+    import Markdown from '$lib/components/shared/main/utils/Markdown.svelte';
 
     let { data } = $props();
 
@@ -42,7 +43,9 @@
 />
 
 {#if !page.params.slug || page.params.slug === 'home/readme'}
-    <MarkdownPage content={documentation.readme}/>
+    <article class={[proseClasses, 'p-4']}>
+        <Markdown content={data.documentation.readme}/>
+    </article>
 {:else}
     {@const type = page.params.slug.split('/')[0] as DocNodeKind}
     {@const name = page.params.slug.split('/')[1]}

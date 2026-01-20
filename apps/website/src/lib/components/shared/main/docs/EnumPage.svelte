@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { DocNodeEnum } from '@deno/doc';
-    import DocNodeTitle from '../utils/DocNodeTitle.svelte';
+    import NodeDocHeader from '../utils/NodeDocHeader.svelte';
 
     let {
         node
@@ -9,4 +9,4 @@
     } = $props();
 </script>
 
-<DocNodeTitle {node}/>
+<NodeDocHeader {node}/>
