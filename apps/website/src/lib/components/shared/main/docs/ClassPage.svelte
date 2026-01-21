@@ -109,7 +109,9 @@
                                             </p>
                                         </div>
                                     {/if}
-                                    {@render selectMenu({ class: 'pb-5' })}
+                                    {#if overloads.length > 1}
+                                        {@render selectMenu({ class: 'pb-5' })}
+                                    {/if}
                                 </div>
                             {/snippet}
                         </OverloadSwitcher>
