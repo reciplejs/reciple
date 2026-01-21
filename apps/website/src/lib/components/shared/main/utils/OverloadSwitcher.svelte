@@ -1,6 +1,8 @@
 <script lang="ts" generics="T extends any">
     import type { Snippet } from 'svelte';
     import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+    import { cn } from '$lib/helpers/utils';
+    import type { HTMLAttributes } from 'svelte/elements';
 
     let {
         data,
@@ -10,15 +12,15 @@
     }: {
         data: T[];
         children: Snippet<[{ index: number; item: T; }]>;
-        select?: Snippet<[{ values: T[]; selectMenu: Snippet; }]>;
+        select?: Snippet<[{ values: T[]; selectMenu: Snippet<[HTMLAttributes<HTMLDivElement>]>; }]>;
         index?: number;
     } = $props();
 
     let item = $derived(data[index]);
 </script>
 
-{#snippet SelectMenu()}
-    <div class="mt-2">
+{#snippet SelectMenu({ class: className }: HTMLAttributes<HTMLDivElement> = {})}
+    <div class={cn("mt-2", className)}>
         <Select
             type="single"
             bind:value={
@@ -40,7 +42,7 @@
     </div>
 {/snippet}
 
-{@render children({ index, item,  })}
+{@render children({ index, item })}
 
 {#if data.length > 1}
     {#if select}
