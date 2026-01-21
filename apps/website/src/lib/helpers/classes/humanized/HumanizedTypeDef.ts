@@ -127,11 +127,19 @@ export class HumanizedTypeDef extends BaseHumanized {
                     this.addToken(new HumanizedTypeDef(this).humanize(type.fnOrConstructor.tsType));
                 }
                 break;
+            case 'typePredicate':
+                if (type.typePredicate.asserts) {
+                    this.addToken('asserts');
+                }
+
+                this.addToken(type.typePredicate.param.type === 'identifier' ? type.typePredicate.param.name ?? 'this' : 'this');
+                this.addToken('is');
+                this.addToken(type.typePredicate.type ? new HumanizedTypeDef(this).humanize(type.typePredicate.type) : 'unknown');
+                break;
             case 'importType':
             case 'infer':
             case 'indexedAccess':
             case 'mapped':
-            case 'typePredicate':
             default:
                 this.addToken(`$${type.kind}`);
                 break;
