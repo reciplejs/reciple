@@ -4,7 +4,7 @@
     import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '$lib/components/ui/collapsible';
     import { ChevronRightIcon } from '@lucide/svelte';
     import { page } from '$app/state';
-    import { filterDuplicateSidebarGroupCategoryItem } from '$lib/helpers/utils';
+    import { filterArrayDuplicate } from '$lib/helpers/utils';
 
     let {
         data
@@ -25,7 +25,8 @@
         <SidebarGroupContent>
             {#each Object.keys(group.categories) as label (label)}
                 {@const category = group.categories[label]}
-                {#if category.links.length}
+                {@const links = filterArrayDuplicate(category.links, 'href')}
+                {#if links.length}
                     <SidebarMenu>
                         <Collapsible open class="group/collapsible overflow-hidden">
                             {#snippet child({ props })}
@@ -43,7 +44,7 @@
                                     </CollapsibleTrigger>
                                     <CollapsibleContent class="data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0">
                                         <SidebarMenuSub>
-                                            {#each filterDuplicateSidebarGroupCategoryItem(category.links) as item (item.label + item.href)}
+                                            {#each links as item (item.label + item.href)}
                                                 {@const isActive = !!page.params.slug && item.href.endsWith(page.params.slug)}
                                                 <SidebarMenuSubItem>
                                                     <SidebarMenuSubButton

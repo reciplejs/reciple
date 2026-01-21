@@ -1,9 +1,10 @@
 <script lang="ts">
-    import type { DocNodeClass, DocNodeEnum, DocNodeInterface, DocNodeNamespace } from '@deno/doc';
+    import type { ClassMethodDef, ClassPropertyDef, DocNode, DocNodeClass, DocNodeEnum, DocNodeInterface, DocNodeNamespace, EnumMemberDef, InterfaceMethodDef, InterfacePropertyDef } from '@deno/doc';
     import DocAccordion from './DocAccordion.svelte';
     import { BoxIcon, KeyIcon, Layers2Icon, LayoutListIcon, WrenchIcon } from '@lucide/svelte';
     import { Button } from '../../../ui/button';
     import { documentationState } from '../../../../helpers/contexts';
+    import { filterArrayDuplicate } from '../../../../helpers/utils';
 
     let {
         node
@@ -13,33 +14,44 @@
 
     let docState = documentationState.get();
 
-    let methods = $derived(
-        node.kind === 'class'
-            ? node.classDef.methods
-            : node.kind === 'interface'
-                ? node.interfaceDef.methods
-                : []
-        );
+    let methods: (ClassMethodDef|InterfaceMethodDef)[] = $derived(
+        filterArrayDuplicate(
+            node.kind === 'class'
+                ? node.classDef.methods
+                : node.kind === 'interface'
+                    ? node.interfaceDef.methods
+                    : [],
+            'name'
+        )
+    );
 
-    let properties = $derived(
-        node.kind === 'class'
+    let properties: (ClassPropertyDef|InterfacePropertyDef)[] = $derived(
+        filterArrayDuplicate(node.kind === 'class'
             ? node.classDef.properties
             : node.kind === 'interface'
                 ? node.interfaceDef.properties
-                : []
-        );
+                : [],
+            'name'
+        )
+    );
 
-    let elements = $derived(
-        node.kind === 'namespace'
-            ? node.namespaceDef.elements
-            : []
-        );
+    let elements: DocNode[] = $derived(
+        filterArrayDuplicate(
+            node.kind === 'namespace'
+                ? node.namespaceDef.elements
+                : [],
+            'name'
+        )
+    );
 
-    let members = $derived(
-        node.kind === 'enum'
-            ? node.enumDef.members
-            : []
-        );
+    let members: EnumMemberDef[] = $derived(
+        filterArrayDuplicate(
+            node.kind === 'enum'
+                ? node.enumDef.members
+                : [],
+            'name'
+        )
+    );
 
     let lengths = $derived([methods.length, properties.length, elements.length, members.length]);
     let items = $derived(methods.length + properties.length + elements.length + members.length);

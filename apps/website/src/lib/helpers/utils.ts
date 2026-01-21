@@ -2,7 +2,6 @@ import { clsx, type ClassValue } from "clsx";
 import { slug } from 'github-slugger';
 import { createHighlighter } from 'shiki';
 import { twMerge } from "tailwind-merge";
-import type { SidebarData } from './types';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -56,6 +55,13 @@ export const highlighter = await createHighlighter({
     ]
 });
 
-export function filterDuplicateSidebarGroupCategoryItem(items: SidebarData.GroupCategoryItem[]): SidebarData.GroupCategoryItem[] {
-    return items.filter((item, index) => items.findIndex(i => i.href === item.href) === index);
+export function filterArrayDuplicate<T extends any[]>(items: T, key: keyof typeof items[number]|(string & {})): T
+export function filterArrayDuplicate<T extends any[]>(items: T, isNotDuplicate: (data: { item: T[number]; index: number; items: T; }) => boolean): T
+export function filterArrayDuplicate<T extends any[]>(items: T, keyOrFn: ((data: { item: T[number]; index: number; items: T; }) => boolean)|keyof typeof items[number]|(string & {})): T
+export function filterArrayDuplicate<T extends any[]>(items: T, keyOrFn: ((data: { item: T[number]; index: number; items: T; }) => boolean)|keyof typeof items[number]|(string & {})): T {
+    const isNotDuplicate: ((data: { item: T[number]; index: number; items: T; }) => boolean) = typeof keyOrFn !== 'function'
+            ? (data) => data.items.findIndex(item => item[keyOrFn] === data.item[keyOrFn]) === data.index
+            : keyOrFn;
+
+    return items.filter((item, index) => isNotDuplicate({ item, index, items })) as T;
 }
