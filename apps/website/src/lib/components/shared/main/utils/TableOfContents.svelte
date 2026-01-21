@@ -17,7 +17,7 @@
         members?: EnumMemberDef[];
     } = $props();
 
-    let docState = documentationState.get();
+    const docState = documentationState.get();
 
     let lengths = $derived([methods.length, properties.length, elements.length, members.length]);
     let items = $derived(methods.length + properties.length + elements.length + members.length);

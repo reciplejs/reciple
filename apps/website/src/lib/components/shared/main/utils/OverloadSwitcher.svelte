@@ -11,8 +11,8 @@
         index = $bindable(0)
     }: {
         data: T[];
-        children: Snippet<[{ index: number; item: T; }]>;
-        select?: Snippet<[{ values: T[]; selectMenu: Snippet<[HTMLAttributes<HTMLDivElement>]>; }]>;
+        children: Snippet<[{ index: number; item: T; selectMenu: Snippet<[HTMLAttributes<HTMLDivElement>]>; }]>;
+        select?: Snippet<[{ values: T[]; selectMenu: Snippet<[HTMLAttributes<HTMLDivElement>]>; }]>|boolean;
         index?: number;
     } = $props();
 
@@ -42,12 +42,12 @@
     </div>
 {/snippet}
 
-{@render children({ index, item })}
+{@render children({ index, item, selectMenu: SelectMenu })}
 
 {#if data.length > 1}
-    {#if select}
+    {#if typeof select === 'function'}
         {@render select({ values: data, selectMenu: SelectMenu })}
-    {:else}
+    {:else if select}
         {@render SelectMenu()}
     {/if}
 {/if}

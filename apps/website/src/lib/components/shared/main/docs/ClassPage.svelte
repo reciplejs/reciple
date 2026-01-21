@@ -14,7 +14,6 @@
     import { filterArrayDuplicate } from '$lib/helpers/utils';
     import { HumanizedTypeParams } from '$lib/helpers/classes/humanized/HumanizedTypeParams';
     import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
-    import CardFooter from '$lib/components/ui/card/card-footer.svelte';
     import { Badge } from '$lib/components/ui/badge';
     import { Separator } from '$lib/components/ui/separator';
 
@@ -66,7 +65,7 @@
                     {@const overloads = node.classDef.methods.filter(m => m.name === method.name)}
                     <div>
                         <OverloadSwitcher data={overloads}>
-                            {#snippet children({ item })}
+                            {#snippet children({ item, selectMenu })}
                                 {@const slugId = docState.documentation.getElementSlug(item)}
                                 {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(item.functionDef.typeParams)}
                                 {@const humanizedParams = new HumanizedParams(docState).humanize(item.functionDef.params)}
@@ -109,12 +108,8 @@
                                             </p>
                                         </div>
                                     {/if}
+                                    {@render selectMenu({ class: 'pb-5' })}
                                 </div>
-                            {/snippet}
-                            {#snippet select({ selectMenu })}
-                                <CardFooter>
-                                    {@render selectMenu({ class: 'mt-0' })}
-                                </CardFooter>
                             {/snippet}
                         </OverloadSwitcher>
                         {#if index < methods.length - 1}

@@ -16,7 +16,8 @@
         class?: ClassValue;
     } = $props();
 
-    let docState = documentationState.get();
+    const docState = documentationState.get();
+
     let hasDescription = $derived(!!jsDoc?.tags?.some(t => t.kind === 'param' && !!t.doc));
 </script>
 
