@@ -54,54 +54,55 @@
 </section>
 {#if methods.length}
     <section class="mt-2">
-        <h1 class="flex items-center gap-2 font-semibold text-lg px-2 py-4">
-            <BoxIcon/>
-            Methods
-        </h1>
-        <div class="grid gap-5 px-2 mt-3">
-            {#each methods as method, index}
-                {@const overloads = node.classDef.methods.filter(m => m.name === method.name)}
-                <div>
-                    <OverloadSwitcher data={overloads}>
-                        {#snippet children({ item })}
-                            {@const slugId = docState.documentation.getElementSlug(item)}
-                            {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(item.functionDef.typeParams)}
-                            {@const humanizedParams = new HumanizedParams(docState).humanize(item.functionDef.params)}
-                            <div class={proseClasses} id={slugId}>
-                                <h2 class="text-semibold truncate">
-                                    <a href={`#${slugId}`}>{item.name}</a>
-                                </h2>
-                                <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
-                                {#if item.functionDef.typeParams.length || item.functionDef.params.length}
-                                    <TokensCodeBlock
-                                        tokens={[
-                                            ...(item.functionDef.typeParams.length ? humanizedTypeParams.tokens : []),
-                                            ...humanizedParams.tokens
-                                        ]}
-                                    />
-                                {/if}
-                                {#if item.functionDef.params.length}
-                                    <ParamsTable params={item.functionDef.params} class="mt-5"/>
-                                {/if}
-                                {#if item.functionDef.returnType}
-                                    <div>
-                                        <p class="text-muted-foreground text-sm mt-2!">
-                                            <b>Returns:</b>
-                                            <TokensCodeBlock
-                                                class="inline-block p-0 border-0"
-                                                tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}
-                                            />
-                                        </p>
-                                    </div>
-                                {/if}
-                            </div>
-                        {/snippet}
-                    </OverloadSwitcher>
-                    {#if index < overloads.length - 1}
-                        <Separator class="mt-5"/>
-                    {/if}
-                </div>
-            {/each}
-        </div>
+        <DocAccordion
+            icon={BoxIcon}
+            title="Methods"
+        >
+            <div class="grid gap-5">
+                {#each methods as method, index}
+                    {@const overloads = node.classDef.methods.filter(m => m.name === method.name)}
+                    <div>
+                        <OverloadSwitcher data={overloads}>
+                            {#snippet children({ item })}
+                                {@const slugId = docState.documentation.getElementSlug(item)}
+                                {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(item.functionDef.typeParams)}
+                                {@const humanizedParams = new HumanizedParams(docState).humanize(item.functionDef.params)}
+                                <div class={proseClasses} id={slugId}>
+                                    <h2 class="text-semibold truncate">
+                                        <a href={`#${slugId}`}>{item.name}</a>
+                                    </h2>
+                                    <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
+                                    {#if item.functionDef.typeParams.length || item.functionDef.params.length}
+                                        <TokensCodeBlock
+                                            tokens={[
+                                                ...(item.functionDef.typeParams.length ? humanizedTypeParams.tokens : []),
+                                                ...humanizedParams.tokens
+                                            ]}
+                                        />
+                                    {/if}
+                                    {#if item.functionDef.params.length}
+                                        <ParamsTable params={item.functionDef.params} class="mt-5"/>
+                                    {/if}
+                                    {#if item.functionDef.returnType}
+                                        <div>
+                                            <p class="text-muted-foreground text-sm mt-2!">
+                                                <b>Returns:</b>
+                                                <TokensCodeBlock
+                                                    class="inline-block p-0 border-0"
+                                                    tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}
+                                                />
+                                            </p>
+                                        </div>
+                                    {/if}
+                                </div>
+                            {/snippet}
+                        </OverloadSwitcher>
+                        {#if index < overloads.length - 1}
+                            <Separator class="mt-5"/>
+                        {/if}
+                    </div>
+                {/each}
+            </div>
+        </DocAccordion>
     </section>
 {/if}
