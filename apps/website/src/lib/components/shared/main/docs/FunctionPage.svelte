@@ -24,7 +24,7 @@
         <NodeDocHeader node={item}/>
 
         <section class="mt-2 grid gap-2">
-            {#if item.functionDef.params.length > 0}
+            {#if item.functionDef.params.length}
                 <DocAccordion
                     icon={ParenthesesIcon}
                     title="Parameters"
@@ -35,7 +35,10 @@
                             <div>
                                 <p class="text-muted-foreground text-sm mt-2!">
                                     <b>Returns:</b>
-                                    <TokensCodeBlock class="inline-block p-0 border-0" tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}/>
+                                    <TokensCodeBlock
+                                        class="inline-block p-0 border-0"
+                                        tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}
+                                    />
                                 </p>
                             </div>
                         {/if}
