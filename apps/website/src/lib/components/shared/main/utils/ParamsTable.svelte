@@ -21,7 +21,7 @@
     let hasDescription = $derived(!!jsDoc?.tags?.some(t => t.kind === 'param' && !!t.doc));
 </script>
 
-<table class="font-mono w-full overflow-auto not-prose [&_td]:p-2 [&_th]:p-2">
+<table class="font-mono w-full overflow-auto not-prose [&_td]:p-2 [&_th]:p-2 text-sm">
     <thead class="border-b">
         <tr class="[&_th]:text-start">
             <th>Param</th>

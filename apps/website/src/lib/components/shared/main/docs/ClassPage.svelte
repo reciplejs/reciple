@@ -96,7 +96,7 @@
                                         />
                                     {/if}
                                     {#if item.functionDef.params.length}
-                                        <ParamsTable params={item.functionDef.params} class="mt-5"/>
+                                        <ParamsTable jsDoc={item.jsDoc} params={item.functionDef.params} class="mt-5"/>
                                     {/if}
                                     {#if item.functionDef.returnType}
                                         <div>

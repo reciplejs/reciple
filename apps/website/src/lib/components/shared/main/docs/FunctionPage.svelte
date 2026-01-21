@@ -30,7 +30,7 @@
                     title="Parameters"
                 >
                     <div class={proseClasses}>
-                        <ParamsTable params={item.functionDef.params} class="mt-5"/>
+                        <ParamsTable jsDoc={item.jsDoc} params={item.functionDef.params} class="mt-5"/>
                         {#if item.functionDef.returnType}
                             <div>
                                 <p class="text-muted-foreground text-sm mt-2!">
