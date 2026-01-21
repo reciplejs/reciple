@@ -5,18 +5,19 @@
     let {
         data,
         children,
+        select,
         index = $bindable(0)
     }: {
         data: T[];
         children: Snippet<[{ index: number; item: T; }]>;
+        select?: Snippet<[{ values: T[]; selectMenu: Snippet; }]>;
         index?: number;
     } = $props();
 
     let item = $derived(data[index]);
 </script>
 
-{@render children({ index, item })}
-{#if data.length > 1}
+{#snippet SelectMenu()}
     <div class="mt-2">
         <Select
             type="single"
@@ -37,4 +38,14 @@
             </SelectContent>
         </Select>
     </div>
+{/snippet}
+
+{@render children({ index, item,  })}
+
+{#if data.length > 1}
+    {#if select}
+        {@render select({ values: data, selectMenu: SelectMenu })}
+    {:else}
+        {@render SelectMenu()}
+    {/if}
 {/if}

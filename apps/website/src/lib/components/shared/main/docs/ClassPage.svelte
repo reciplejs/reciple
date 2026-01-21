@@ -14,7 +14,8 @@
     import { filterArrayDuplicate } from '../../../../helpers/utils';
     import { HumanizedTypeParams } from '../../../../helpers/classes/humanized/HumanizedTypeParams';
     import { HumanizedTypeDef } from '../../../../helpers/classes/humanized/HumanizedTypeDef';
-    import { Separator } from '../../../ui/separator';
+    import { Card, CardContent, CardHeader, CardTitle } from '../../../ui/card';
+    import CardFooter from '../../../ui/card/card-footer.svelte';
 
     let {
         node
@@ -58,49 +59,55 @@
             icon={BoxIcon}
             title="Methods"
         >
-            <div class="grid gap-5">
-                {#each methods as method, index}
+            <div class="grid gap-2">
+                {#each methods as method}
                     {@const overloads = node.classDef.methods.filter(m => m.name === method.name)}
-                    <div>
-                        <OverloadSwitcher data={overloads}>
-                            {#snippet children({ item })}
-                                {@const slugId = docState.documentation.getElementSlug(item)}
-                                {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(item.functionDef.typeParams)}
-                                {@const humanizedParams = new HumanizedParams(docState).humanize(item.functionDef.params)}
-                                <div class={proseClasses} id={slugId}>
-                                    <h2 class="text-semibold truncate">
-                                        <a href={`#${slugId}`}>{item.name}</a>
-                                    </h2>
-                                    <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
-                                    {#if item.functionDef.typeParams.length || item.functionDef.params.length}
-                                        <TokensCodeBlock
-                                            tokens={[
-                                                ...(item.functionDef.typeParams.length ? humanizedTypeParams.tokens : []),
-                                                ...humanizedParams.tokens
-                                            ]}
-                                        />
-                                    {/if}
-                                    {#if item.functionDef.params.length}
-                                        <ParamsTable params={item.functionDef.params} class="mt-5"/>
-                                    {/if}
-                                    {#if item.functionDef.returnType}
-                                        <div>
-                                            <p class="text-muted-foreground text-sm mt-2!">
-                                                <b>Returns:</b>
-                                                <TokensCodeBlock
-                                                    class="inline-block p-0 border-0"
-                                                    tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}
-                                                />
-                                            </p>
-                                        </div>
-                                    {/if}
-                                </div>
-                            {/snippet}
-                        </OverloadSwitcher>
-                        {#if index < overloads.length - 1}
-                            <Separator class="mt-5"/>
-                        {/if}
-                    </div>
+                    <Card>
+                        <div>
+                            <OverloadSwitcher data={overloads}>
+                                {#snippet children({ item })}
+                                    {@const slugId = docState.documentation.getElementSlug(item)}
+                                    {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(item.functionDef.typeParams)}
+                                    {@const humanizedParams = new HumanizedParams(docState).humanize(item.functionDef.params)}
+                                    <CardHeader id={slugId}>
+                                        <CardTitle class="text-lg text-primary">
+                                            <a href={`#${slugId}`}>{item.name}</a>
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent class={proseClasses}>
+                                        <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
+                                        {#if item.functionDef.typeParams.length || item.functionDef.params.length}
+                                            <TokensCodeBlock
+                                                tokens={[
+                                                    ...(item.functionDef.typeParams.length ? humanizedTypeParams.tokens : []),
+                                                    ...humanizedParams.tokens
+                                                ]}
+                                            />
+                                        {/if}
+                                        {#if item.functionDef.params.length}
+                                            <ParamsTable params={item.functionDef.params} class="mt-5"/>
+                                        {/if}
+                                        {#if item.functionDef.returnType}
+                                            <div>
+                                                <p class="text-muted-foreground text-sm mt-2!">
+                                                    <b>Returns:</b>
+                                                    <TokensCodeBlock
+                                                        class="inline-block p-0 border-0"
+                                                        tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}
+                                                    />
+                                                </p>
+                                            </div>
+                                        {/if}
+                                    </CardContent>
+                                {/snippet}
+                                {#snippet select({ selectMenu })}
+                                    <CardFooter>
+                                        {@render selectMenu()}
+                                    </CardFooter>
+                                {/snippet}
+                            </OverloadSwitcher>
+                        </div>
+                    </Card>
                 {/each}
             </div>
         </DocAccordion>
