@@ -86,15 +86,17 @@
                                 </div>
                                 <div class={proseClasses}>
                                     <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
-                                    {#if item.functionDef.typeParams.length || item.functionDef.params.length}
-                                        <TokensCodeBlock
-                                            tokens={[
-                                                item.name,
-                                                ...(item.functionDef.typeParams.length ? humanizedTypeParams.tokens : []),
-                                                ...humanizedParams.tokens
-                                            ]}
-                                        />
-                                    {/if}
+                                    <TokensCodeBlock
+                                        tokens={[
+                                            item.name,
+                                            ...(item.functionDef.typeParams.length ? humanizedTypeParams.tokens : []),
+                                            ...humanizedParams.tokens,
+                                            ...(item.functionDef.returnType
+                                                ? [':', ' ', ...new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens]
+                                                : []
+                                            )
+                                        ]}
+                                    />
                                     {#if item.functionDef.params.length}
                                         <ParamsTable jsDoc={item.jsDoc} params={item.functionDef.params} class="mt-5"/>
                                     {/if}
