@@ -4,11 +4,12 @@
     import TableOfContents from '../utils/TableOfContents.svelte';
     import DocAccordion from '../utils/DocAccordion.svelte';
     import { KeyIcon } from '@lucide/svelte';
-    import { documentationState } from '../../../../helpers/contexts';
-    import { proseClasses } from '../../../../helpers/constants';
+    import { documentationState } from '$lib/helpers/contexts';
+    import { proseClasses } from '$lib/helpers/constants';
     import Markdown from '../utils/Markdown.svelte';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
-    import { HumanizedTypeDef } from '../../../../helpers/classes/humanized/HumanizedTypeDef';
+    import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
+    import { scrollToWhenActive } from '$lib/helpers/attachments.svelte';
 
     let {
         node
@@ -36,7 +37,7 @@
                 {#each members as member}
                     {@const slugId = docState.documentation.getElementSlug(member)}
                     <div>
-                        <div id={slugId}>
+                        <div id={slugId} {@attach scrollToWhenActive(slugId)}>
                             <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
                                 <a href={`#${slugId}`} class="truncate">{member.name}</a>
                             </h3>

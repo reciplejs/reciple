@@ -16,6 +16,7 @@
     import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
     import { Badge } from '$lib/components/ui/badge';
     import { Separator } from '$lib/components/ui/separator';
+    import { scrollToWhenActive } from '$lib/helpers/attachments.svelte';
 
     let {
         node
@@ -69,7 +70,7 @@
                                 {@const slugId = docState.documentation.getElementSlug(item)}
                                 {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(item.functionDef.typeParams)}
                                 {@const humanizedParams = new HumanizedParams(docState).humanize(item.functionDef.params)}
-                                <div id={slugId}>
+                                <div id={slugId} {@attach scrollToWhenActive(slugId)}>
                                     <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
                                         {#if item.isAbstract}
                                             <Badge>abstract</Badge>
@@ -129,10 +130,10 @@
             contentClass="border-b-0"
         >
             <div class="w-full flex flex-col gap-5">
-                {#each properties as property, index}
+                {#each properties as property}
                     {@const slugId = docState.documentation.getElementSlug(property)}
                     <div>
-                        <div id={slugId}>
+                        <div id={slugId} {@attach scrollToWhenActive(slugId)}>
                             <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
                                 {#if property.isAbstract}
                                     <Badge>abstract</Badge>
