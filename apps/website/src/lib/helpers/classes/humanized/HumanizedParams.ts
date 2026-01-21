@@ -70,7 +70,7 @@ export class HumanizedParams extends BaseHumanized {
                 }
                 break;
             case 'rest':
-                this.addToken('...');
+                this.addToken('...', true);
                 this.humanizeParam(param.arg, removeLeadingSpace, removeTypes);
 
                 if (!removeTypes) {
