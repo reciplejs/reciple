@@ -1,6 +1,7 @@
 import type { TsTypeDef } from '@deno/doc';
 import { BaseHumanized } from './BaseHumanized';
 import { HumanizedTypeParams } from './HumanizedTypeParams';
+import { HumanizedParams } from './HumanizedParams';
 
 export class HumanizedTypeDef extends BaseHumanized {
     public humanize(type: TsTypeDef): this {
@@ -36,7 +37,7 @@ export class HumanizedTypeDef extends BaseHumanized {
                 break;
             case 'array':
                 this.addToken(new HumanizedTypeDef(this).humanize(type.array));
-                this.addToken('[]');
+                this.addToken('[]', true);
                 break;
             case 'tuple':
                 this.addToken('[');
@@ -88,16 +89,50 @@ export class HumanizedTypeDef extends BaseHumanized {
                 this.addToken(')', true);
                 break;
             case 'typeOperator':
+                this.addToken(type.typeOperator.operator);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.typeOperator.tsType));
+                break;
             case 'rest':
+                this.addToken('...');
+                this.addToken(new HumanizedTypeDef(this).humanize(type.rest), true);
+                break;
             case 'optional':
-            case 'typeQuery':
+                this.addToken(new HumanizedTypeDef(this).humanize(type.optional));
+                this.addToken('?', true);
+                break;
             case 'this':
+                this.addToken('this');
+                break;
+            case 'typeQuery':
+                this.addToken(type.typeQuery);
+                break;
             case 'fnOrConstructor':
+                if (type.fnOrConstructor.constructor) {
+                    this.addToken('new');
+                }
+
+                this.addToken([
+                    ...(
+                        type.fnOrConstructor.typeParams.length
+                            ? new HumanizedTypeParams(this).humanize(type.fnOrConstructor.typeParams).tokens
+                            : []
+                    ),
+                    '(',
+                    ...new HumanizedParams(this).humanize(type.fnOrConstructor.params).tokens,
+                    ')'
+                ]);
+
+                if (type.fnOrConstructor.tsType) {
+                    this.addToken('=>');
+                    this.addToken(new HumanizedTypeDef(this).humanize(type.fnOrConstructor.tsType));
+                }
+                break;
             case 'importType':
             case 'infer':
             case 'indexedAccess':
             case 'mapped':
             case 'typePredicate':
+            default:
                 this.addToken(`$${type.kind}`);
                 break;
         }
