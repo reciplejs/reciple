@@ -1,4 +1,4 @@
-<script lang="ts" generics="T extends any">
+<script lang="ts" generics="T">
     import type { Snippet } from 'svelte';
     import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
     import { cn } from '$lib/helpers/utils';

@@ -5,7 +5,6 @@
     "": {
       "name": "@reciple/monorepo",
       "dependencies": {
-        "@jsr/deno__doc": "^0.189.0",
         "@sveltejs/kit": "^2.50.0",
         "svelte": "^5.46.4",
       },
@@ -537,8 +536,6 @@
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
     "@jsr/deno__cache-dir": ["@jsr/deno__cache-dir@0.25.0", "https://npm.jsr.io/~/11/@jsr/deno__cache-dir/0.25.0.tgz", { "dependencies": { "@jsr/deno__graph": "^0.86.0", "@jsr/std__fmt": "^1.0.3", "@jsr/std__fs": "^1.0.6", "@jsr/std__io": "^0.225.0", "@jsr/std__path": "^1.0.8" } }, "sha512-J5/kPR8sc+dsRyE8rnLPhqay7B4XgBmkv7QaeIV41sGibszQjIb8b599LssN1YWBbqPLakPRMVobg5u6LheWfg=="],
-
-    "@jsr/deno__doc": ["@jsr/deno__doc@0.189.0", "https://npm.jsr.io/~/11/@jsr/deno__doc/0.189.0.tgz", { "dependencies": { "@jsr/deno__cache-dir": "^0.25.0", "@jsr/deno__graph": "^0.100" } }, "sha512-3NQqCtAbpkhVuNlQ2hZvVkpNG6oVwEuhluCIWb4iyfGPZ20BOHJ91PiRKTUVFu/lFgLx7WZXtIlfntGz1P6ULQ=="],
 
     "@jsr/deno__graph": ["@jsr/deno__graph@0.100.1", "https://npm.jsr.io/~/11/@jsr/deno__graph/0.100.1.tgz", {}, "sha512-mPemftpdwtz8fo+RNKujjXKpDQRcj5E0nOcxeNiDGLRzqQk/Q69IcGM4ruZGX+0xhTNNSLc8Uu3W4ynIDfTR6g=="],
 
