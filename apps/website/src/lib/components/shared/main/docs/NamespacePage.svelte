@@ -42,11 +42,11 @@
     {#each elements as element}
         {@const slugId = docState.documentation.getElementSlug(element)}
         <DocAccordion
+            open={false}
             icon={DocTypeIcons[element.kind as DocType]}
             title={element.name}
             id={slugId}
         >
-            <NodeDocHeader node={element}/>
             {#if element?.kind === 'class'}
                 <ClassPage tiny node={element}/>
             {:else if element?.kind === 'namespace'}
