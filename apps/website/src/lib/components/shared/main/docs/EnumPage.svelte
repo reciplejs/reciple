@@ -26,11 +26,12 @@
 
 <section class="mt-2 grid gap-2">
     <NodeDocHeader {node}/>
-    <TableOfContents {members}/>
+    <TableOfContents {members} open={!tiny}/>
 </section>
 {#if members.length}
     <section>
         <DocAccordion
+            open={!tiny}
             icon={KeyIcon}
             title="Members"
             contentClass="border-b-0"

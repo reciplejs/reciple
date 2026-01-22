@@ -22,11 +22,12 @@
 
 <section class="mt-2 grid gap-2">
     <NodeDocHeader {node}/>
-    <TableOfContents {methods} {properties}/>
+    <TableOfContents {methods} {properties} open={!tiny}/>
 </section>
 {#if methods.length}
     <section class="mt-2">
         <DocAccordion
+            open={!tiny}
             icon={BoxIcon}
             title="Methods"
             contentClass="border-b-0"
@@ -43,6 +44,7 @@
 {#if properties.length}
     <section class="mt-2">
         <DocAccordion
+            open={!tiny}
             icon={WrenchIcon}
             title="Properties"
             contentClass="border-b-0"

@@ -2,19 +2,21 @@
     import type { ClassMethodDef, ClassPropertyDef, DocNode, EnumMemberDef, InterfaceMethodDef, InterfacePropertyDef } from '@deno/doc';
     import DocAccordion from './DocAccordion.svelte';
     import { BoxIcon, KeyIcon, Layers2Icon, LayoutListIcon, WrenchIcon } from '@lucide/svelte';
-    import { Button } from '../../../ui/button';
-    import { documentationState } from '../../../../helpers/contexts';
+    import { Button } from '$lib/components/ui/button';
+    import { documentationState } from '$lib/helpers/contexts';
 
     let {
         methods = [],
         properties = [],
         elements = [],
-        members = []
+        members = [],
+        open = $bindable(true),
     }: {
         methods?: (ClassMethodDef|InterfaceMethodDef)[];
         properties?: (ClassPropertyDef|InterfacePropertyDef)[];
         elements?: DocNode[];
         members?: EnumMemberDef[];
+        open?: boolean;
     } = $props();
 
     const docState = documentationState.get();
@@ -33,6 +35,7 @@
     <DocAccordion
         icon={LayoutListIcon}
         title="Table of contents"
+        bind:open
     >
         <div class="grid gap-2" class:@2xl:grid-cols-2={lengths.filter((length) => !!length).length > 1}>
             {#if methods.length}

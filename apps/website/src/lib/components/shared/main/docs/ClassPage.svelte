@@ -34,6 +34,7 @@
 <section class="mt-2 grid gap-2">
     {#if node.classDef.constructors.length}
         <DocAccordion
+            open={!tiny}
             icon={BoxIcon}
             title="Constructor"
         >
@@ -44,7 +45,7 @@
                         {#if item.params.length}
                             {@const humanized = new HumanizedParams(docState).humanize(item.params)}
                             <TokensCodeBlock tokens={['constructor', ...humanized.tokens]}/>
-                            <ParamsTable params={item.params} class="mt-5"/>
+                            <ParamsTable jsDoc={item.jsDoc} params={item.params} class="mt-5"/>
                         {/if}
                     </div>
                 {/snippet}
@@ -56,6 +57,7 @@
 {#if methods.length}
     <section class="mt-2">
         <DocAccordion
+            open={!tiny}
             icon={BoxIcon}
             title="Methods"
             contentClass="border-b-0"
@@ -72,6 +74,7 @@
 {#if properties.length}
     <section class="mt-2">
         <DocAccordion
+            open={!tiny}
             icon={WrenchIcon}
             title="Properties"
             contentClass="border-b-0"

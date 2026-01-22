@@ -35,7 +35,7 @@
 
 <section class="mt-2 grid gap-2">
     <NodeDocHeader {node}/>
-    <TableOfContents {elements}/>
+    <TableOfContents {elements} open={!tiny}/>
 </section>
 
 <section class="mt-2 flex flex-col gap-2">
