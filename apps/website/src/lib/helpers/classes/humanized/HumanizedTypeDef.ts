@@ -136,10 +136,48 @@ export class HumanizedTypeDef extends BaseHumanized {
                 this.addToken('is');
                 this.addToken(type.typePredicate.type ? new HumanizedTypeDef(this).humanize(type.typePredicate.type) : 'unknown');
                 break;
-            case 'importType':
-            case 'infer':
             case 'indexedAccess':
+                this.addToken(new HumanizedTypeDef(this).humanize(type.indexedAccess.objType));
+                this.addToken([
+                        '[',
+                        new HumanizedTypeDef(this).humanize(type.indexedAccess.indexType),
+                        ']'
+                    ],
+                    true
+                );
+                break;
+            case 'infer':
+                this.addToken('infer');
+                this.addToken(new HumanizedTypeParams(this).humanize([type.infer.typeParam], true));
+                break;
             case 'mapped':
+                if (type.mappedType.readonly) {
+                    this.addToken(
+                        `${typeof type.mappedType.readonly === 'string' ? type.mappedType.readonly : ''}readonly`
+                    );
+                }
+
+                this.addToken([
+                    '[',
+                    new HumanizedTypeParams(this).humanize([type.mappedType.typeParam], true),
+                    ...(type.mappedType.nameType
+                        ? [
+                            ' ', 'as', ' ',
+                            new HumanizedTypeDef(this).humanize(type.mappedType.nameType)
+                        ]
+                        : []
+                    ),
+                    ']'
+                ]);
+
+                if (type.mappedType.optional) {
+                    this.addToken(
+                        `${typeof type.mappedType.optional === 'string' ? type.mappedType.optional : ''}optional`
+                        , true
+                    );
+                }
+                break;
+            case 'importType':
             default:
                 this.addToken(`$${type.kind}`);
                 break;

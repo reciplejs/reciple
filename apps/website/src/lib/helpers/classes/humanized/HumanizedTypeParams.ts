@@ -3,16 +3,18 @@ import { BaseHumanized } from './BaseHumanized';
 import { HumanizedTypeDef } from './HumanizedTypeDef';
 
 export class HumanizedTypeParams extends BaseHumanized {
-    public humanize(typeParams: (TsTypeParamDef|TsTypeDef)[]): this {
-        this.addToken('<');
+    public humanize(typeParams: (TsTypeParamDef|TsTypeDef)[], withoutAngleBrackets = false): this {
+        if (!withoutAngleBrackets) {
+            this.addToken('<');
+        }
 
         for (const i in typeParams) {
             const param = typeParams[Number(i)];
 
             if ('kind' in param) {
-                this.addToken(new HumanizedTypeDef(this).humanize(param), true);
+                this.addToken(new HumanizedTypeDef(this).humanize(param), !withoutAngleBrackets);
             } else {
-                this.addToken(param.name, true);
+                this.addToken(param.name, !withoutAngleBrackets);
 
                 if (param.constraint) {
                     this.addToken('extends');
@@ -25,7 +27,10 @@ export class HumanizedTypeParams extends BaseHumanized {
             }
         }
 
-        this.addToken('>', true);
+        if (!withoutAngleBrackets) {
+            this.addToken('>', true);
+        }
+
         return this;
     }
 }
