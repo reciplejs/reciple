@@ -2,7 +2,6 @@
     import type { DocNodeInterface } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
     import TableOfContents from '../utils/TableOfContents.svelte';
-    import { documentationState } from '../../../../helpers/contexts';
     import DocAccordion from '../utils/DocAccordion.svelte';
     import { BoxIcon, WrenchIcon } from '@lucide/svelte';
     import { filterArrayDuplicate } from '../../../../helpers/utils';
@@ -14,8 +13,6 @@
     }: {
         node: DocNodeInterface;
     } = $props();
-
-    const docState = documentationState.get();
 
     let methods = $derived(filterArrayDuplicate(node.interfaceDef.methods, 'name'));
     let properties = $derived(filterArrayDuplicate(node.interfaceDef.properties, 'name'));
