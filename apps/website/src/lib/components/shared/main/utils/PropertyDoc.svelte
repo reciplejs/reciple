@@ -51,7 +51,7 @@
             <TokensCodeBlock tokens={new HumanizedTypeDef(docState).humanize(item.tsType).tokens}/>
         {/if}
     </div>
-    {#if addSeparator}
-        <Separator/>
+    {#if addSeparator && !item.tsType}
+        <Separator class="mt-4"/>
     {/if}
 </div>
