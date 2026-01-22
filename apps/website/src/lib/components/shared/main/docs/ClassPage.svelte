@@ -16,9 +16,11 @@
     import PropertyDoc from '../utils/PropertyDoc.svelte';
 
     let {
-        node
+        node,
+        tiny = false
     }: {
         node: DocNodeClass;
+        tiny?: boolean;
     } = $props();
 
     const docState = documentationState.get();

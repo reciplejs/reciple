@@ -34,12 +34,14 @@
     });
 </script>
 
-<MetaTags
-    titleTemplate="reciple | %s"
-    {...data.metadata}
-    openGraph={data.metadata}
-    twitter={data.metadata}
-/>
+<svelte:head>
+    <MetaTags
+        titleTemplate="reciple | %s"
+        {...data.metadata}
+        openGraph={data.metadata}
+        twitter={data.metadata}
+    />
+</svelte:head>
 
 {#if searchState.open !== undefined}
     <SearchDialog

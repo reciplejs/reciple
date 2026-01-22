@@ -3,9 +3,11 @@
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
 
     let {
-        node
+        node,
+        tiny = false
     }: {
         node: DocNodeTypeAlias;
+        tiny?: boolean;
     } = $props();
 </script>
 

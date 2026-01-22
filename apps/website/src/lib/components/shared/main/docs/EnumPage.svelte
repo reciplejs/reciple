@@ -12,9 +12,11 @@
     import { scrollToWhenActive } from '$lib/helpers/attachments.svelte';
 
     let {
-        node
+        node,
+        tiny = false
     }: {
         node: DocNodeEnum;
+        tiny?: boolean;
     } = $props();
 
     const docState = documentationState.get();

@@ -124,12 +124,7 @@ export class Documentation {
         }
 
         if ('kind' in element) {
-            switch (element.kind) {
-                case 'method':
-                case 'getter':
-                case 'setter':
-                    result += `${element.kind}`;
-            }
+            result += `${element.kind}`;
         }
 
         return `${result ? result + ':' : ''}${slug(element.name, true)}`;

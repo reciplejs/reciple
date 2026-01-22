@@ -4,14 +4,16 @@
     import TableOfContents from '../utils/TableOfContents.svelte';
     import DocAccordion from '../utils/DocAccordion.svelte';
     import { BoxIcon, WrenchIcon } from '@lucide/svelte';
-    import { filterArrayDuplicate } from '../../../../helpers/utils';
+    import { filterArrayDuplicate } from '$lib/helpers/utils';
     import MethodDoc from '../utils/MethodDoc.svelte';
     import PropertyDoc from '../utils/PropertyDoc.svelte';
 
     let {
-        node
+        node,
+        tiny = false
     }: {
         node: DocNodeInterface;
+        tiny?: boolean;
     } = $props();
 
     let methods = $derived(filterArrayDuplicate(node.interfaceDef.methods, 'name'));

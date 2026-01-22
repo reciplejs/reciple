@@ -11,9 +11,11 @@
     import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
 
     let {
-        nodes
+        nodes,
+        tiny = false
     }: {
         nodes: DocNodeFunction[];
+        tiny?: boolean;
     } = $props();
 
     const docState = documentationState.get();

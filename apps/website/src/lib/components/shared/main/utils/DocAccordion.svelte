@@ -13,7 +13,8 @@
         title,
         class: className,
         contentClass,
-        triggerClass
+        triggerClass,
+        id
     }: {
         open?: boolean;
         children?: Snippet;
@@ -22,10 +23,12 @@
         class?: ClassValue;
         contentClass?: ClassValue;
         triggerClass?: ClassValue;
+        id?: string;
     } = $props();
 </script>
 
 <Accordion
+    {id}
     class={cn([className, '@container/accordion'])}
     type="single"
     bind:value={

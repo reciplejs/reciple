@@ -12,11 +12,13 @@
     };
 </script>
 
-<MetaTags
-    {...metatags}
-    openGraph={metatags}
-    twitter={metatags}
-/>
+<svelte:head>
+    <MetaTags
+        {...metatags}
+        openGraph={metatags}
+        twitter={metatags}
+    />
+</svelte:head>
 
 <h1 class="text-2xl sm:text-3xl font-bold text-center">Choose a package</h1>
 <div class="grid gap-2">

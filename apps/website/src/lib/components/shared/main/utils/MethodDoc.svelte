@@ -54,6 +54,9 @@
                     {#if isClassMethodDef(item) && item.isStatic}
                         <Badge>static</Badge>
                     {/if}
+                    {#if isClassMethodDef(item) && item.kind !== 'method'}
+                        <Badge>{item.kind.substring(0, 3)}</Badge>
+                    {/if}
                     {#if isClassMethodDef(item) && item.functionDef.isAsync}
                         <Badge>async</Badge>
                     {/if}

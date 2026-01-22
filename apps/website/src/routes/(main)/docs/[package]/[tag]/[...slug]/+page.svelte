@@ -34,12 +34,14 @@
     documentationState.set(docState);
 </script>
 
-<MetaTags
-    titleTemplate="reciple | %s"
-    {...data.metadata}
-    openGraph={data.metadata}
-    twitter={data.metadata}
-/>
+<svelte:head>
+    <MetaTags
+        titleTemplate="reciple | %s"
+        {...data.metadata}
+        openGraph={data.metadata}
+        twitter={data.metadata}
+    />
+</svelte:head>
 
 {#if !page.params.slug || page.params.slug === 'home/readme'}
     <article class={[proseClasses, 'p-4']}>
