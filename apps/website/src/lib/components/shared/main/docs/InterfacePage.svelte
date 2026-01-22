@@ -21,7 +21,7 @@
 </script>
 
 <section class="mt-2 grid gap-2">
-    <NodeDocHeader {node}/>
+    <NodeDocHeader {node} removeIcon={tiny}/>
     <TableOfContents {methods} {properties} open={!tiny}/>
 </section>
 {#if methods.length}

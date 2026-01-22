@@ -10,9 +10,11 @@
     import TokensCodeBlock from './TokensCodeBlock.svelte';
 
     let {
-        node
+        node,
+        removeIcon = false
     }: {
         node: DocNode;
+        removeIcon?: boolean;
     } = $props();
 
     const docState = documentationState.get();
@@ -22,9 +24,11 @@
 
 <section class="grid">
     <div class="grid mb-4">
-        <span class="ml-8 text-sm font-normal text-muted-foreground">{node.kind}</span>
+        <span class:ml-8={!removeIcon} class="text-sm font-normal text-muted-foreground">{node.kind}</span>
         <div class="flex gap-2 items-center overflow-hidden">
-            <Icon class="shrink-0"/>
+            {#if !removeIcon}
+                <Icon class="shrink-0"/>
+            {/if}
             <h1 class="text-2xl font-bold truncate">{node.name}</h1>
         </div>
     </div>

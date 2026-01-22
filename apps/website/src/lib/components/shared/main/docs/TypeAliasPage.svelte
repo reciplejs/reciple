@@ -12,5 +12,5 @@
 </script>
 
 <section class="mt-2 grid gap-2">
-    <NodeDocHeader {node}/>
+    <NodeDocHeader {node} removeIcon={tiny}/>
 </section>

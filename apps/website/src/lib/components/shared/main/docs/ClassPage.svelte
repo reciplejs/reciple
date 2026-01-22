@@ -29,7 +29,7 @@
     let properties  = $derived(filterArrayDuplicate(node.classDef.properties, 'name'));
 </script>
 
-<NodeDocHeader {node}/>
+<NodeDocHeader {node} removeIcon={tiny}/>
 
 <section class="mt-2 grid gap-2">
     {#if node.classDef.constructors.length}
