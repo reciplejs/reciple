@@ -5,7 +5,6 @@
     import { documentationState } from '$lib/helpers/contexts';
     import { HumanizedTypeParams } from '$lib/helpers/classes/humanized/HumanizedTypeParams';
     import { HumanizedParams } from '$lib/helpers/classes/humanized/HumanizedParams';
-    import { scrollToWhenActive } from '$lib/helpers/attachments.svelte';
     import Badge from '$lib/components/ui/badge/badge.svelte';
     import { proseClasses } from '$lib/helpers/constants';
     import Markdown from './Markdown.svelte';
@@ -43,7 +42,7 @@
             {@const returnType = isClassMethodDef(item) ? item.functionDef.returnType : item.returnType}
             {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(typeParams)}
             {@const humanizedParams = new HumanizedParams(docState).humanize(params)}
-            <div id={slugId} {@attach scrollToWhenActive(slugId)}>
+            <div id={slugId}>
                 <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
                     {#if isClassMethodDef(item) && item.accessibility}
                         <Badge>{item.accessibility}</Badge>

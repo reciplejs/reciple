@@ -9,7 +9,6 @@
     import Markdown from '../utils/Markdown.svelte';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
     import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
-    import { scrollToWhenActive } from '$lib/helpers/attachments.svelte';
 
     let {
         node,
@@ -40,7 +39,7 @@
                 {#each members as member}
                     {@const slugId = docState.documentation.getElementSlug(member)}
                     <div>
-                        <div id={slugId} {@attach scrollToWhenActive(slugId)}>
+                        <div id={slugId}>
                             <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
                                 <a href={`#${slugId}`} class="truncate">{member.name}</a>
                             </h3>

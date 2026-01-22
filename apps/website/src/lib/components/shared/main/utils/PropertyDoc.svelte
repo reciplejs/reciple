@@ -2,7 +2,6 @@
     import type { ClassPropertyDef, InterfacePropertyDef } from '@deno/doc';
     import type { HTMLAttributes } from 'svelte/elements';
     import { documentationState } from '$lib/helpers/contexts';
-    import { scrollToWhenActive } from '$lib/helpers/attachments.svelte';
     import Badge from '$lib/components/ui/badge/badge.svelte';
     import { proseClasses } from '$lib/helpers/constants';
     import Markdown from './Markdown.svelte';
@@ -31,7 +30,7 @@
 </script>
 
 <div {...props}>
-    <div id={slugId} {@attach scrollToWhenActive(slugId)}>
+    <div id={slugId}>
         <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
             {#if isClassPropertyDef(item) && item.accessibility}
                 <Badge>{item.accessibility}</Badge>
