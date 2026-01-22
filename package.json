@@ -1,31 +1,36 @@
 {
   "name": "@reciple/monorepo",
   "license": "LLGPL-3.0-only",
+  "version": "10.2.0",
   "private": true,
   "type": "module",
   "workspaces": [
     "packages/*",
+    "apps/*",
     "example"
   ],
   "scripts": {
     "clean": "rimraf -g ./packages/*/bin ./packages/*/dist",
     "build": "turbo run build",
+    "docs": "bun ./scripts/docs.ts",
     "check": "turbo run check",
-    "test": "npm run dev -w example",
+    "test": "bun run dev -w example",
     "publish-pre": "changeset publish --tag next",
     "publish-latest": "changeset publish",
-    "docs": "rimraf -g ./packages/*/docs/docs.json && lerna run docs",
-    "test-create": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
-    "test-create:default": "npm run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
+    "test-create": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
+    "test-create:default": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
-    "@types/node": "^24.10.4",
+    "@types/node": "^25.0.9",
     "rimraf": "^6.1.2",
-    "rolldown": "^1.0.0-beta.57",
-    "tsdown": "^0.18.3",
-    "turbo": "^2.7.2",
+    "tsdown": "^0.20.0-beta.3",
+    "turbo": "^2.7.5",
     "typescript": "^5.9.3"
   },
-  "packageManager": "npm@11.6.2"
+  "packageManager": "bun@1.3.8",
+  "dependencies": {
+    "@sveltejs/kit": "^2.50.0",
+    "svelte": "^5.46.4"
+  }
 }

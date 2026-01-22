@@ -21,8 +21,9 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
     "check": "tsc --noEmit",
-    "prepack": "npm run build"
+    "prepack": "bun run build"
   },
   "repository": {
     "type": "git",
@@ -31,11 +32,8 @@
   },
   "dependencies": {
     "@prtty/prtty": "^1.1.0",
-    "@types/shell-quote": "^1.7.5",
-    "detect-newline": "^4.0.1",
     "pkg-types": "^2.3.0",
-    "radash": "^12.1.1",
-    "shell-quote": "^1.8.3"
+    "radash": "^12.1.1"
   },
   "publishConfig": {
     "access": "public"

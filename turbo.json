@@ -15,7 +15,7 @@
     "check": {
     },
     "docs": {
-      "outputs": ["docs/docs.json"],
+      "outputs": ["docs.json"],
       "inputs": [
         "src/**/*"
       ],

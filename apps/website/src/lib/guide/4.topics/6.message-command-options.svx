@@ -1,0 +1,124 @@
+---
+title: Message Command Options
+description: Learn how to use Reciple message command options
+keywords:
+    - message
+    - command
+    - option
+    - argument
+    - parser
+category: Topics
+---
+
+# Message Command Options
+
+Reciple provides a built-in message command parser that can be used to parse command options and arguments from a message.
+
+## Simple String Option
+```js
+import { MessageCommandBuilder } from 'reciple';
+
+new MessageCommandBuilder()
+    .setName('test')
+    .setDescription('A test command')
+    .addOption(option => option
+        .setName('option')
+        .setDescription('A test option')
+        .setRequired(false)
+    )
+    .setExecute(async ({ message, options }) => {
+        const option = options.getOptionValue('option');
+        await message.reply(`Received: **${option ?? 'Nothing'}**`);
+    })
+```
+### Command Usage
+<discord-messages>
+    <discord-message profile="cat">
+        !test Hello
+    </discord-message>
+    <discord-message profile="bot">
+        <discord-reply profile="cat" slot="reply">!test Hello</discord-reply>
+        Received: <b>Hello</b>
+    </discord-message>
+</discord-messages>
+
+## Validate & Resolve Command Option Values
+You make your own option value validator and Resolver by using [`MessageCommandOptionBuilder#setValidator()`](/docs/core/main/classes:MessageCommandOptionBuilder#setvalidator) and [`MessageCommandOptionBuilder#setresolvevalue()`](/docs/core/main/classes:MessageCommandOptionBuilder#setresolvevalue)
+
+```js
+import { MessageCommandBuilder } from 'reciple';
+
+new MessageCommandBuilder()
+    .setName('test')
+    .setDescription('A test command')
+    .addOption(option => option
+        .setName('option')
+        .setDescription('A test option')
+        .setRequired(false)
+        .setResolveValue(({ value }) => Number(value))
+        .setValidator(({ value }) => !isNaN(Number(value)))
+    )
+    .setExecute(async ({ message, options }) => {
+        const option = await options.getOptionValue('option', { resolveValue: true });
+        await message.reply(`Received: **${option ?? 'Nothing'}**`);
+    })
+```
+
+> When using <a href="/docs/core/main/classes:MessageCommandOptionBuilder#setresolvevalue"><code>setResolveValue</code></a>, you must use <a href="/docs/core/main/classes:MessageCommandOptionManager#getoptionvalue"><code>MessageCommandOptionManager#getOptionValue()</code></a> with the <code>resolveValue</code> option set to <code>true</code>. This will make the return value of the option a <code>Promise</code> of the resolved value.
+
+### Command Usage
+<discord-messages>
+    <discord-message profile="cat">
+        !test Hello
+    </discord-message>
+    <discord-message profile="cat">
+        !test 10
+    </discord-message>
+    <discord-message profile="bot">
+        <discord-reply profile="cat" slot="reply">!test 10</discord-reply>
+        Received: <b>10</b>
+    </discord-message>
+</discord-messages>
+
+> You can handle invalid arguments by creating a command halt that handles the <a href="/docs/core/main/enums:CommandHaltReason#invalidarguments"><code>CommandHaltReason.InvalidArguments</code></a>.
+
+## Custom Option Builders
+Custom option builders allows you to use their prebuilt validators and value resolvers. For example, we will use the option builders from [`@reciple/message-command-utils`](https://npmjs.org/package/@reciple/message-command-utils).
+
+```js
+import { MessageCommandBuilder } from 'reciple';
+import { MessageCommandUserOptionBuilder } from '@reciple/message-command-utils'
+
+new MessageCommandBuilder()
+    .setName('test')
+    .setDescription('A test command')
+    .addOption(new MessageCommandUserOptionBuilder()
+        .setName('user')
+        .setDescription('A user option')
+        .setRequired(false)
+    )
+    .setExecute(async ({ message, options }) => {
+        const user = await MessageCommandUserOptionBuilder.resolveOption('option', options);
+        await message.reply(user
+            ? `**${user.displayName}** ${user.id}`
+            : 'No user'
+        );
+    })
+```
+
+### Command Usage
+<discord-messages>
+    <discord-message profile="cat">
+        !test Hello
+    </discord-message>
+    <discord-message profile="cat">
+        !test 749120018771345488
+    </discord-message>
+    <discord-message profile="bot">
+        <discord-reply profile="cat" slot="reply">!test 749120018771345488</discord-reply>
+        <b>Cat++</b> 749120018771345488
+    </discord-message>
+</discord-messages>
+<br>
+
+> More `@reciple/message-command-utils` usage examples: **[Here](https://github.com/thenorthsolution/Reciple/blob/main/example/modules/Commands/Resolvers.js)**

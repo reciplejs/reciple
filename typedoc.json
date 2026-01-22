@@ -1,0 +1,8 @@
+{
+  "emit": "none",
+  "excludeExternals": true,
+  "plugin": [
+    "typedoc-plugin-mdn-links",
+    "typedoc-plugin-rename-defaults"
+  ]
+}

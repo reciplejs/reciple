@@ -19,6 +19,8 @@ export namespace Utils {
                 return new SlashCommand(data as SlashCommand.Data) as AnyCommand<T>;
             case CommandType.ContextMenu:
                 return new ContextMenuCommand(data as ContextMenuCommand.Data) as AnyCommand<T>;
+            default:
+                throw new RecipleError(RecipleError.Code.UnknownCommandType(data.type));
         }
     }
 
@@ -30,6 +32,8 @@ export namespace Utils {
                 return new SlashCommandBuilder() as AnyCommandBuilder<T>;
             case CommandType.ContextMenu:
                 return new ContextMenuCommandBuilder() as AnyCommandBuilder<T>;
+            default:
+                throw new RecipleError(RecipleError.Code.UnknownCommandType(type));
         }
     }
 

@@ -43,8 +43,9 @@
   "scripts": {
     "clean": "rimraf ./dist",
     "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
     "check": "tsc --noEmit",
-    "prepack": "npm run build"
+    "prepack": "bun run build"
   },
   "repository": {
     "type": "git",
