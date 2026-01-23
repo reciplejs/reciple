@@ -53,7 +53,7 @@
                 <Button href={resolve('/(main)/guide')} variant="default" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! shadow-sm shadow-primary/50">
                     Get Started
                 </Button>
-                <Button href={resolve('/(main)/docs')} variant="secondary" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! border">
+                <Button href={resolve('/(main)/docs') + '?first'} variant="secondary" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! border">
                     Docs
                 </Button>
                 <Button href={Links.discord} variant="secondary" size="lg" class="font-bold px-5 sm:w-1/3! md:w-fit! justify-start! sm:justify-center! shrink! border">
