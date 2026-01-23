@@ -9,6 +9,8 @@
     import Markdown from '../utils/Markdown.svelte';
     import TokensCodeBlock from '../utils/TokensCodeBlock.svelte';
     import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
+    import SourceButton from '../utils/SourceButton.svelte';
+    import { Separator } from '../../../ui/separator';
 
     let {
         node,
@@ -36,12 +38,15 @@
             contentClass="border-b-0"
         >
             <div class="w-full flex flex-col gap-5">
-                {#each members as member}
+                {#each members as member, index}
                     {@const slugId = docState.documentation.getElementSlug(member)}
                     <div>
-                        <div id={slugId}>
-                            <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
-                                <a href={`#${slugId}`} class="truncate">{member.name}</a>
+                        <div class="grid mb-2" id={slugId}>
+                            <div class="flex flex-wrap gap-1">
+                                <SourceButton location={member.location}/>
+                            </div>
+                            <h3 class="text-lg font-bold font-mono truncate w-full">
+                                .<a href={`#${slugId}`}>{member.name}</a>
                             </h3>
                         </div>
                         <div class={proseClasses}>
@@ -55,6 +60,9 @@
                             {/if}
                         </div>
                     </div>
+                    {#if index !== members.length - 1}
+                        <Separator/>
+                    {/if}
                 {/each}
             </div>
         </DocAccordion>

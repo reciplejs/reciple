@@ -8,6 +8,7 @@
     import { TextAlignStartIcon } from '@lucide/svelte';
     import Markdown from './Markdown.svelte';
     import TokensCodeBlock from './TokensCodeBlock.svelte';
+    import SourceButton from './SourceButton.svelte';
 
     let {
         node,
@@ -29,7 +30,10 @@
             {#if !removeIcon}
                 <Icon class="shrink-0"/>
             {/if}
-            <h1 class="text-2xl font-bold truncate">{node.name}</h1>
+            <h1 class="text-2xl font-bold truncate">
+                {node.name}
+            </h1>
+            <SourceButton location={node.location}/>
         </div>
     </div>
     <TokensCodeBlock tokens={new HumanizedNode(docState).humanize(node).tokens}/>

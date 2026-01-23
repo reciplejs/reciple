@@ -1,3 +1,4 @@
+import type { Location } from '@deno/doc';
 import { clsx, type ClassValue } from "clsx";
 import { slug } from 'github-slugger';
 import { createHighlighter } from 'shiki';
@@ -64,4 +65,9 @@ export function filterArrayDuplicate<T extends any[]>(items: T, keyOrFn: ((data:
             : keyOrFn;
 
     return items.filter((item, index) => isNotDuplicate({ item, index, items })) as T;
+}
+
+export function resolveLocationURL(location: Location): string|null {
+    const url = `${location.filename}#L${location.line}-${location.col}`;
+    return url.startsWith('http') ? url : null;
 }

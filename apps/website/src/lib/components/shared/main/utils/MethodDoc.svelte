@@ -12,6 +12,7 @@
     import { HumanizedTypeDef } from '$lib/helpers/classes/humanized/HumanizedTypeDef';
     import ParamsTable from './ParamsTable.svelte';
     import { Separator } from '$lib/components/ui/separator';
+    import SourceButton from './SourceButton.svelte';
 
     let {
         overloads,
@@ -42,8 +43,8 @@
             {@const returnType = isClassMethodDef(item) ? item.functionDef.returnType : item.returnType}
             {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(typeParams)}
             {@const humanizedParams = new HumanizedParams(docState).humanize(params)}
-            <div id={slugId}>
-                <h3 class="text-lg text-primary font-bold font-mono flex flex-wrap items-center gap-2 w-full">
+            <div class="grid mb-2" id={slugId}>
+                <div class="flex flex-wrap gap-1">
                     {#if isClassMethodDef(item) && item.accessibility}
                         <Badge>{item.accessibility}</Badge>
                     {/if}
@@ -59,7 +60,10 @@
                     {#if isClassMethodDef(item) && item.functionDef.isAsync}
                         <Badge>async</Badge>
                     {/if}
-                    <a href={`#${slugId}`} class="truncate">{item.name}{method.optional ? '?' : ''}</a>
+                    <SourceButton location={item.location}/>
+                </div>
+                <h3 class="text-lg font-bold font-mono truncate w-full">
+                    .<a href={`#${slugId}`}>{item.name}{method.optional ? '?' : ''}</a>({params.length ? '...' : ''})
                 </h3>
             </div>
             <div class={proseClasses}>
