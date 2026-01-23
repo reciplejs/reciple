@@ -12,6 +12,7 @@ import { resolveTSConfig } from 'pkg-types';
 import { unrun, type Options as UnrunOptions } from 'unrun';
 import { colors } from '@prtty/prtty';
 import type { ShardingManagerOptions } from 'discord.js';
+import { isDebugging } from '@reciple/utils';
 
 declare module "@reciple/core" {
     interface Config {
@@ -57,13 +58,18 @@ export class ConfigReader {
     constructor(public readonly filepath: string) {}
 
     public async read(options?: Omit<UnrunOptions, 'path'>): Promise<ConfigReader> {
+        const originalPath = process.cwd();
+
+        process.chdir(path.dirname(this.filepath));
+
         const { module } = await unrun<Config>({
             ...options,
-            inputOptions: {
-                cwd: path.dirname(this.filepath)
-            },
+            debug: isDebugging(),
+            preset: 'bundle-require',
             path: this.filepath
         });
+
+        process.chdir(originalPath);
 
         if (!module || !module.client || !(module.client instanceof Client)) {
             throw new RecipleError(`exported client is not an instance of ${colors.cyan('Client')} from ${colors.green('"@reciple/core"')}.`);
