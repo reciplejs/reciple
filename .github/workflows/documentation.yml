@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    name: Build Documentation
+    name: Build & Push Documentation
     runs-on: ubuntu-latest
     if: github.repository_owner == 'reciplejs'
     env:
@@ -46,79 +46,38 @@ jobs:
         run: bun run build:packages
       - name: Build Documentation
         run: bun run docs
-      - name: Upload Documentation Artifacts
-        uses: actions/upload-artifact@v6
-        with:
-          name: Documentation
-          path: docs/*/docs.json
-  publish:
-    name: Publish Documentation
-    runs-on: ubuntu-latest
-    needs: build
-    strategy:
-      max-parallel: 1
-      fail-fast: false
-      matrix:
-        package:
-          - core
-          - jsx
-          - modules
-          - reciple
-          - utils
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.ref || '' }}
-      - name: Download Documentation Artifacts
-        uses: actions/download-artifact@v6
-        with:
-          name: Documentation
-          path: artifacts
       - name: Checkout Documentation Repository
         uses: actions/checkout@v6
         with:
           repository: reciplejs/docs
-          path: docs
-      - name: Install Bun
-        if: ${{ github.ref_type == 'tag' }}
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - name: Install Dependencies
-        if: ${{ github.ref_type == 'tag' }}
-        run: bun install
+          ref: main
+          path: out
       - name: Format Tag
         id: format-tag
         if: ${{ github.ref_type == 'tag' }}
         uses: ./scripts/actions/formatTag
         with:
           tag: ${{ github.ref_name }}
-      - name: Publish (Tag)
-        if: ${{ github.ref_type == 'tag' && matrix.package == steps.format-tag.outputs.package }}
+      - name: Move Documentation Files (Branch)
+        run: |
+          declare -a PACKAGES=("core" "jsx" "modules" "reciple" "utils")
+
+          for PACKAGE in "${PACKAGES[@]}"; do
+            mkdir -p "out/${PACKAGE}"
+            mv "docs/${PACKAGE}/docs.json" "out/${PACKAGE}/${GITHUB_REF_NAME}.json"
+          done
+      - name: Move Documentation Files (Tag)
+        if: ${{ github.ref_type == 'tag' }}
         env:
-          PACKAGE: ${{ steps.format-tag.outputs.package }}
-          SEMVER: ${{ steps.format-tag.outputs.semver }}
+          PACKAGE_NAME: ${{ steps.format-tag.outputs.package }}
+          PACKAGE_VERSION: ${{ steps.format-tag.outputs.version }}
         run: |
-          echo "artifacts/${PACKAGE}/docs.json > docs/${PACKAGE}/${SEMVER}.json"
-          mkdir -p docs/${PACKAGE}
-          mv artifacts/${PACKAGE}/docs.json docs/${PACKAGE}/${SEMVER}.json
-      - name: Publish (Branch)
-        if: ${{ github.ref_type == 'branch' }}
-        env:
-          PACKAGE: ${{ matrix.package }}
-          SEMVER: ${{ github.ref_name }}
-        run: |
-          echo "artifacts/${PACKAGE}/docs.json > docs/${PACKAGE}/${GITHUB_REF_NAME}.json"
-          mkdir -p docs/${PACKAGE}
-          mv artifacts/${PACKAGE}/docs.json docs/${PACKAGE}/${GITHUB_REF_NAME}.json
-      - name: Commit & Push
-        run: |
-          cd docs
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git pull
-          git add .
-          git commit -m "Docs build for ${GITHUB_REF_TYPE} ${GITHUB_REF_NAME}: ${GITHUB_SHA}" || true
-          git pull
-          git push
+          mkdir -p "out/${PACKAGE_NAME}"
+          mv "docs/${PACKAGE_NAME}/docs.json" "out/${PACKAGE_NAME}/${PACKAGE_VERSION}.json"
+      - name: Push Documentation Files
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: reciplejs/docs
+          branch: main
+          directory: out
