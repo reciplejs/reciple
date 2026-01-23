@@ -75,9 +75,11 @@ jobs:
           mkdir -p "out/${PACKAGE_NAME}"
           mv "docs/${PACKAGE_NAME}/docs.json" "out/${PACKAGE_NAME}/${PACKAGE_VERSION}.json"
       - name: Push Documentation Files
-        uses: ad-m/github-push-action@v0.6.0
+        uses: dprakash2101/push-to-other-repo@v0.0.1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          repository: reciplejs/docs
-          branch: main
-          directory: out
+          api_token: ${{ secrets.GITHUB_TOKEN }}
+          source_directory: out
+          target_branch: main
+          destination_repository: reciplejs/docs
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          user_name: github-actions[bot]
