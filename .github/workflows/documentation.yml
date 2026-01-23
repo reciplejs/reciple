@@ -19,7 +19,7 @@ jobs:
     if: github.repository_owner == 'reciplejs'
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      TURBO_TEAM: ${{ vars.TURBO_SCOPE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -49,6 +49,7 @@ jobs:
       - name: Checkout Documentation Repository
         uses: actions/checkout@v6
         with:
+          token: ${{ secrets.DOCS_TOKEN }}
           repository: reciplejs/docs
           ref: main
           path: out
