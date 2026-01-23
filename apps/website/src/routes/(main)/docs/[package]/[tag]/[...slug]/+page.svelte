@@ -12,12 +12,24 @@
     import VariablePage from '$lib/components/shared/main/docs/VariablePage.svelte';
     import { proseClasses } from '$lib/helpers/constants';
     import Markdown from '$lib/components/shared/main/utils/Markdown.svelte';
+    import SearchDialog, { fromSidebarGroups, type SearchData } from '../../../../../../lib/components/shared/main/SearchDialog.svelte';
+    import Fuse from 'fuse.js';
 
     let { data } = $props();
 
     let searchState = searchDialogState.get();
     let documentation = $derived(data.documentation);
     let docState = $derived({ documentation });
+    let searchIndex: SearchData[] = $derived(fromSidebarGroups(data.sidebarData.content?.groups ?? []));
+    let fuse: Fuse<SearchData> = $derived(new Fuse(searchIndex, {
+        keys: [
+            { name: 'title', weight: 0.8 },
+            { name: 'keywords', weight: 0.5 },
+            { name: 'description', weight: 0.3 },
+            { name: 'category', weight: 0.1 },
+        ],
+        threshold: 0.3
+    }));
 
     const metadata = pageMetadata.get();
 
@@ -42,6 +54,22 @@
         twitter={data.metadata}
     />
 </svelte:head>
+
+{#if searchState.open !== undefined}
+    <SearchDialog
+        bind:open={searchState.open}
+        data={searchIndex}
+        delayType={null}
+        onFilter={async (value) => {
+            value = value.trim();
+            if (!value) return searchIndex;
+
+            const results = fuse.search(value);
+
+            return results.map(result => result.item);
+        }}
+    />
+{/if}
 
 {#if !page.params.slug || page.params.slug === 'home/readme'}
     <article class={[proseClasses, 'p-4']}>
