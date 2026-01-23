@@ -12,8 +12,7 @@
       "outputLogs": "new-only",
       "cache": true
     },
-    "check": {
-    },
+    "check": {},
     "docs": {
       "outputs": ["docs.json"],
       "inputs": [

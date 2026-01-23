@@ -32,6 +32,8 @@ jobs:
           deno-version: vx.x.x
       - name: Install Dependencies
         run: bun install
+      - name: Build Packages
+        run: bun run build
       - name: Build Documentation
         run: bun run docs
       - name: Upload Documentation Artifacts
