@@ -75,7 +75,7 @@ export class RecipleInteractionEvents extends ClientEventModule<'interactionCrea
 
                 this.logger.debug(`Resolving listeners from module "${module.id}" with property "${listenerProperty}"...`);
 
-                listenerLoop: for (const data of moduleListeners) {
+                for (const data of moduleListeners) {
                     const listener = InteractionListener.from(data);
 
                     Reflect.set(listener, 'moduleId', module.id);
