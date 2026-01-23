@@ -3,12 +3,15 @@
     import '@fontsource-variable/roboto-mono';
     import '@fontsource/archivo-black';
     import '$lib/styles/app.css';
+    import { injectSpeedInsights } from '@vercel/speed-insights/dist/sveltekit';
 
 	import { ModeWatcher } from "mode-watcher";
 	import { Toaster } from '$lib/components/ui/sonner';
 	import { resolve } from '$app/paths';
 
 	let { children } = $props();
+
+    injectSpeedInsights();
 </script>
 
 <svelte:head>
