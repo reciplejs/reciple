@@ -59,6 +59,9 @@ export class ConfigReader {
     public async read(options?: Omit<UnrunOptions, 'path'>): Promise<ConfigReader> {
         const { module } = await unrun<Config>({
             ...options,
+            inputOptions: {
+                cwd: path.dirname(this.filepath)
+            },
             path: this.filepath
         });
 
