@@ -1,4 +1,4 @@
-import { PackageJsonBuilder } from '@reciple/utils';
+import { isDebugging, PackageJsonBuilder } from '@reciple/utils';
 import { ConfigReader } from '../cli/ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { confirm, intro, isCancel, outro, select, text, log } from '@clack/prompts';
@@ -296,6 +296,8 @@ export class TemplateBuilder {
             ...TemplateBuilder.createDependencyRecord(this.typescript ? 'ts' : 'js'),
         });
 
+        await this.packageJson?.write(this.packageJsonPath, true);
+
         return this;
     }
 
@@ -319,7 +321,7 @@ export class TemplateBuilder {
                 promise: installDependencies({
                     cwd: this.directory,
                     packageManager: this.packageManager,
-                    silent: true
+                    silent: !isDebugging()
                 }),
                 indicator: 'timer',
                 errorMessage: `${colors.bold().red('✗')} Failed to install dependencies`,
@@ -380,13 +382,11 @@ export class TemplateBuilder {
     }
 
     public async build(options?: TemplateBuilder.BuildOptions): Promise<this> {
-        await this.packageJson?.write(this.packageJsonPath, true);
-
         if (!options?.skipBuild && this.dependenciesInstalled) await CLI.createSpinnerPromise({
             promise: runScript('build', {
                 cwd: this.directory,
                 packageManager: this.packageManager,
-                silent: true
+                silent: !isDebugging()
             }),
             indicator: 'timer',
             errorMessage: `${colors.bold().red('✗')} Failed to build project`,
