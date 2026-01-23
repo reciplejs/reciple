@@ -27,7 +27,7 @@ export default class CreateModuleSubcommand extends CLISubcommand {
             flags.config
             ?? await ConfigReader.find()
             ?? ConfigReader.createConfigFilename('js')
-        ).read();
+        ).read({ ignoreInstanceCheck: true });
 
         const template = new ModuleTemplateBuilder({
             cli: this.cli,

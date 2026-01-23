@@ -18,7 +18,7 @@ export default class BuildSubcommand extends CLISubcommand {
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { build: buildConfig } = await configReader.read();
+        const { build: buildConfig } = await configReader.read({ ignoreInstanceCheck: true });
 
         let plugins = buildConfig.plugins
             ? Array.isArray(buildConfig.plugins)

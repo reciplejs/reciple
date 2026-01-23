@@ -57,7 +57,7 @@ export class ConfigReader {
 
     constructor(public readonly filepath: string) {}
 
-    public async read(options?: Omit<UnrunOptions, 'path'>): Promise<ConfigReader> {
+    public async read(options?: Omit<UnrunOptions, 'path'> & { ignoreInstanceCheck?: boolean; }): Promise<ConfigReader> {
         const originalPath = process.cwd();
 
         process.chdir(path.dirname(this.filepath));
@@ -71,7 +71,7 @@ export class ConfigReader {
 
         process.chdir(originalPath);
 
-        if (!module || !module.client || !(module.client instanceof Client)) {
+        if (!module || !module.client || (!options?.ignoreInstanceCheck && !(module.client instanceof Client))) {
             throw new RecipleError(`exported client is not an instance of ${colors.cyan('Client')} from ${colors.green('"@reciple/core"')}.`);
         }
 

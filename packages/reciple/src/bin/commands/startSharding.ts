@@ -39,7 +39,7 @@ export default class StartShardingSubcommand extends CLISubcommand {
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { config, build: buildConfig, sharding } = await configReader.read();
+        const { config, build: buildConfig, sharding } = await configReader.read({ ignoreInstanceCheck: true });
 
         const logger = config.logger instanceof Logger ? this.cli.logger = config.logger : this.cli.logger.clone(config.logger);
 

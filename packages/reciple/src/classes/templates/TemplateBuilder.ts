@@ -348,7 +348,7 @@ export class TemplateBuilder {
 
         const moduleOptions: ModuleTemplateBuilder.Options = {
             cli: this.cli,
-            config: await this.config?.read()!,
+            config: await this.config?.read({ ignoreInstanceCheck: true })!,
             defaultAll: true,
             typescript: this.typescript,
         };
