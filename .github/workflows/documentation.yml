@@ -58,14 +58,6 @@ jobs:
         uses: ./scripts/actions/formatTag
         with:
           tag: ${{ github.ref_name }}
-      - name: Move Documentation Files (Branch)
-        run: |
-          declare -a PACKAGES=("core" "jsx" "modules" "reciple" "utils")
-
-          for PACKAGE in "${PACKAGES[@]}"; do
-            mkdir -p "out/${PACKAGE}"
-            mv "docs/${PACKAGE}/docs.json" "out/${PACKAGE}/${GITHUB_REF_NAME}.json"
-          done
       - name: Move Documentation Files (Tag)
         if: ${{ github.ref_type == 'tag' }}
         env:
@@ -74,12 +66,19 @@ jobs:
         run: |
           mkdir -p "out/${PACKAGE_NAME}"
           mv "docs/${PACKAGE_NAME}/docs.json" "out/${PACKAGE_NAME}/${PACKAGE_VERSION}.json"
+      - name: Move Documentation Files (Branch)
+        run: |
+          declare -a PACKAGES=("core" "jsx" "modules" "reciple" "utils")
+
+          for PACKAGE in "${PACKAGES[@]}"; do
+            mkdir -p "out/${PACKAGE}"
+            mv "docs/${PACKAGE}/docs.json" "out/${PACKAGE}/${GITHUB_REF_NAME}.json"
+          done
       - name: Push Documentation Files
-        uses: dprakash2101/push-to-other-repo@v0.0.1
-        with:
-          api_token: ${{ secrets.GITHUB_TOKEN }}
-          source_directory: out
-          target_branch: main
-          destination_repository: reciplejs/docs
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          user_name: github-actions[bot]
+        run: |
+          cd out
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: update documentation"
+          git push origin main
