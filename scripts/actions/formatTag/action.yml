@@ -1,0 +1,14 @@
+name: Format Tag
+description: Formats a git tag to remove potentially prefixes
+inputs:
+  tag:
+    description: The git tag to format
+    required: true
+outputs:
+  package:
+    description: The formatted git tag
+  semver:
+    description: The semantic version of the formatted git tag
+runs:
+  using: node16
+  main: "index.js"

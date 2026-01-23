@@ -1,63 +1,93 @@
-<h1 align="center">
-    <img src="https://i.imgur.com/h0ljJR5.png" width="50%">
+<div align="center">
+    <img src="https://i.imgur.com/C3gWxwc.png" width="50%">
+    <p align="center">
+        <b>A Discord.js framework that just works.</b>
+    </p>
     <br>
-</h1>
+</div>
 
 <h3 align="center">
-    <a href="https://discord.gg/2gyckrwK7b">
-        <img src="https://img.shields.io/discord/1032785824686817291?color=5865F2&logo=discord&logoColor=white">
+    <a href="https://discord.gg/KxfPZYuTGV">
+        <img src="https://img.shields.io/discord/1453743492722458708?color=5865F2&logo=discord&logoColor=white">
     </a>
     <a href="https://npmjs.org/package/@reciple/core">
-        <img src="https://img.shields.io/npm/v/%40reciple/core?label=npm">
+        <img src="https://img.shields.io/npm/v/@reciple/core?label=npm">
     </a>
-    <a href="https://github.com/thenorthsolution/Reciple/tree/main/packages/core">
-        <img src="https://img.shields.io/npm/dt/%40reciple/core?maxAge=3600">
+    <a href="https://github.com/reciplejs/reciple/tree/main/packages/core">
+        <img src="https://img.shields.io/npm/dt/@reciple/core?maxAge=3600">
     </a>
-    <a href="https://www.codefactor.io/repository/github/thenorthsolution/reciple">
-        <img src="https://www.codefactor.io/repository/github/thenorthsolution/reciple/badge">
+    <a href="https://www.codefactor.io/repository/github/reciplejs/reciple">
+        <img src="https://www.codefactor.io/repository/github/reciplejs/reciple/badge">
     </a>
     <br>
     <div style="padding-top: 1rem">
-        <a href="https://discord.gg/2gyckrwK7b">
-            <img src="http://invidget.switchblade.xyz/2gyckrwK7b">
+        <a href="https://discord.gg/KxfPZYuTGV">
+            <img src="http://invidget.switchblade.xyz/KxfPZYuTGV">
         </a>
     </div>
 </h3>
 
----
-
 ## About
 
-`@reciple/core` contains the core components of Reciple such as the extended Discord.js Client and command builders.
+`@reciple/core` The core implementation of reciple. It exports the core classes and functions of reciple.
+
+## Installation
+
+```bash
+npm install @reciple/core
+yarn add @reciple/core
+pnpm add @reciple/core
+bun install @reciple/core
+deno install npm:@reciple/core
+```
 
 ## Usage
-
 ```js
-// @ts-check
-import { RecipleClient, SlashCommandBuilder } from '@reciple/core';
+import { Client, SlashCommand } from '@reciple/core';
 
-const client = new RecipleClient({
-    token: 'YOUR_TOKEN',
-    client: {
-        intents: ['Guilds']
-    }
+const client = new Client({
+    token: process.env.TOKEN,
+    intents: [
+        'Guilds',
+        'GuildMessages',
+        'MessageContent'
+    ],
+    preconditions: [],
+    postconditions: [],
+    commands: [
+        new SlashCommand()
+            .setCommand(c => c
+                .setName('ping')
+                .setDescription('Replies with Pong!')
+            )
+            .setExecute(async (interaction) => {
+                await interaction.reply('Pong!');
+            })
+    ]
+});
+
+client.on('ready', () => {
+    console.log(`Logged in as ${client.user.tag}!`);
+
+    await client.commands.registerApplicationCommands({
+        commands: client.commands.applicationCommands,
+        slashCommands: {
+            registerGlobally: true
+        },
+        contextMenuCommands: {
+            registerGlobally: true
+        },
+        allowEmptyCommands: false,
+        registerGlobally: true
+    });
 });
 
 await client.login();
-
-client.commands?.add(
-    new SlashCommandBuilder()
-        .setName('ping')
-        .setDescription('Replies with pong!')
-        .setExecute(async ({ interaction }) => {
-            await interaction.reply('Pong!');
-        }),
-)
-
-await client.commands?.registerApplicationCommands();
-
-client.on('interactionCreate', async interaction => {
-    if (interaction.isChatInputCommand()) await client.commands?.execute(interaction);
-});
-
 ```
+
+## Links
+
+- [Website](https://reciple.js.org)
+- [Discord](https://discord.gg/KxfPZYuTGV)
+- [Github](https://github.com/reciplejs/reciple/tree/main/packages/core)
+- [NPM](https://npmjs.org/package/@reciple/core)

@@ -1,59 +1,44 @@
 {
   "name": "@reciple/core",
-  "description": "Reciple core implementations",
-  "homepage": "https://reciple.js.org/docs/client",
-  "license": "GPL-3.0",
-  "version": "9.9.0",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "version": "10.0.1",
+  "license": "LGPL-3.0-only",
+  "description": "The core of reciple",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "type": "module",
-  "keywords": [
-    "reciple",
-    "discord.js",
-    "handler",
-    "client"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thenorthsolution/Reciple",
-    "directory": "packages/core"
-  },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     }
-  },
-  "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "tsup",
-    "check": "tsc --noEmit",
-    "docs": "node ../docgen/dist/bin.js -i ./src/index.ts -o ./docs/docs.json",
-    "prepack": "npm run build"
   },
   "files": [
     "dist",
     "README.md"
   ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
+    "check": "tsc --noEmit",
+    "prepack": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenorthsolution/reciple",
+    "directory": "packages/core"
+  },
   "dependencies": {
-    "@reciple/utils": "^9.8.0",
+    "@reciple/utils": "workspace:^",
     "@sapphire/shapeshift": "^4.0.0",
-    "fallout-utility": "^2.9.1",
-    "lodash.defaultsdeep": "^4.6.1",
-    "prtyprnt": "^1.1.0",
-    "semver": "^7.7.1",
+    "@sapphire/snowflake": "^3.5.3",
+    "split-string": "^6.1.0",
     "ts-mixer": "^6.0.4"
   },
-  "devDependencies": {
-    "@types/lodash.defaultsdeep": "^4.6.9",
-    "@types/semver": "^7.5.8",
-    "discord.js": "^14.18.0"
-  },
   "peerDependencies": {
-    "discord.js": "^14.15.0"
+    "discord.js": "^14.25.1"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "88c2b7a5d61ca5707db84435871c11d50259d056"
+  }
 }

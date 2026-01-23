@@ -3,17 +3,18 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "node ../packages/reciple/dist/bin.js -c ./reciple.mjs",
-    "shard": "node ../packages/reciple/dist/bin.js --debug shard -c reciple.mjs",
+    "build": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env build",
+    "start": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start --build",
+    "sharding": "node ../packages/reciple/dist/bin/reciple.mjs --env ../.env start sharding --build",
     "dev": "nodemon"
   },
-  "dependencies": {
-    "@reciple/core": "file:../packages/core",
-    "@reciple/message-command-utils": "file:../packages/message-command-utils",
-    "discord.js": "^14.16.3",
-    "reciple": "file:../packages/reciple"
-  },
   "devDependencies": {
-    "@types/node": "^22.7.7"
+    "@reciple/core": "^10.0.1",
+    "@reciple/jsx": "^10.0.1",
+    "@reciple/modules": "^10.0.1",
+    "reciple": "^10.0.1"
+  },
+  "dependencies": {
+    "@prtty/print": "^1.1.0"
   }
 }

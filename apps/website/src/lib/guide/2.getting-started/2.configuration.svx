@@ -1,0 +1,257 @@
+---
+title: Configuration
+description: Learn how to configure Reciple
+keywords:
+  - env
+  - config
+  - setup
+  - token
+category: Getting Started
+---
+
+# Configuration
+It is not necessary to modify the config file after you have completed the setup of your bot. But doing so is also acceptable! The file `reciple.mjs` in your bot's root directory contains the current Reciple configuration.
+
+> ### Reciple Config
+Reciple configuration allows you to change some of Reciple's behavior and expand its functionality.
+
+## Token
+Your bot token is not directly stored in your configuration to prevent it from being leaked when using git.
+
+```js
+export const config = {
+    token: process.env.TOKEN ?? ''
+};
+```
+
+By default, Reciple will create your Discord bot and use the `TOKEN` environment variable to find your Discord bot token.
+
+> It is not recommended to add your Discord bot token directly in your configuration file.
+
+*****
+
+## Commands
+You can also disable specific command types and their related features such as cooldowns. Command configuration also allows you to specify which guild the application commands should be registered to.
+
+## Application Commands
+The application commands are the context menus and slash commands.
+
+```js
+export const config = {
+    commands: {
+        contextMenuCommand: {
+            enabled: true,
+            enableCooldown: true,
+            acceptRepliedInteractions: false,
+            registerCommands: {
+                registerGlobally: true,
+                registerToGuilds: []
+            }
+        },
+        slashCommand: {
+            enabled: true,
+            enableCooldown: true,
+            acceptRepliedInteractions: false,
+            registerCommands: {
+                registerGlobally: true,
+                registerToGuilds: []
+            }
+        }
+};
+```
+
+- `acceptRepliedInteractions` Prevents replied or deffered interaction commands from executing in order to avoid errors with previously replied commands.
+- `registerCommands` Allows you to specify where these commands are registered.
+  - `registerGlobally` Whether to register your commands globally.
+  - `registerToGuilds` An array of server ID where these commands should be registered.
+
+## Message Commands
+Message commands are executed using prefixed messages. These are commonly referred to as "traditional commands".
+
+```js
+export const config = {
+    commands: {
+        messageCommand: {
+            enabled: true,
+            enableCooldown: true,
+            commandArgumentSeparator: ' ',
+            prefix: '!'
+        }
+    }
+};
+```
+
+- `commandArgumentSeparator` The character that separates the arguments of the commands.
+- `prefix` The character that is used at the start of a message to indicate a message command.
+
+### Example Usage of Message Command
+
+<discord-messages>
+    <discord-message profile="cat">
+        !ping
+    </discord-message>
+    <discord-message profile="bot">
+        <discord-reply profile="cat" slot="reply">
+        !ping
+        </discord-reply>
+        Pong!
+    </discord-message>
+</discord-messages>
+
+*****
+
+## Application Command Register
+Just like the context menu and slash commands' config, you can also configure both with `applicationCommandRegister`.
+
+```js
+export const config = {
+    applicationCommandRegister: {
+        enabled: true,
+        allowRegisterGlobally: true,
+        allowRegisterToGuilds: true,
+        registerEmptyCommands: true,
+        registerToGuilds: []
+    }
+};
+```
+
+- `allowRegisterGlobally` Allows your application commands to be registered globally. This config will overwrite all application commands' config if set to `false`.
+- `allowRegisterToGuilds` Allows your application commands to be registered to guilds. This config will overwrite all application commands' config if set to `false`.
+- `registerEmptyCommands` Whether your application should register commands when empty.
+- `registerToGuilds` An array of server ID where application commands should be registered. This will not overwrite the existing command config.
+
+*****
+
+## Client
+This configuration allows you to modify the Discord.js Client options, which include intents, cache options, and more.
+
+```js
+export const config = {
+    client: {
+        intents: [
+            IntentsBitField.Flags.Guilds,
+            IntentsBitField.Flags.GuildMembers,
+            IntentsBitField.Flags.GuildMessages,
+            IntentsBitField.Flags.MessageContent,
+        ]
+    }
+};
+```
+
+> **View [`ClientOptions`](https://discord.js.org/docs/packages/discord.js/14.15.2/ClientOptions:Interface) Docs**
+
+*****
+
+## Logger
+This config allows you to configure the [`Logger`](/docs/core/main/classes:Logger).
+
+```js
+export const config = {
+    logger: {
+        enabled: true,
+        debugmode: null,
+        coloredMessages: true,
+        disableLogPrefix: false,
+        logToFile: {
+            enabled: true,
+            logsFolder: './logs',
+            file: 'latest.log'
+        }
+    }
+};
+```
+
+- `debugmode` Shows some debug messages to the console.
+- `coloredMessages` Prints console messages with colors.
+- `disableLogPrefix` Disables the time and context prefix of a log message.
+- `logToFile` Config for the log files.
+  - `logsFolder` The folder where log files are saved.
+  - `file` The name of the latest log file.
+
+*****
+
+## Modules
+This configuration allows you to change the directory where modules are stored and the files that should be excluded.
+
+```js
+export const config = {
+    modules: {
+        dirs: ['./modules', './modules/*', './modules/*/*'],
+        exclude: ['halts', 'preconditions', '_*'],
+        filter: file => true,
+        disableModuleVersionCheck: false
+    }
+};
+```
+
+- `dirs` An array of directory names that contains the module files. This config also accepts glob patterns.
+- `exclude` An array of file or dir names to exclude from loaded modules. This also accepts wildcard patterns.
+- `filter` A function that returns a boolean. This functions filters the module files to be loaded.
+- `disableModuleVersionCheck` Whether to check if the module supports the current version of Reciple.
+
+*****
+
+## Preconditions
+Preconditions are functions that are executed before a command execution, and it determine whether the execution must continue. Built-in preconditions includes the [`CooldownPrecondition`](/docs/core/main/classes:CooldownPrecondition) and [`CommandPremissionsPermissions`](/docs/core/main/classes:CommandPremissionsPermissions).
+
+```js
+export const config = {
+    preconditions: [
+        new CooldownPrecondition(),
+        new CommandPermissionsPrecondition()
+    ]
+};
+```
+
+> Create your own preconditions by following the precondition schema [View Docs](/docs/core/main/interfaces:CommandPreconditionData)
+
+*****
+
+## Command Halts
+Command halts are functions that are executed after the command is terminated. This allows you to handle command errors, cooldowns, and precondition triggers. This config sets the global command halts for every commands.
+
+```js
+export const config = {
+    commandHalts: []
+};
+```
+> Create your own command halt by following the command halt schema [View Docs](/docs/core/main/interfaces:CommandHaltData)
+
+*****
+
+## Cooldown Sweeper Options
+This config allows you to modify the cooldown sweeping options.
+
+```js
+export const config = {
+    cooldownSweeperOptions: {
+        timer: 1000 * 60 * 60
+    }
+};
+```
+
+- `timer` The interval when to sweep unused cooldowns.
+- `filter` The cooldown sweep filter function that returns a boolean when a cooldown is unused.
+- `maxAgeMs` The max age of a cooldown to be marked unused.
+
+*****
+
+## Check For Updates
+By default, Reciple checks for updates when Reciple process is started.
+
+```js
+export const config = {
+    checkForUpdates: true
+};
+```
+
+*****
+
+## version
+Changing this value has the potential to break Reciple. This property determines the supported version of a Reciple configuration.
+
+```js
+export const config = {
+    version: '^9.x.x'
+};
+```

@@ -1,0 +1,66 @@
+{
+  "name": "@reciple/jsx",
+  "version": "10.0.1",
+  "license": "LGPL-3.0-only",
+  "description": "The JSX component wrappers of Discord.js builders",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    },
+    "./jsx-runtime": {
+      "import": "./dist/jsx-runtime.mjs",
+      "types": "./dist/jsx-runtime.d.mts"
+    },
+    "./interactive": {
+      "import": "./dist/components/interactive/index.mjs",
+      "types": "./dist/components/interactive/index.d.mts"
+    },
+    "./embed": {
+      "import": "./dist/components/embed/index.mjs",
+      "types": "./dist/components/embed/index.d.mts"
+    },
+    "./modals": {
+      "import": "./dist/components/modals/index.mjs",
+      "types": "./dist/components/modals/index.d.mts"
+    },
+    "./poll": {
+      "import": "./dist/components/poll/index.mjs",
+      "types": "./dist/components/poll/index.d.mts"
+    },
+    "./v1": {
+      "import": "./dist/components/v1/index.mjs",
+      "types": "./dist/components/v1/index.d.mts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
+    "check": "tsc --noEmit",
+    "prepack": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenorthsolution/reciple",
+    "directory": "packages/jsx"
+  },
+  "peerDependencies": {
+    "discord.js": "^14.25.1"
+  },
+  "peerDependenciesMeta": {
+    "discord.js": {
+      "optional": false
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

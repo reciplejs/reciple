@@ -1,0 +1,10 @@
+{
+  "extends": "@reciple/utils/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "allowJs": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@reciple/jsx"
+  }
+}

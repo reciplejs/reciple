@@ -1,89 +1,82 @@
-import { CooldownManager } from '../managers/CooldownManager.js';
-import { CommandType } from '../../types/constants.js';
-import { type JSONEncodable, type TextBasedChannel } from 'discord.js';
+import { DiscordSnowflake } from '@sapphire/snowflake';
+import type { Client } from './Client.js';
+import type { InteractionType, SendableChannels } from 'discord.js';
+import type { CommandType, CooldownTriggerType } from '../../helpers/constants.js';
 
-export interface CooldownData {
-    /**
-     * The user id of the user that the cooldown is for.
-     */
-    userId: string;
-    /**
-     * The date that the cooldown ends at.
-     */
-    endsAt: Date;
-    /**
-     * The channel id of the channel that the cooldown is for.
-     */
-    channelId?: string;
-    /**
-     * The guild id of the guild that the cooldown is for.
-     */
-    guildId?: string;
-    /**
-     * The name of the command that the cooldown is for.
-     */
-    commandName?: string;
-    /**
-     * The type of the command that the cooldown is for.
-     */
-    commandType?: CommandType;
-}
-
-export class Cooldown implements CooldownData {
-    readonly id: string;
-    readonly userId: string;
-    readonly endsAt: Date;
-    readonly channelId?: string;
-    readonly guildId?: string;
-    readonly commandName?: string;
-    readonly commandType?: CommandType;
-    readonly createdAt: Date = new Date();
+export class Cooldown implements Cooldown.Data {
+    public id: string = DiscordSnowflake.generate().toString();
+    public userId!: string;
+    public guildId?: string;
+    public channelId?: string;
+    public trigger?: Cooldown.Trigger;
+    public endsAt!: Date;
 
     get remainingMs() {
         const remaining = this.endsAt.getTime() - Date.now();
         return remaining >= 0 ? remaining : 0;
     }
 
+    get isExpired() {
+        return this.remainingMs <= 0;
+    }
+
     get user() {
-        return this.manager.client.users.cache.get(this.userId);
+        return this.client.users.cache.get(this.userId);
     }
 
     get channel() {
-        return this.channelId ? this.manager.client.channels.cache.get(this.channelId) as TextBasedChannel|undefined : null;
+        return this.channelId ? this.client.channels.cache.get(this.channelId) as SendableChannels|undefined : undefined;
     }
 
     get guild() {
-        if (this.guildId) return this.manager.client.guilds.cache.get(this.guildId);
-        return this.channel && !this.channel.isDMBased() ? this.channel.guild : undefined;
+        return (this.guildId ? this.client.guilds.cache.get(this.guildId) : undefined) ?? (this.channel && !this.channel.isDMBased() ? this.channel.guild : undefined);
     }
 
-    constructor(data: CooldownData, readonly manager: CooldownManager) {
-        this.id = CooldownManager.generateId();
-        this.userId = data.userId;
-        this.endsAt = data.endsAt;
-        this.channelId = data.channelId;
-        this.guildId = data.guildId;
-        this.commandName = data.commandName;
-        this.commandType = data.commandType;
+    constructor(public readonly client: Client, data: Omit<Cooldown.Data, 'id'>) {
+        Object.assign(this, data);
     }
 
-    /**
-     * Check if the cooldown has ended.
-     */
-    public isEnded(): boolean {
-        return this.endsAt.getTime() <= Date.now();
-    }
-
-    public toJSON(): CooldownData {
+    public toJSON(): Cooldown.Data {
         return {
+            id: this.id,
             userId: this.userId,
-            endsAt: this.endsAt,
-            channelId: this.channelId,
             guildId: this.guildId,
-            commandName: this.commandName,
-            commandType: this.commandType
+            channelId: this.channelId,
+            trigger: this.trigger,
+            endsAt: this.endsAt
         };
     }
 }
 
-export type CooldownResolvable = CooldownData|JSONEncodable<CooldownData>;
+export namespace Cooldown {
+    export type Resolvable = Cooldown;
+
+    export interface Data {
+        id: string;
+        userId: string;
+        guildId?: string;
+        channelId?: string;
+        trigger?: Trigger;
+        endsAt: Date;
+    }
+
+    export type Trigger = CommandTrigger|InteractionTrigger;
+
+    export interface CommandTrigger {
+        type: CooldownTriggerType.Command;
+        commands: {
+            type?: CommandType;
+            id?: string;
+            name?: string;
+        }[];
+    }
+
+    export interface InteractionTrigger {
+        type: CooldownTriggerType.Interaction;
+        interactions?: {
+            type?: InteractionType;
+            customId?: string;
+            commandName?: string;
+        }[];
+    }
+}

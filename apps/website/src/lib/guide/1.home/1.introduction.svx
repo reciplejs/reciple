@@ -1,0 +1,23 @@
+---
+title: Introduction
+description: Introduction to reciple guide
+category: Home
+---
+
+# Introduction
+
+Reciple is a [Discord.js](https://discordjs.dev) framework that aims to extend its functionality to its fullest. This guide will provide you the enough knowledge to get started with your Discord bot.
+
+# Before you begin...
+
+This guide assumes you have a good understanding of JavaScript and Discord.js. If you don't know JavaScript and want to learn about it, here are a few links to help you get started:
+
+- [Eloquent JavaScript, a free online book](http://eloquentjavascript.net/)
+- [JavaScript.info, a modern javascript tutorial](https://javascript.info/)
+- [Codecademy's interactive JavaScript course](https://codecademy.com/learn/introduction-to-javascript)
+- [Nodeschool, for both JavaScript and Node.js lessons](https://nodeschool.io/)
+- [MDN's JavaScript guide and full documentation](https://developer.mozilla.org/docs/Web/JavaScript)
+- [Google, your best friend](https://google.com/)
+- [Discord.js Guide](https://discordjs.guide)
+
+Take your pick, learn some JavaScript, and once you feel like you're confident enough to make a bot, come back and get started!

@@ -1,56 +1,73 @@
-import { CommandPrecondition, type CommandPreconditionData } from '../structures/CommandPrecondition.js';
-import type { AnyCommandExecuteData } from '../../types/structures.js';
-import type { CooldownData } from '../structures/Cooldown.js';
-import { CommandType } from '../../types/constants.js';
+import { CommandPostconditionReason, CommandType, CooldownTriggerType } from '../../helpers/constants.js';
+import type { AnyCommandExecuteData } from '../../helpers/types.js';
+import type { CommandPostcondition } from '../structures/CommandPostcondition.js';
+import { CommandPrecondition } from '../structures/CommandPrecondition.js';
 
-export class CooldownPrecondition extends CommandPrecondition {
-    public static id: string = 'org.reciple.js.cooldowns';
-    public static data: CommandPreconditionData = {
-        id: CooldownPrecondition.id,
-        disabled: false,
-        contextMenuCommandExecute: data => CooldownPrecondition._execute(data),
-        slashCommandExecute: data => CooldownPrecondition._execute(data),
-        messageCommandExecute: data => CooldownPrecondition._execute(data),
-    };
+export class CooldownCommandPrecondition extends CommandPrecondition<CommandPostcondition.CooldownExecuteData<CommandType>> {
+    public scope: CommandType[] = [];
 
-    constructor() {
-        super(CooldownPrecondition.data);
+    constructor(public readonly options?: CooldownCommandPrecondition.Options) {
+        super();
+
+        if (options?.scope) this.scope = options.scope;
     }
 
-    private static _execute(data: AnyCommandExecuteData): boolean {
-        const duration = data.builder.cooldown;
-        if (!duration) return true;
+    public async execute<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<CommandPrecondition.ResultDataResolvable<T, CommandPostcondition.CooldownExecuteData<CommandType>>> {
+        const userId = data.type === CommandType.Message ? data.message.author.id : data.interaction.user.id;
+        const guildId = this.options?.matchWithin === 'guild' ? (data.type === CommandType.Message ? data.message.guildId : data.interaction.guildId) : undefined;
+        const channelId = this.options?.matchWithin === 'channel' ? (data.type === CommandType.Message ? data.message.channelId : data.interaction.channelId) : undefined;
 
-        switch (data.builder.command_type) {
-            case CommandType.ContextMenuCommand:
-                if (data.client.config.commands?.contextMenuCommand?.enableCooldown === false) return true;
-                break;
-            case CommandType.MessageCommand:
-                if (data.client.config.commands?.messageCommand?.enableCooldown === false) return true;
-                break;
-            case CommandType.SlashCommand:
-                if (data.client.config.commands?.slashCommand?.enableCooldown === false) return true;
-                break;
+        let cooldown = await data.client.cooldowns.fetchForUser(userId, {
+            guildId: guildId ?? undefined,
+            channelId: channelId ?? undefined,
+            trigger: {
+                type: CooldownTriggerType.Command,
+                commands: [data.command]
+            }
+        }).then(data => data.at(0));
+
+        if (cooldown?.isExpired) {
+            if (this.options?.deleteWhenExpired !== false) await data.client.cooldowns.adapter.delete({
+                where: {
+                    id: cooldown.id
+                }
+            });
+
+            cooldown = undefined;
         }
 
-        const userId = data.type === CommandType.MessageCommand ? data.message.author.id : data.interaction.user.id;
-        const guildId = (data.type === CommandType.MessageCommand ? data.message.guildId : data.interaction.guildId) ?? undefined;
+        if (!cooldown) {
+            if (data.command.cooldown) await data.client.cooldowns.create({
+                userId,
+                guildId: guildId ?? undefined,
+                channelId: channelId ?? undefined,
+                endsAt: new Date(Date.now() + data.command.cooldown),
+                trigger: {
+                    type: CooldownTriggerType.Command,
+                    commands: [data.command]
+                }
+            });
 
-        const cooldownData: Omit<CooldownData, 'endsAt'> = {
-            commandType: data.builder.command_type,
-            commandName: data.builder.name,
-            userId,
-            guildId
+            return true;
+        }
+
+        return {
+            postconditionExecute: {
+                data: {
+                    reason: CommandPostconditionReason.Cooldown,
+                    cooldown,
+                    executeData: data,
+                }
+            },
+            success: false
         };
+    }
+}
 
-        const cooldown = data.client.cooldowns.findCooldown(cooldownData);
-        if (cooldown) return true;
-
-        data.client.cooldowns.create({
-            ...cooldownData,
-            endsAt: new Date(Date.now() + duration)
-        });
-
-        return true;
+export namespace CooldownCommandPrecondition {
+    export interface Options {
+        scope?: CommandType[];
+        matchWithin?: 'global'|'guild'|'channel';
+        deleteWhenExpired?: boolean;
     }
 }

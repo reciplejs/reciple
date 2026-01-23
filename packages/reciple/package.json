@@ -1,66 +1,80 @@
 {
   "name": "reciple",
-  "description": "Reciple is a Discord.js bot framework",
-  "homepage": "https://reciple.js.org/docs/reciple",
-  "license": "GPL-3.0",
-  "version": "9.9.0",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": "./dist/bin.js",
+  "version": "10.0.1",
+  "license": "LGPL-3.0-only",
+  "description": "The CLI for reciple",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "bin": "./dist/bin/reciple.mjs",
   "type": "module",
-  "keywords": [
-    "reciple",
-    "discord.js",
-    "handler",
-    "commands"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thenorthsolution/Reciple",
-    "directory": "packages/reciple"
-  },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     },
-    "./config": {
-      "types": "./static/config.d.mts",
-      "import": "./static/config.mjs"
+    "./jsx-runtime": {
+      "import": "./dist/helpers/jsx-runtime.mjs",
+      "types": "./dist/helpers/jsx-runtime.d.mts"
     }
-  },
-  "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "npm run clean && tsc",
-    "check": "tsc --noEmit",
-    "docs": "node ../docgen/dist/bin.js -i ./src/exports.ts -o ./docs/docs.json",
-    "prepack": "npm run build"
   },
   "files": [
     "dist",
-    "static",
+    "assets",
     "README.md"
   ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
+    "check": "tsc --noEmit",
+    "prepack": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenorthsolution/reciple",
+    "directory": "packages/reciple"
+  },
   "dependencies": {
-    "@reciple/utils": "^9.8.0",
-    "ansi-regex": "^6.1.0",
-    "commander": "^13.1.0",
-    "dotenv": "^16.4.7",
-    "fallout-utility": "^2.9.1",
-    "globby": "^14.1.0",
-    "prompts": "^2.4.2",
-    "prtyprnt": "^1.1.0",
-    "semver": "^7.7.1"
+    "@clack/prompts": "^0.11.0",
+    "@dotenvx/dotenvx": "^1.52.0",
+    "@prtty/print": "^1.1.0",
+    "@prtty/prtty": "^1.1.0",
+    "@reciple/utils": "^10.0.1",
+    "@sapphire/shapeshift": "^4.0.0",
+    "@sapphire/snowflake": "^3.5.5",
+    "commander": "^14.0.2",
+    "github-slugger": "^2.0.0",
+    "globby": "^16.1.0",
+    "micromatch": "^4.0.8",
+    "nypm": "^0.6.4",
+    "pkg-types": "^2.3.0",
+    "semver": "^7.7.3",
+    "ts-mixer": "^6.0.4",
+    "tsdown": "^0.20.1",
+    "unrun": "^0.2.26"
   },
   "devDependencies": {
-    "@reciple/core": "^9.9.0",
-    "@types/micromatch": "^4.0.9",
-    "@types/semver": "^7.5.8",
-    "discord.js": "^14.18.0"
+    "@reciple/jsx": "^10.0.1",
+    "@types/micromatch": "^4.0.10",
+    "@types/node": "^25.0.10",
+    "@types/semver": "^7.7.1",
+    "nodemon": "^3.1.11",
+    "rolldown": "^1.0.0-rc.1",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@reciple/core": "^9 || ^9.0.0-dev",
-    "discord.js": "^14.15.0"
+    "@reciple/core": "workspace:^",
+    "discord.js": "^14.25.1"
   },
-  "gitHead": "88c2b7a5d61ca5707db84435871c11d50259d056"
+  "peerDependenciesMeta": {
+    "@reciple/core": {
+      "optional": false
+    },
+    "discord.js": {
+      "optional": false
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

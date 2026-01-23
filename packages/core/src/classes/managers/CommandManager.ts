@@ -1,333 +1,172 @@
-import { Collection, Message, isJSONEncodable, normalizeArray, type ApplicationCommand, type ApplicationCommandDataResolvable, type ChatInputCommandInteraction, type ContextMenuCommandInteraction, type JSONEncodable, type RESTPostAPIChatInputApplicationCommandsJSONBody, type RESTPostAPIContextMenuApplicationCommandsJSONBody, type RestOrArray } from 'discord.js';
-import type { AnyCommandBuilder, AnyCommandExecuteData, AnyCommandHaltTriggerData, AnyCommandResolvable, RecipleClientConfig, RecipleClientInteractionBasedCommandConfigOptions } from '../../types/structures.js';
-import { CommandPrecondition, type CommandPreconditionResolvable, type CommandPreconditionResultData } from '../structures/CommandPrecondition.js';
-import { SlashCommandBuilder, type AnySlashCommandBuilder, type SlashCommandExecuteData } from '../builders/SlashCommandBuilder.js';
-import { ContextMenuCommandBuilder, type ContextMenuCommandExecuteData } from '../builders/ContextMenuCommandBuilder.js';
-import { CommandHalt, type CommandHaltResolvable, type CommandHaltResultData } from '../structures/CommandHalt.js';
-import { MessageCommandBuilder, type MessageCommandExecuteData } from '../builders/MessageCommandBuilder.js';
-import type { RecipleClient } from '../structures/RecipleClient.js';
-import { CommandHaltReason, CommandType } from '../../types/constants.js';
+import { ApplicationCommandType, Collection, type ApplicationCommand, type ApplicationCommandDataResolvable, type Constructable } from 'discord.js';
+import type { AnyCommand, AnyCommandExecuteData, AnyCommandResolvable } from '../../helpers/types.js';
+import { BaseCommand } from '../abstract/BaseCommand.js';
+import { BaseManager } from '../abstract/BaseManager.js';
+import type { Client } from '../structures/Client.js';
+import { CommandType } from '../../helpers/constants.js';
+import { EventEmitter } from 'node:events';
+import { hasMixin, mix } from 'ts-mixer';
 import { RecipleError } from '../structures/RecipleError.js';
 import { Utils } from '../structures/Utils.js';
-import defaultsDeep from 'lodash.defaultsdeep';
+import type { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
+import type { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
 
-export interface CommandManagerRegisterCommandsOptions extends Omit<Exclude<RecipleClientConfig['applicationCommandRegister'], undefined>, 'enabled'> {
-    contextMenuCommands?: Partial<RecipleClientInteractionBasedCommandConfigOptions> & {
-        commands?: (RESTPostAPIContextMenuApplicationCommandsJSONBody|JSONEncodable<RESTPostAPIContextMenuApplicationCommandsJSONBody>)[];
-    };
-    slashCommands?: Partial<RecipleClientInteractionBasedCommandConfigOptions> & {
-        commands?: (RESTPostAPIChatInputApplicationCommandsJSONBody|JSONEncodable<RESTPostAPIChatInputApplicationCommandsJSONBody>)[];
-    };
-}
+export interface CommandManager extends BaseManager<string, AnyCommand, AnyCommandResolvable>, EventEmitter<CommandManager.Events> {}
 
+@mix(BaseManager, EventEmitter)
 export class CommandManager {
-    readonly contextMenuCommands: Collection<string, ContextMenuCommandBuilder> = new Collection();
-    readonly messageCommands: Collection<string, MessageCommandBuilder> = new Collection();
-    readonly slashCommands: Collection<string, AnySlashCommandBuilder> = new Collection();
-    readonly preconditions: Collection<string, CommandPrecondition> = new Collection();
-    readonly halts: Collection<string, CommandHalt> = new Collection();
+    public readonly holds = BaseCommand as Constructable<AnyCommand>;
 
-    constructor(readonly client: RecipleClient<true>) {}
-
-    get size() {
-        return this.contextMenuCommands.size + this.messageCommands.size + this.slashCommands.size;
-    }
+    constructor(public readonly client: Client) {}
 
     get applicationCommands() {
-        return [
-            ...this.contextMenuCommands.values(),
-            ...this.slashCommands.values()
-        ];
+        return this.cache
+            .filter(c => c.type === CommandType.Slash || c.type === CommandType.ContextMenu)
+            .map(c => c.data);
     }
 
-    /**
-     * Retrieves all application commands.
-     *
-     * @return {(ContextMenuCommandBuilder|AnySlashCommandBuilder)[]} The application commands
-     * @deprecated Use `.applicationCommands` property instead
-     */
-    public getApplicationCommands(): (ContextMenuCommandBuilder|AnySlashCommandBuilder)[] {
-        return this.applicationCommands;
+    public add<T extends CommandType>(data: AnyCommandResolvable<T>): this {
+        const command = hasMixin(data, this.holds) ? data : Utils.createCommandInstance(data) as AnyCommand<T>;
+
+        if (this.cache.get(command.id)) throw new RecipleError(RecipleError.Code.CommandAlreadyExists(command));
+
+        this.cache.set(command.id, command);
+        this.emit('commandCreate', command);
+
+        return this;
     }
 
-    /**
-     * Adds preconditions to the global preconditions.
-     * @param data Preconditions resolvable.
-     */
-    public addPreconditions(...data: RestOrArray<CommandPreconditionResolvable>): CommandPrecondition[] {
-        const preconditions = normalizeArray(data).map(p => CommandPrecondition.resolve(p));
+    public remove(resolvable: AnyCommandResolvable|string): this {
+        const id = typeof resolvable === 'string' ? resolvable : resolvable.id;
+        const command = this.cache.get(id);
 
-        for (const precondition of preconditions) {
-            this.preconditions.set(precondition.id, precondition);
+        if (!command) return this;
+
+        this.cache.delete(id);
+        this.emit('commandRemove', command);
+
+        return this;
+    }
+
+    public get<T extends CommandType>(type: T, name: string): AnyCommand<T>|undefined {
+        return this.cache.find(c => c.type === type && c.data.name === name) as AnyCommand<T>|undefined;
+    }
+
+    public async registerApplicationCommands(options?: CommandManager.RegisterApplicationCommandsOptions): Promise<CommandManager.RegisteredCommandsData> {
+        const globalCommands = new Collection<string, ApplicationCommandDataResolvable>();
+        const guildCommands = new Collection<string, Collection<string, ApplicationCommandDataResolvable>>();
+
+        if (!this.client.isReady()) throw new RecipleError(RecipleError.Code.ClientNotReady());
+
+        const slashCommands = (options?.commands ?? this.applicationCommands).filter(c => c.type === ApplicationCommandType.ChatInput);
+        const contextMenuCommands = (options?.commands ?? this.applicationCommands).filter(c => c.type === ApplicationCommandType.Message || c.type === ApplicationCommandType.User);
+
+        if (options?.registerGlobally) {
+            if (options.slashCommands?.registerGlobally) slashCommands?.forEach(c => globalCommands.set(c.name, c));
+            if (options.contextMenuCommands?.registerGlobally) contextMenuCommands?.forEach(c => globalCommands.set(c.name, c));
         }
 
-        return preconditions;
-    }
+        if (options?.registerToGuilds) {
+            const guilds = Array.isArray(options.registerToGuilds) ? options.registerToGuilds : [];
+            const slashCommandGuilds = options.slashCommands?.registerToGuilds
+                ? Array.isArray(options.slashCommands.registerToGuilds)
+                    ? options.slashCommands.registerToGuilds
+                    : []
+                : [];
+            const contextMenuCommandGuilds = options.contextMenuCommands?.registerToGuilds
+                ? Array.isArray(options.contextMenuCommands.registerToGuilds)
+                    ? options.contextMenuCommands.registerToGuilds
+                    : []
+                : [];
 
-    /**
-     * Sets the preconditions in global preconditions.
-     * @param data Preconditions resolvable.
-     */
-    public setPreconditions(...data: RestOrArray<CommandPreconditionResolvable>): CommandPrecondition[] {
-        this.preconditions.clear();
-        return this.addPreconditions(normalizeArray(data));
-    }
+            for (const guildId of guilds) {
+                const commands = guildCommands.get(guildId) ?? new Collection<string, ApplicationCommandDataResolvable>();
 
-    /**
-     * Executes a preconditions for a command.
-     * @param executeData Execute data of the command.
-     */
-    public async executePreconditions<T extends AnyCommandExecuteData = AnyCommandExecuteData>(executeData: T): Promise<CommandPreconditionResultData<T>|null> {
-        const preconditions = Array.from(this.preconditions.values());
-        const disabledPreconditions = executeData.builder.disabled_preconditions;
+                slashCommands.forEach(c => commands.set(c.name, c));
+                contextMenuCommands.forEach(c => commands.set(c.name, c));
+                guildCommands.set(guildId, commands);
+            }
 
-        for (const precondition of executeData.builder.preconditions) {
-            const data = CommandPrecondition.resolve(precondition);
-            if (preconditions.some(p => p.id === data.id) || disabledPreconditions.includes(data.id)) continue;
+            for (const guildId of slashCommandGuilds) {
+                const commands = guildCommands.get(guildId) ?? new Collection<string, ApplicationCommandDataResolvable>();
 
-            preconditions.push(data);
-        }
+                slashCommands.forEach(c => commands.set(c.name, c));
+                guildCommands.set(guildId, commands);
+            }
 
-        for (const precondition of preconditions) {
-            if (precondition.disabled || disabledPreconditions.some(p => p === precondition.id)) continue;
+            for (const guildId of contextMenuCommandGuilds) {
+                const commands = guildCommands.get(guildId) ?? new Collection<string, ApplicationCommandDataResolvable>();
 
-            const data = await precondition.execute(executeData);
-            if (!data.successful) return data;
-        }
-
-        return null;
-    }
-
-    /**
-     * Adds halt to the global halts.
-     * @param data Halts resolvable.
-     */
-    public addHalts(...data: RestOrArray<CommandHaltResolvable>): CommandHalt[] {
-        const halts = normalizeArray(data).map(h => CommandHalt.resolve(h));
-
-        for (const halt of halts) {
-            this.halts.set(halt.id, halt);
-        }
-
-        return halts;
-    }
-
-    /**
-     * Sets halts in global halts.
-     * @param data Halts resolvable.
-     */
-    public setHalts(...data: RestOrArray<CommandHaltResolvable>): CommandHalt[] {
-        this.halts.clear();
-        return this.addHalts(normalizeArray(data));
-    }
-
-    /**
-     * Executes a halt for a command.
-     * @param trigger Trigger data of the command.
-     */
-    public async executeHalts<T extends AnyCommandHaltTriggerData = AnyCommandHaltTriggerData>(trigger: T): Promise<CommandHaltResultData<T['commandType']>|boolean> {
-        const halts: CommandHalt[] = [];
-        const disabledHalts = trigger.executeData.builder.disabled_halts;
-
-        for (const halt of trigger.executeData.builder.halts) {
-            const data = CommandHalt.resolve(halt);
-            if (halts.some(p => p.id === data.id)  || disabledHalts.includes(data.id)) continue;
-
-            halts.push(data);
-        }
-
-        halts.push(...this.halts.values());
-
-        let handled = false;
-
-        for (const halt of halts) {
-            if (halt.disabled || disabledHalts.some(p => p === halt.id)) continue;
-
-            const data = await halt.execute(trigger);
-            if (data === null) continue;
-            if (!data.successful) return data;
-
-            handled = true;
-        }
-
-        return handled;
-    }
-
-    public get(command: string, type: CommandType.ContextMenuCommand): ContextMenuCommandBuilder|undefined;
-    public get(command: string, type: CommandType.MessageCommand, findWithAliases?: boolean): MessageCommandBuilder|undefined;
-    public get(command: string, type: CommandType.SlashCommand): AnySlashCommandBuilder|undefined;
-    public get(command: string, type: CommandType, findWithAliases: boolean = true): AnyCommandBuilder|undefined {
-        switch (type) {
-            case CommandType.ContextMenuCommand:
-                return this.contextMenuCommands.get(command);
-            case CommandType.MessageCommand:
-                return (
-                    this.messageCommands.get(command)
-                    ?? (
-                        findWithAliases
-                            ? this.messageCommands.find(c => c.aliases?.some(a => a == command?.toLowerCase()))
-                            : undefined
-                        )
-                );
-            case CommandType.SlashCommand:
-                return this.slashCommands.get(command);
-        }
-    }
-
-    /**
-     * Adds new command to the manager.
-     * @param commands Any command resolvable.
-     */
-    public add(...commands: RestOrArray<AnyCommandResolvable>): AnyCommandBuilder[] {
-        const resolved = normalizeArray(commands).map(c => Utils.resolveCommandBuilder(c));
-
-        for (const command of resolved) {
-            switch (command.command_type) {
-                case CommandType.ContextMenuCommand:
-                    this.contextMenuCommands.set(command.name, command);
-                    break;
-                case CommandType.MessageCommand:
-                    this.messageCommands.set(command.name, command);
-                    break;
-                case CommandType.SlashCommand:
-                    this.slashCommands.set(command.name, command);
-                    break;
+                contextMenuCommands.forEach(c => commands.set(c.name, c));
+                guildCommands.set(guildId, commands);
             }
         }
 
-        return resolved;
+        const registeredCommands: CommandManager.RegisteredCommandsData = { global: new Collection(), guilds: new Collection() };
+
+        if (options?.registerGlobally && (options.allowEmptyCommands !== false || globalCommands.size > 0)) {
+            registeredCommands.global = await this.client.application?.commands
+                .set(Array.from(globalCommands.values()))
+                .catch(error => {
+                    this.emitOrThrow(error);
+                    return new Collection();
+                });
+
+            this.emit('applicationCommandsRegister', registeredCommands.global, undefined);
+        }
+
+        if (options?.registerToGuilds) {
+            for (const [guildId, commands] of guildCommands) {
+                if (options.allowEmptyCommands === false && !commands.size) continue;
+
+                const registered: Collection<string, ApplicationCommand>|null = await this.client.application?.commands
+                    .set(Array.from(commands.values()), guildId)
+                    .catch(error => {
+                        this.emitOrThrow(error);
+                        return null;
+                    });
+
+                if (!registered) continue;
+                registeredCommands.guilds.set(guildId, registered);
+                this.emit('applicationCommandsRegister', registered, guildId);
+            }
+        }
+
+        return registeredCommands;
     }
 
-    /**
-     * Registers the application commands.
-     * @param options Register application commands options.
-     */
-    public async registerApplicationCommands(options?: CommandManagerRegisterCommandsOptions): Promise<{ global: Collection<string, ApplicationCommand>; guilds: Collection<string, Collection<string, ApplicationCommand>> }> {
-        const store = { global: new Collection<string, ApplicationCommand>(), guilds: new Collection<string, Collection<string, ApplicationCommand>>() };
-        const config = defaultsDeep({ ...this.client.config.commands, ...this.client.config.applicationCommandRegister }, options) as CommandManagerRegisterCommandsOptions;
+    private emitOrThrow(error: unknown): boolean {
+        if (this.client.listenerCount('error') > 0) return this.emit('error', error);
+        throw error;
+    }
+}
 
-        const contextMenuCommands = (options?.contextMenuCommands?.commands ?? Array.from(this.contextMenuCommands.values())).map(c => isJSONEncodable(c) ? c.toJSON() : c);
-        const slashCommands = (options?.slashCommands?.commands ?? Array.from(this.slashCommands.values())).map(c => isJSONEncodable(c) ? c.toJSON() : c);
-
-        const globalCommands: ApplicationCommandDataResolvable[] = [];
-        const guildCommands: Collection<string, Set<ApplicationCommandDataResolvable>> = new Collection();
-
-        if (config.allowRegisterGlobally !== false) {
-            if (config.contextMenuCommands?.registerCommands?.registerGlobally !== false) globalCommands.push(...contextMenuCommands);
-            if (config.slashCommands?.registerCommands?.registerGlobally !== false) globalCommands.push(...slashCommands);
-        }
-
-        if (config.allowRegisterToGuilds) {
-            for (const guildId of config.contextMenuCommands?.registerCommands?.registerToGuilds ?? []) {
-                const commands = guildCommands.get(guildId) ?? guildCommands.set(guildId, new Set()).get(guildId)!;
-                contextMenuCommands.forEach(c => commands.add(c));
-            }
-
-            for (const guildId of config.slashCommands?.registerCommands?.registerToGuilds ?? []) {
-                const commands = guildCommands.get(guildId) ?? guildCommands.set(guildId, new Set()).get(guildId)!;
-                slashCommands.forEach(c => commands.add(c));
-            }
-
-            for (const guildId of config.registerToGuilds ?? []) {
-                const commands = guildCommands.get(guildId) ?? guildCommands.set(guildId, new Set()).get(guildId)!;
-                for (const command of [...contextMenuCommands, ...slashCommands]) {
-                    commands.add(command);
-                }
-            }
-        }
-
-        if (config.allowRegisterGlobally !== false && (config.registerEmptyCommands || globalCommands.length)) {
-            const commands = await this.client.application!.commands.set(globalCommands)
-                .then(cmds => {
-                    this.client.emit('recipleRegisterApplicationCommands', cmds);
-                    return cmds;
-                })
-                .catch(err => this.client._throwError(err));
-
-            if (commands) commands.forEach(c => store.global.set(c.id, c));
-        }
-
-        if (config.allowRegisterToGuilds) {
-            for (const [guildId, APIcommands] of guildCommands) {
-                if (!config.registerEmptyCommands && !APIcommands.size) continue;
-
-                const commands = await this.client.application!.commands.set([...APIcommands.values()], guildId)
-                    .then(cmds => {
-                        this.client.emit('recipleRegisterApplicationCommands', cmds, guildId);
-                        return cmds;
-                    })
-                    .catch(err => this.client._throwError(err));
-
-                store.guilds.set(guildId, commands ?? new Collection());
-            }
-        }
-
-        return store;
+export namespace CommandManager {
+    export interface Events {
+        error: [error: unknown];
+        commandCreate: [command: AnyCommand];
+        commandRemove: [command: AnyCommand];
+        commandExecute: [data: AnyCommandExecuteData];
+        applicationCommandsRegister: [commands: Collection<string, ApplicationCommand>, guildId: string|undefined];
     }
 
-    /**
-     * Executes a command.
-     * @param interaction The object that triggered the command.
-     */
-    public async execute(interaction: ContextMenuCommandInteraction): Promise<ContextMenuCommandExecuteData|null>;
-    public async execute(message: Message): Promise<MessageCommandExecuteData|null>;
-    public async execute(interaction: ChatInputCommandInteraction): Promise<SlashCommandExecuteData|null>;
-    public async execute(command: ContextMenuCommandInteraction|Message|ChatInputCommandInteraction): Promise<AnyCommandExecuteData|null> {
-        if (command instanceof Message) {
-            return MessageCommandBuilder.execute({ client: this.client, message: command });
-        } else if (command.isContextMenuCommand()) {
-            return ContextMenuCommandBuilder.execute({ client: this.client, interaction: command });
-        } else if (command.isChatInputCommand()) {
-            return SlashCommandBuilder.execute({ client: this.client, interaction: command });
-        }
-
-        return null;
+    export interface RegisterApplicationCommandsOptions {
+        commands?: (SlashCommandBuilder.Data|ContextMenuCommandBuilder.Data)[];
+        slashCommands?: {
+            registerToGuilds?: boolean|string[];
+            registerGlobally?: boolean;
+        };
+        contextMenuCommands?: {
+            registerToGuilds?: boolean|string[];
+            registerGlobally?: boolean;
+        };
+        allowEmptyCommands?: boolean;
+        registerToGuilds?: boolean|string[];
+        registerGlobally?: boolean;
     }
 
-    /**
-     * Execute a command with execute data
-     * @param data The command execute data.
-     */
-    public async executeCommandBuilderExecute(data: AnyCommandExecuteData): Promise<boolean> {
-        try {
-            switch (data.type) {
-                case CommandType.ContextMenuCommand:
-                    await data.builder.execute(data);
-                    break;
-                case CommandType.MessageCommand:
-                    await data.builder.execute(data);
-                    break;
-                case CommandType.SlashCommand:
-                    await data.builder.execute(data);
-                    break;
-            }
-
-            return this.client.emit('recipleCommandExecute', data);
-        } catch (error) {
-            // @ts-expect-error Types is broken here
-            const haltData = await this.executeHalts({
-                commandType: data.type,
-                reason: CommandHaltReason.Error,
-                executeData: data,
-                error
-            })
-            .catch(err => {
-                this.client._throwError(new RecipleError(RecipleError.createCommandHaltErrorOptions(data.builder, err)));
-                return null;
-            });
-
-            if (haltData === false) this.client._throwError(new RecipleError(RecipleError.createCommandExecuteErrorOptions(data.builder, error)))
-        }
-
-        return false;
-    }
-
-    public toJSON() {
-        return {
-            contextMenuCommands: this.contextMenuCommands.map(c => c.toJSON()),
-            messageCommands: this.messageCommands.map(c => c.toJSON()),
-            slashCommands: this.slashCommands.map(c => c.toJSON()),
-            preconditions: this.preconditions.map(p => p.toJSON())
-        }
+    export interface RegisteredCommandsData {
+        global: Collection<string, ApplicationCommand>;
+        guilds: Collection<string, Collection<string, ApplicationCommand>>;
     }
 }

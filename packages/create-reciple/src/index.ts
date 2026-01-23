@@ -1,7 +1,12 @@
-export * from './classes/Addon.js';
-export * from './classes/Config.js';
-export * from './classes/Setup.js';
-export * from './classes/TemplateBuilder.js';
-export * from './utils/constants.js';
-export * from './utils/helpers.js';
-export * from './utils/types.js';
+#!/usr/bin/env node
+import { spawn } from 'node:child_process';
+import { styleText } from 'node:util';
+import { CLI } from 'reciple';
+
+useLogger().warn(`This command is now obsolete. Please use ${styleText(['bold', 'yellow'], 'reciple create')} instead.`);
+
+spawn(process.execPath || 'node', [CLI.bin, 'create', ...process.argv.slice(2)], {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'inherit'
+});

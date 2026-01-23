@@ -1,0 +1,20 @@
+{
+  "extends": "@reciple/utils/tsconfig.json",
+  "exclude": [
+    "reciple.config.js"
+  ],
+  "include": [
+    "./src/**/*"
+  ],
+  "compilerOptions": {
+    "baseUrl": "./",
+    "rootDir": "./src",
+    "outDir": "./modules",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "@reciple/jsx",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

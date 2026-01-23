@@ -1,48 +1,48 @@
-<h1 align="center">
-    <img src="https://i.imgur.com/h0ljJR5.png" width="50%">
+<div align="center">
+    <img src="https://i.imgur.com/C3gWxwc.png" width="50%">
+    <p align="center">
+        <b>A Discord.js framework that just works.</b>
+    </p>
     <br>
-</h1>
+</div>
 
 <h3 align="center">
-    <a href="https://discord.gg/2gyckrwK7b">
-        <img src="https://img.shields.io/discord/1032785824686817291?color=5865F2&logo=discord&logoColor=white">
+    <a href="https://discord.gg/KxfPZYuTGV">
+        <img src="https://img.shields.io/discord/1453743492722458708?color=5865F2&logo=discord&logoColor=white">
     </a>
     <a href="https://npmjs.org/package/reciple">
         <img src="https://img.shields.io/npm/v/reciple?label=npm">
     </a>
-    <a href="https://github.com/thenorthsolution/Reciple/tree/main/packages/reciple">
+    <a href="https://github.com/reciplejs/reciple/tree/main/packages/reciple">
         <img src="https://img.shields.io/npm/dt/reciple?maxAge=3600">
     </a>
-    <a href="https://www.codefactor.io/repository/github/thenorthsolution/reciple">
-        <img src="https://www.codefactor.io/repository/github/thenorthsolution/reciple/badge">
+    <a href="https://www.codefactor.io/repository/github/reciplejs/reciple">
+        <img src="https://www.codefactor.io/repository/github/reciplejs/reciple/badge">
     </a>
     <br>
     <div style="padding-top: 1rem">
-        <a href="https://discord.gg/2gyckrwK7b">
-            <img src="http://invidget.switchblade.xyz/2gyckrwK7b">
+        <a href="https://discord.gg/KxfPZYuTGV">
+            <img src="http://invidget.switchblade.xyz/KxfPZYuTGV">
         </a>
     </div>
 </h3>
 
----
-
 ## About
 
-Reciple is a Discord.js command handler framework that provides extended features for developers.
-
-## Installation
-
-```bash
-npm create reciple@latest
-```
+Reciple is a command framework for [Discord.js](https://discord.js.org/) that just works.
 
 ## Packages
 
-- [@reciple/actions](./packages/actions/) - Used by our github workflow to generate docs.json
-- [@reciple/core](./packages/core/) - Extends [discord.js](https://npmjs.com/package/discord.js) Client to simplify working with Discord API
-- [@reciple/decorators](./packages/decorators) - A collection of Typescript decorators for easier module creation.
-- [@reciple/docgen](./packages/docgen/) - Parses Typescript file to generate json file for documentation
-- [@reciple/message-command-utils](./packages/message-command-utils/) - A library of built-in message command utilities for Reciple.
-- [@reciple/utils](./packages/utils) - Global utilities used by reciple packages
-- [create-reciple](./packages/create-reciple/) - A tool used to easily create Reciple projects
-- [reciple](./packages/reciple/) - A CLI tool for loading modules and running Reciple based Discord bots
+- [@reciple/core](packages/core) - Contains the core classes and interfaces of reciple.
+- [@reciple/jsx](packages/jsx) - Contains the JSX component wrappers of Discord.js builders.
+- [@reciple/modules](packages/modules) - Contains some useful modules for reciple.
+- [@reciple/utils](packages/utils) - Contains the utilities used by reciple packages.
+- [create-reciple](packages/create-reciple) - An alias for `reciple create`.
+- [reciple](packages/reciple) - The reciple CLI and main handler framework and loaders.
+
+## Links
+
+- [Website](https://reciple.js.org)
+- [Discord](https://discord.gg/KxfPZYuTGV)
+- [Github](https://github.com/reciplejs/reciple)
+- [NPM](https://npmjs.org/package/reciple)

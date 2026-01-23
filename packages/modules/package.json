@@ -1,0 +1,49 @@
+{
+  "name": "@reciple/modules",
+  "version": "10.0.1",
+  "license": "LGPL-3.0-only",
+  "description": "A collection of useful modules for reciple",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
+    "check": "tsc --noEmit",
+    "prepack": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenorthsolution/reciple",
+    "directory": "packages/modules"
+  },
+  "peerDependencies": {
+    "discord.js": "^14.25.1",
+    "reciple": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "discord.js": {
+      "optional": false
+    },
+    "reciple": {
+      "optional": false
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@sapphire/snowflake": "^3.5.5"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "modules/**"],
+      "inputs": [
+        "src/**/*",
+        "*.json",
+        "tsdown.config.ts"
+      ],
+      "outputLogs": "new-only",
+      "cache": true
+    },
+    "check": {},
+    "docs": {
+      "outputs": ["docs.json"],
+      "inputs": [
+        "src/**/*"
+      ],
+      "outputLogs": "new-only",
+      "cache": true
+    }
+  }
+}

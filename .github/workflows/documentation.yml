@@ -1,115 +1,85 @@
-name: Generate Docs
-
+name: Documentation
 on:
   push:
-    branches: ['main']
-    tags: ['**']
+    branches:
+      - main
+      - v*
+    tags:
+      - '**'
+    paths:
+      - 'packages/*/src/**'
   workflow_dispatch:
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 jobs:
   build:
-    name: Build documentation
+    name: Build & Push Documentation
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'thenorthsolution'
+    if: github.repository_owner == 'reciplejs'
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_SCOPE }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.ref_name || '' }}
-
-      - name: Install node.js
-        uses: actions/setup-node@v4
+          ref: ${{ github.ref || '' }}
+      - name: Cache turbo build setup
+        uses: actions/cache@v4
         with:
-          node-version: latest
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Docgen
-        run: npm run build -w @reciple/utils -w @reciple/docgen
-
-      - name: Build docs.json
-        run: npm run docs
-
-      - name: Upload docgen artifacts
-        uses: actions/upload-artifact@v4
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          name: docgen
-          path: packages/*/docs/docs.json
-  upload:
-    name: Upload Documentation
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
-      fail-fast: false
-      matrix:
-        package: ['core', 'reciple', 'decorators', 'message-command-utils', 'utils', 'docgen', 'create-reciple']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+          bun-version: latest
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
         with:
-          ref: ${{ github.ref_name || '' }}
-
-      - name: Install node.js
-        uses: actions/setup-node@v4
+          deno-version: vx.x.x
+      - name: Install Dependencies
+        run: bun install
+      - name: Build Packages
+        run: bun run build:packages
+      - name: Build Documentation
+        run: bun run docs
+      - name: Checkout Documentation Repository
+        uses: actions/checkout@v6
         with:
-          node-version: latest
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Download docgen artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: docgen
-          path: docs
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Format tag package semver
+          token: ${{ secrets.DOCS_TOKEN }}
+          repository: reciplejs/docs
+          ref: main
+          path: out
+      - name: Format Tag
         id: format-tag
         if: ${{ github.ref_type == 'tag' }}
-        uses: ./packages/actions/src/formatTag
+        uses: ./scripts/actions/formatTag
         with:
           tag: ${{ github.ref_name }}
-
-      - name: Checkout docs repository
-        uses: actions/checkout@v4
-        with:
-          ref: 'tags'
-          path: 'out'
-
-      - name: Move docs to correct directory (Tag)
-        if: ${{ github.ref_type == 'tag' && matrix.package == steps.format-tag.outputs.package }}
+      - name: Move Documentation Files (Tag)
+        if: ${{ github.ref_type == 'tag' }}
         env:
-          PACKAGE: ${{ steps.format-tag.outputs.package }}
-          SEMVER: ${{ steps.format-tag.outputs.semver }}
+          PACKAGE_NAME: ${{ steps.format-tag.outputs.package }}
+          PACKAGE_VERSION: ${{ steps.format-tag.outputs.version }}
         run: |
-          echo "docs/${PACKAGE}/docs/docs.json > out/${PACKAGE}/${SEMVER}.json"
-          mkdir -p out/${PACKAGE}
-          mv docs/${PACKAGE}/docs/docs.json out/${PACKAGE}/${SEMVER}.json
-
-      - name: Move docs to correct directory (Branch)
-        if: ${{ github.ref_type == 'branch' }}
-        env:
-          PACKAGE: ${{ matrix.package }}
+          mkdir -p "out/${PACKAGE_NAME}"
+          mv "docs/${PACKAGE_NAME}/docs.json" "out/${PACKAGE_NAME}/${PACKAGE_VERSION}.json"
+      - name: Move Documentation Files (Branch)
         run: |
-          echo "docs/${PACKAGE}/docs/docs.json > out/${PACKAGE}/${GITHUB_REF_NAME}.json"
-          mkdir -p out/${PACKAGE}
-          mv docs/${PACKAGE}/docs/docs.json out/${PACKAGE}/${GITHUB_REF_NAME}.json
+          declare -a PACKAGES=("core" "jsx" "modules" "reciple" "utils")
 
-      - name: Commit and push
+          for PACKAGE in "${PACKAGES[@]}"; do
+            mkdir -p "out/${PACKAGE}"
+            mv "docs/${PACKAGE}/docs.json" "out/${PACKAGE}/${GITHUB_REF_NAME}.json"
+          done
+      - name: Push Documentation Files
         run: |
           cd out
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git pull
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Docs build for ${GITHUB_REF_TYPE} ${GITHUB_REF_NAME}: ${GITHUB_SHA}" || true
-          git pull
-          git push
+          git commit -m "chore: update documentation"
+          git push origin main

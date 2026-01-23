@@ -1,0 +1,30 @@
+---
+title: Error Handling
+description: Learn how to handle errors in Reciple
+keywords:
+    - error
+    - crash
+category: Topics
+---
+
+# Error Handling
+
+Using our external package [`reciple-anticrash`](https://npmjs.org/package/reciple-anticrash) simplifies error handling. This prevents process and client errors from crashing your bot; instead, they log the stack trace and send the error to a Discord channel for convenient debugging.
+
+### Two ways to install `reciple-anticrash`
+- Select the addon `reciple-anticrash` when creating the bot project using `npm create reciple@latest`
+- Install the package `reciple-anticrash` using `npm i reciple-anticrash`.
+  - Then create a new module in your `./modules/addons` folder. In this case we will name it `reciple-anticrash.js`.
+    ```js
+    import { RecipleAnticrash } from 'reciple-anticrash';
+    export default new RecipleAnticrash({
+      reportChannels: process.env.ERROR_CHANNELS ? process.env.ERROR_CHANNELS.split(',') : []
+    });
+    ```
+
+To add error channels, simply create a new entry in your `.env` file and add your channels separated by commas.
+```properties
+ERROR_CHANNELS="123456789012345678,987654321098765432"
+```
+
+Now, whenever there is an error, your bot will display these fancy error messages in its logs and error channels without crashing the entire bot process!

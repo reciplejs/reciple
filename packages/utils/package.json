@@ -1,56 +1,41 @@
 {
   "name": "@reciple/utils",
-  "description": "Utilities used by reciple modules",
-  "license": "GPL-3.0",
-  "version": "9.8.0",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "version": "10.0.1",
+  "license": "LGPL-3.0-only",
+  "description": "Utils for reciple",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "type": "module",
-  "keywords": [
-    "reciple",
-    "utility"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thenorthsolution/Reciple",
-    "directory": "packages/utils"
-  },
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
     },
     "./tsconfig.json": "./assets/tsconfig.json"
-  },
-  "scripts": {
-    "clean": "rimraf ./dist",
-    "build": "tsup",
-    "check": "tsc --noEmit",
-    "docs": "node ../docgen/dist/bin.js -i ./src/index.ts -o ./docs/docs.json",
-    "prepack": "npm run build"
   },
   "files": [
     "dist",
     "assets",
     "README.md"
   ],
-  "publishConfig": {
-    "access": "public"
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build": "tsdown --config-loader unrun",
+    "docs": "deno doc --json --sloppy-imports ./src/index.ts > docs.json",
+    "check": "tsc --noEmit",
+    "prepack": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thenorthsolution/reciple",
+    "directory": "packages/utils"
   },
   "dependencies": {
-    "@discordjs/collection": "^2.1.1",
-    "discord-api-types": "^0.37.119",
-    "dotenv": "^16.4.7",
-    "fallout-utility": "^2.9.1",
-    "file-type": "^20.4.0",
-    "package-json": "^10.0.1",
-    "semver": "^7.7.1"
+    "@prtty/prtty": "^1.1.0",
+    "pkg-types": "^2.3.0",
+    "radash": "^12.1.1"
   },
-  "devDependencies": {
-    "@types/semver": "^7.5.8",
-    "discord.js": "^14.18.0"
-  },
-  "gitHead": "88c2b7a5d61ca5707db84435871c11d50259d056"
+  "publishConfig": {
+    "access": "public"
+  }
 }

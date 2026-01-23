@@ -20,6 +20,7 @@ pids
 lib-cov
 
 # Docs files
+docs
 docs.json
 
 # Coverage directory used by tools like istanbul
@@ -129,9 +130,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# bin
-bin
-
 # docs
 docs/docs.json
 
@@ -140,3 +138,4 @@ test
 .nx
 .turbo
 tmp
+test-template

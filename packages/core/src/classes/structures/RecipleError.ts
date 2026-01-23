@@ -1,115 +1,107 @@
-import type { AnyCommandBuilder, AnyCommandBuilderData } from '../../types/structures.js';
-import type { BaseCommandBuilderData } from '../builders/BaseCommandBuilder.js';
-import { buildVersion } from '../../types/constants.js';
-import { stripVTControlCharacters } from 'node:util';
-import { kleur } from 'fallout-utility/strings';
-import { Utils } from './Utils.js';
-
-export interface RecipleErrorOptions {
-    message: string;
-    name?: string;
-    cause?: unknown;
-}
+import { stripVTControlCharacters, styleText } from 'node:util';
+import type { AnyCommand } from '../../helpers/types.js';
+import { CommandType } from '../../helpers/constants.js';
+import { MessageCommand } from '../commands/MessageCommand.js';
+import type { MessageCommandOption } from './MessageCommandOption.js';
+import type { MessageCommandFlag } from './MessageCommandFlag.js';
 
 export class RecipleError extends Error {
-    get cleanStack() { return this.stack && stripVTControlCharacters(this.stack); }
+    get cleanStack() {
+        return this.stack && stripVTControlCharacters(this.stack)
+    }
 
-    constructor(options: RecipleErrorOptions|string) {
+    constructor(options: RecipleError.Options|string) {
         options = typeof options === 'string' ? { message: options } : options;
         if ('cause' in options) options.cause = ['string', 'boolean', 'number', 'symbol', 'bigint'].includes(typeof options.cause) ? new RecipleError(String(options.cause)) : options.cause;
 
         super(options.message, { ...options });
 
-        if (options.name) this.name = kleur.bold().red(options.name);
+        if (options.name) this.name = styleText(['red', 'bold'], options.name);
     }
 
     public toString() {
         return stripVTControlCharacters(super.toString());
     }
 
-    public static createUnknownCommandTypeErrorOptions(given: unknown): RecipleErrorOptions {
-        return {
-            message: `Unknown command type ${kleur.blue().bold(typeof given)}`,
-            name: 'UnknownCommandType'
-        };
+    public static fromArray(errors: Error[]) {
+        if (errors.length === 1) return errors[0];
+        return new RecipleError(RecipleError.Code.MultipleErrors(errors));
+    }
+}
+
+export namespace RecipleError {
+    export interface Options {
+        name?: string;
+        message: string;
+        cause?: unknown;
     }
 
-    public static createCommandExecuteErrorOptions(builder: AnyCommandBuilder|AnyCommandBuilderData, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `An error occured while executing a ${kleur.cyan(Utils.getCommandTypeName(builder.command_type))} named ${kleur.red("'" + builder.name + "'")}`,
+    export const Code = {
+        MultipleErrors: (errors: Error[]) => ({
+            name: 'MultipleErrors',
+            message: `${errors.length} error${errors.length === 1 ? '' : 's'} occurred while executing.`,
+            cause: errors.length === 1 ? errors[0] : errors,
+        }),
+        NotImplemented: () => ({
+            name: 'NotImplemented',
+            message: 'This functionality is not yet implemented.',
+        }),
+        UnknownCommandType: (type: string) => ({
+            name: 'UnknownCommandType',
+            message: `The command type (${type}) is unknown.`,
+        }),
+        ClientNotReady: () => ({
+            name: 'ClientNotReady',
+            message: 'The client is not yet ready. Please wait until the client is logged in before using this functionality.',
+        }),
+        ClientAlreadyReady: () => ({
+            name: 'ClientAlreadyReady',
+            message: 'The client is already ready.',
+        }),
+        PreconditionError: (errors: unknown[]) => ({
+            name: 'PreconditionError',
+            message: `${errors.length} precondition${errors.length === 1 ? '' : 's'} failed while executing.`,
+            cause: errors.length === 1 ? errors[0] : errors,
+        }),
+        PostconditionError: (errors: unknown[]) => ({
+            name: 'PostconditionError',
+            message: `${errors.length} postcondition${errors.length === 1 ? '' : 's'} failed while executing.`,
+            cause: errors.length === 1 ? errors[0] : errors,
+        }),
+        CommandExecuteError: (command: AnyCommand, cause: unknown) => ({
+            name: 'CommandExecuteError',
+            message: `An error occurred while executing the command (${CommandType[command.type]}: ${command.data.name}).`,
             cause,
-            name: 'CommandExecuteError'
-        };
-    }
-
-    public static createCommandHaltErrorOptions(builder: BaseCommandBuilderData & { name: string; }, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `An error occured while executing the halt function of a ${kleur.cyan(Utils.getCommandTypeName(builder.command_type))} named ${kleur.red("'" + builder.name + "'")}`,
-            cause,
-            name: 'CommandHaltError'
-        };
-    }
-
-    public static createCommandPreconditionErrorOptions(builder: BaseCommandBuilderData & { name: string; }, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `An error occured while executing precondition for ${kleur.cyan(Utils.getCommandTypeName(builder.command_type))} named ${kleur.red("'" + builder.name + "'")}`,
-            cause,
-            name: 'PreconditionError'
-        };
-    }
-
-    public static createCommandRequiredOptionNotFoundErrorOptions(optionName: string, value: unknown): RecipleErrorOptions {
-        return {
-            message: `No value given for required option ${kleur.cyan("'" + optionName + "'")}`,
-            cause: { value },
-            name: 'RequiredOptionNotFound'
-        };
-    }
-
-    public static createCommandRequiredFlagNotFoundErrorOptions(flagName: string, value: unknown): RecipleErrorOptions {
-        return {
-            message: `No value given for required flag ${kleur.cyan("'" + flagName + "'")}`,
-            cause: { value },
-            name: 'RequiredFlagNotFound'
-        };
-    }
-
-    public static createStartModuleErrorOptions(moduleName: string, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `Failed to start module ${kleur.red("'" + moduleName + "'")}`,
-            cause,
-            name: `StartModuleError`
-        };
-    }
-
-    public static createLoadModuleErrorOptions(moduleName: string, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `Failed to load ${kleur.red("'" + moduleName + "'")}`,
-            cause,
-            name: 'LoadModuleError'
-        };
-    }
-
-    public static createUnloadModuleErrorOptions(moduleName: string, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `Failed to unload ${kleur.red("'" + moduleName + "'")}`,
-            cause,
-            name: 'UnloadModuleError'
-        };
-    }
-
-    public static createUnsupportedModuleErrorOptions(moduleDisplayName: string): RecipleErrorOptions {
-        return {
-            message: `The module ${kleur.red("'" + moduleDisplayName + "'")} does not support reciple client ${kleur.blue().bold(buildVersion)}`,
-            name: 'UnsupportedModule'
-        };
-    }
-
-    public static createResolveModuleFilesErrorOptions(file: string, cause: unknown): RecipleErrorOptions {
-        return {
-            message: `An error occured while resolving module file ${kleur.green("'" + file + "'")}`,
-            cause,
-            name: 'ResolveModuleFilesError'
-        };
-    }
+        }),
+        CommandAlreadyExists: (command: AnyCommand) => ({
+            name: 'CommandAlreadyExists',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) already exists.`,
+        }),
+        MessageCommandMissingRequiredOption: (command: MessageCommand, option: MessageCommandOption<any>) => ({
+            name: 'MessageCommandMissingRequiredOption',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) is missing a required option (${option.name}).`,
+        }),
+        MessageCommandMissingRequiredFlag: (command: MessageCommand, flag: MessageCommandFlag<any>) => ({
+            name: 'MessageCommandMissingRequiredFlag',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) is missing a required flag (${flag.name}).`,
+        }),
+        MessageCommandInvalidOption: (command: MessageCommand, option: MessageCommandOption<any>, reason?: unknown) => ({
+            name: 'MessageCommandInvalidOption',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) has an invalid option (${option.name}).`,
+            cause: reason
+        }),
+        MessageCommandInvalidFlag: (command: MessageCommand, flag: MessageCommandFlag<any>, reason?: unknown) => ({
+            name: 'MessageCommandInvalidFlag',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) has an invalid flag (${flag.name}).`,
+            cause: reason
+        }),
+        MessageCommandUnknownOption: (command: MessageCommand, option: string) => ({
+            name: 'MessageCommandUnknownOption',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) does not have an option (${option}).`,
+        }),
+        MessageCommandUnknownFlag: (command: MessageCommand, flag: string) => ({
+            name: 'MessageCommandUnknownFlag',
+            message: `The command (${CommandType[command.type]}: ${command.data.name}) does not have a flag (${flag}).`,
+        }),
+    } as const;
 }

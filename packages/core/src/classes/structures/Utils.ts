@@ -1,44 +1,90 @@
-import { ContextMenuCommandBuilder, type ContextMenuCommandResolvable } from '../builders/ContextMenuCommandBuilder.js';
-import { MessageCommandBuilder, type MessageCommandResolvable } from '../builders/MessageCommandBuilder.js';
-import { SlashCommandBuilder, type SlashCommandResolvable } from '../builders/SlashCommandBuilder.js';
-import type { AnyCommandBuilder, AnyCommandResolvable } from '../../types/structures.js';
-import { CommandType } from '../../types/constants.js';
-import { isJSONEncodable } from 'discord.js';
+import type { Collection } from 'discord.js';
+import { CommandPostconditionReason, CommandType } from '../../helpers/constants.js';
+import type { AnyCommand, AnyCommandBuilder, AnyCommandData, AnyCommandExecuteData } from '../../helpers/types.js';
+import { ContextMenuCommandBuilder } from '../builders/ContextMenuCommandBuilder.js';
+import { MessageCommandBuilder } from '../builders/MessageCommandBuilder.js';
+import { SlashCommandBuilder } from '../builders/SlashCommandBuilder.js';
+import { ContextMenuCommand } from '../commands/ContextMenuCommand.js';
+import { MessageCommand } from '../commands/MessageCommand.js';
+import { SlashCommand } from '../commands/SlashCommand.js';
+import { RecipleError } from './RecipleError.js';
+import type { CommandPrecondition } from './CommandPrecondition.js';
 
-export class Utils {
-    private constructor() {}
-
-    public static getCommandTypeName(commandType: CommandType): string {
-        switch (commandType) {
-            case CommandType.ContextMenuCommand:
-                return 'Context Menu Command';
-            case CommandType.MessageCommand:
-                return 'Message Command';
-            case CommandType.SlashCommand:
-                return 'Slash Command';
+export namespace Utils {
+    export function createCommandInstance<T extends CommandType>(data: Omit<Partial<AnyCommandData<T>>, 'type'> & { type: T }): AnyCommand<T> {
+        switch (data.type) {
+            case CommandType.Message:
+                return new MessageCommand(data as MessageCommand.Data) as AnyCommand<T>;
+            case CommandType.Slash:
+                return new SlashCommand(data as SlashCommand.Data) as AnyCommand<T>;
+            case CommandType.ContextMenu:
+                return new ContextMenuCommand(data as ContextMenuCommand.Data) as AnyCommand<T>;
+            default:
+                throw new RecipleError(RecipleError.Code.UnknownCommandType(data.type));
         }
     }
 
-    public static resolveCommandBuilder(data: ContextMenuCommandResolvable, createNewInstance?: boolean): ContextMenuCommandBuilder;
-    public static resolveCommandBuilder(data: MessageCommandResolvable, createNewInstance?: boolean): MessageCommandBuilder;
-    public static resolveCommandBuilder(data: SlashCommandResolvable, createNewInstance?: boolean): SlashCommandBuilder;
-    public static resolveCommandBuilder(data: AnyCommandResolvable, createNewInstance?: boolean): AnyCommandBuilder;
-    public static resolveCommandBuilder(data: AnyCommandResolvable, createNewInstance: boolean = false): AnyCommandBuilder {
-        if (!createNewInstance) {
-            if (data instanceof ContextMenuCommandBuilder) return data;
-            if (data instanceof MessageCommandBuilder) return data;
-            if (data instanceof SlashCommandBuilder) return data;
+    export function createCommandBuilderInstance<T extends CommandType>(type: T): AnyCommandBuilder<T> {
+        switch (type) {
+            case CommandType.Message:
+                return new MessageCommandBuilder() as AnyCommandBuilder<T>;
+            case CommandType.Slash:
+                return new SlashCommandBuilder() as AnyCommandBuilder<T>;
+            case CommandType.ContextMenu:
+                return new ContextMenuCommandBuilder() as AnyCommandBuilder<T>;
+            default:
+                throw new RecipleError(RecipleError.Code.UnknownCommandType(type));
+        }
+    }
+
+    export async function executeCommandPreconditions<T extends CommandType>(data: AnyCommandExecuteData<T>): Promise<AnyCommandExecuteData<T>|null> {
+        await data.client.preconditions.execute({ data });
+
+        if (data.preconditionResults.hasErrors) {
+            const results = await data.client.postconditions.execute<CommandType, unknown>({
+                data: {
+                    reason: CommandPostconditionReason.PreconditionError,
+                    preconditionResult: data.preconditionResults,
+                    executeData: data
+                }
+            });
+
+            if (!results.cache.some(result => result.success)) {
+                throw new RecipleError(RecipleError.Code.PreconditionError(data.preconditionResults.errors));
+            }
+
+            return data;
         }
 
-        if (isJSONEncodable(data)) return this.resolveCommandBuilder(data.toJSON(), createNewInstance);
+        if (data.preconditionResults.postconditionExecutes.length) {
+            const withPostconditionData = (data.preconditionResults.cache as Collection<string, CommandPrecondition.ResultData<CommandType>>)
+                .filter(result => !!result.postconditionExecute);
 
-        switch (data.command_type) {
-            case CommandType.ContextMenuCommand:
-                return ContextMenuCommandBuilder.from(data);
-            case CommandType.MessageCommand:
-                return MessageCommandBuilder.from(data);
-            case CommandType.SlashCommand:
-                return SlashCommandBuilder.from(data);
+            for (const [id, result] of withPostconditionData) {
+                const postconditionExecute = result.postconditionExecute!;
+
+                await data.client.postconditions.execute<CommandType, unknown>({
+                    data: postconditionExecute.data!,
+                    allowedPostconditions: postconditionExecute.allowedPostconditions,
+                    preconditionTrigger: result
+                });
+            }
+
+            return data;
         }
+
+        if (data.preconditionResults.hasFailures) {
+            await data.client.postconditions.execute<CommandType, unknown>({
+                data: {
+                    reason: CommandPostconditionReason.PreconditionFailure,
+                    preconditionResult: data.preconditionResults,
+                    executeData: data
+                }
+            });
+
+            return data;
+        }
+
+        return null;
     }
 }

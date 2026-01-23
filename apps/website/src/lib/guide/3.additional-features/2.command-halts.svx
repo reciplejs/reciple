@@ -1,0 +1,137 @@
+---
+title: Command Halts
+description: Learn how to create and use command halts
+category: Additional Features
+---
+
+# Command Halts
+Command halts are functions that are executed when a command, such as the context menu, message, or slash command, is terminated, cooled-down, or fails to execute.
+
+There are different types of command halts that serves their own purposes.
+
+#### Command Halt Data Types
+- [`CommandErrorHaltTriggerData`](/docs/core/main/interfaces:CommandErrorHaltTriggerData) Used to handle error thrown by the command.
+- [`CommandCooldownHaltTriggerData`](/docs/core/main/interfaces:CommandCooldownHaltTriggerData) Used to handle commands that are cooled-down.
+- [`CommandPreconditionResultHaltTriggerData`](/docs/core/main/interfaces:CommandPreconditionResultHaltTriggerData) Used to handle a command that has triggered a precondition.
+- [`CommandInvalidArgumentsHaltTriggerData`](/docs/core/main/interfaces:CommandInvalidArgumentsHaltTriggerData) Can only be used with message commands to handle invalid argument error.
+- [`CommandMissingArgumentsHaltTriggerData`](/docs/core/main/interfaces:CommandMissingArgumentsHaltTriggerData) Can only be used with message commands to handle missing argument error.
+- [`CommandInvalidFlagsHaltTriggerData`](/docs/core/main/interfaces:CommandInvalidFlagsHaltTriggerData) Can only be used with message commands to handle invalid flag error.
+- [`CommandMissingFlagsHaltTriggerData`](/docs/core/main/interfaces:CommandMissingFlagsHaltTriggerData) Can only be used with message commands to handle missing flag error.
+
+Command halts are identified using the [`.reason`](/docs/core/main/interfaces:BaseCommandHaltData) property that uses the [`CommandHaltReason`](/docs/core/main/enums:CommandHaltReason) enum.
+
+To create a command halt, create a new file in a folder that is **NOT** your modules folder. In this case we will use `./modules/halts/error-handler.js`. Inside that file export the command halt data.
+
+```js
+import { CommandHaltReason, CommandType } from 'reciple';
+
+export class MyErrorCommandHalt {
+    id = 'my.errorhandler';
+    disabled = false; // Defaults to false when not defined
+
+    errorMessage =  `An error occured while executing this command`;
+
+    contextMenuCommandHalt(data) {
+        if (data.reason !== CommandHaltReason.Error) return;
+
+        const interaction = data.executeData.interaction;
+        if (interaction.replied || interaction.deferred) {
+            await interaction.editReply(this.errorMessage);
+        } else {
+            await interaction.reply(this.errorMessage);
+        }
+
+        return true;
+    }
+
+    messageCommandHalt(data) {
+        if (data.reason !== CommandHaltReason.Error) return;
+
+        await data.executeData.message.reply(this.errorMessage);
+        return true;
+    }
+
+    slashCommandHalt(data) {
+        if (data.reason !== CommandHaltReason.Error) return;
+
+        const interaction = data.executeData.interaction;
+        if (interaction.replied || interaction.deferred) {
+            await interaction.editReply(this.errorMessage);
+        } else {
+            await interaction.reply(this.errorMessage);
+        }
+
+        return true;
+    }
+};
+```
+
+`contextMenuCommandHalt`, `messageCommandHalt`, and `slashCommandHalt` are the functions that will handle the command halt.
+- Return `true` if the halt is handled
+- `false|string|Error` if it fails
+- `null|undefined` to pass the command halt trigger to the next command halt.
+
+> Learn more about command halt data structure. [View Docs](/docs/core/main/interfaces:CommandHaltData)
+
+## Global Scope Command Halt
+
+To use the command halt that we made, you can import it in your config file and add it to the `commandHalts` array.
+
+```js
+import { MyErrorHandler } from './modules/halts/error-handler.js';
+
+export const config = {
+    /// ...other config...
+    commandHalts: [
+        new MyErrorHandler()
+    ]
+};
+```
+
+## Command Scope Command Halt
+
+Alternatively, you can add it to a single command using the [`.addHalts()`](/docs/core/main/classes:BaseCommandBuilder#addhalts) or [`.setHalts()`](/docs/core/main/classes:BaseCommandBuilder#sethalts) methods.
+
+```js
+import { SlashCommandBuilder } from 'reciple';
+import { MyErrorHandler } from '../halts/error-handler.js';
+
+new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Pong command')
+    .setPreconditions(new MyErrorHandler())
+    .setExecute(async ({ interaction }) => {
+        await interaction.reply('Pong!');
+    })
+```
+
+Now, when a command fails, the code above will send a message rather than terminating the bot process.
+
+<discord-messages>
+    <discord-message profile="bot" ephemeral>
+        <discord-command slot="reply" profile="cat" command="/ping"></discord-command>
+        An error occured while executing this command
+    </discord-message>
+</discord-messages>
+
+> You can disable a global or command scope halts from a command using [`.addDisabledHalts()`](/docs/core/main/classes:BaseCommandBuilder#adddisabledhalts) or [`.setDisabledHalts()`](/docs/core/main/classes:BaseCommandBuilder#setdisabledhalts). Just pass the id of the halt you want to disable to the arguments of this method to not use them.
+
+## Set Global Command Halt In Module
+
+This methods allows you to set a global command halt within a module without adding it to the config file.
+
+```js
+import { MyErrorHandler } from '../halts/error-handler.js';
+
+export class LoadHalt {
+    halt = new MyErrorHandler();
+
+    async onStart({ client }) {
+        client.commands.addHalts(this.halt);
+
+        return true;
+    }
+}
+
+export default LoadHalt;
+```

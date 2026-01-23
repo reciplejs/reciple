@@ -1,0 +1,139 @@
+@reference "./app.css";
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Book.woff') format('woff');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Medium.woff') format('woff');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Semibold.woff') format('woff');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Whitney';
+  src: url('https://cdn.skyra.pw/whitney-font/v2/Bold.woff') format('woff');
+  font-weight: 700;
+}
+
+html {
+    .shiki,
+    .shiki span {
+        color: var(--shiki-light);
+        background-color: var(--shiki-light-bg);
+        font-style: var(--shiki-light-font-style);
+        font-weight: var(--shiki-light-font-weight);
+        text-decoration: var(--shiki-light-text-decoration);
+    }
+
+    &.dark .shiki,
+    &.dark .shiki span {
+        color: var(--shiki-dark);
+        background-color: var(--shiki-dark-bg);
+        font-style: var(--shiki-dark-font-style);
+        font-weight: var(--shiki-dark-font-weight);
+        text-decoration: var(--shiki-dark-text-decoration);
+    }
+
+    .prose {
+        & p,
+        & h1,
+        & h2,
+        & h3,
+        & h4,
+        & h5,
+        & h6,
+        & blockquote,
+        & td {
+            /* white-space: break-spaces; */
+            word-wrap: break-word;
+        }
+
+        & table {
+            overflow: auto;
+            display: block;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        & pre.shiki {
+            @apply border;
+            word-wrap: ;
+            overflow: auto;
+        }
+
+        & pre,
+        & code,
+        .shiki span {
+            @apply select-text!;
+        }
+
+        & h1,
+        & h2,
+        & h3,
+        & h4,
+        & h5,
+        & h6{
+            &:hover,
+            & a:focus {
+                & span.icon.icon-link::after {
+                    content: '';
+                    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWxpbmsyLWljb24gbHVjaWRlLWxpbmstMiI+PHBhdGggZD0iTTkgMTdIN0E1IDUgMCAwIDEgNyA3aDIiLz48cGF0aCBkPSJNMTUgN2gyYTUgNSAwIDEgMSAwIDEwaC0yIi8+PGxpbmUgeDE9IjgiIHgyPSIxNiIgeTE9IjEyIiB5Mj0iMTIiLz48L3N2Zz4=');
+                    @apply inline-block size-6 ms-2 align-middle dark:invert;
+                }
+            }
+        }
+    }
+
+    &.dark .prose {
+        & h1,
+        & h2,
+        & h3,
+        & h4,
+        & h5,
+        & h6{
+            & a span.icon.icon-link::after {
+                filter: invert(1);
+            }
+        }
+    }
+}
+
+@layer base {
+    discord-messages {
+        @apply border rounded-lg bg-neutral-800 mb-2!;
+        position: relative;
+        overflow: auto;
+
+        &[no-background] {
+            @apply bg-transparent border-0;
+        }
+    }
+
+    discord-messages,
+    discord-messages *::before,
+    discord-messages *::after,
+    discord-messages * {
+        margin: revert-layer;
+        padding: revert-layer;
+        user-select: text;
+    }
+}
+
+@layer utilities {
+  .prose a {
+    & :where(img):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      margin-top: 0;
+      margin-bottom: 0;
+      display: inline;
+    }
+  }
+}
