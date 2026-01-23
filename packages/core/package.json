@@ -36,7 +36,7 @@
     "ts-mixer": "^6.0.4"
   },
   "peerDependencies": {
-    "discord.js": "^14.25.1"
+    "discord.js": "catalog:"
   },
   "publishConfig": {
     "access": "public"

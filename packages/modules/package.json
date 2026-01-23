@@ -29,7 +29,7 @@
     "directory": "packages/modules"
   },
   "peerDependencies": {
-    "discord.js": "^14.25.1",
+    "discord.js": "catalog:",
     "reciple": "workspace:^"
   },
   "peerDependenciesMeta": {
