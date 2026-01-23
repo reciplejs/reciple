@@ -5,9 +5,6 @@ import path from "node:path";
 const root = path.join(import.meta.dirname, '../');
 const packages = await readdir(path.join(root, "./packages"));
 const outDir = path.join(root, './docs');
-const tag = process.argv[2];
-
-if (!tag) throw new Error('Tag is required');
 
 await new Promise((res, rej) => {
     const child = spawn(`turbo run docs`, {
@@ -43,5 +40,5 @@ for (const pkg of packages) {
 
     await rm(entry);
     await mkdir(newDir, { recursive: true });
-    await writeFile(path.join(newDir, `${tag}.json`), JSON.stringify(data, null, 2));
+    await writeFile(path.join(newDir, `docs.json`), JSON.stringify(data, null, 2));
 }
