@@ -33,7 +33,7 @@ jobs:
       - name: Install Dependencies
         run: bun install
       - name: Build Packages
-        run: bun run build
+        run: bun run build:packages
       - name: Build Documentation
         run: bun run docs
       - name: Upload Documentation Artifacts
