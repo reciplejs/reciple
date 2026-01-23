@@ -8,7 +8,7 @@ const outDir = path.join(root, './docs');
 const gitPath = `${await getGitRemote()}/blob/${await getGitRef()}/`;
 
 await new Promise((res, rej) => {
-    const child = spawn(`turbo run docs --cache=local:`, {
+    const child = spawn(`turbo run docs`, {
         env: process.env,
         shell: true,
         stdio: 'inherit'
