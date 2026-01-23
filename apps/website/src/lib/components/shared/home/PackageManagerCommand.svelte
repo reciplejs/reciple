@@ -47,7 +47,7 @@
     }
 
     function supportsClipboard() {
-        return 'clipboard' in navigator && 'writeText' in navigator.clipboard;
+        return typeof navigator !== 'undefined' && 'clipboard' in navigator && 'writeText' in navigator.clipboard;
     }
 </script>
 
