@@ -93,10 +93,12 @@
     },
     "packages/create-reciple": {
       "name": "create-reciple",
-      "version": "10.0.7",
+      "version": "10.0.9",
       "bin": "./dist/index.mjs",
       "dependencies": {
-        "reciple": "^10.0.1",
+        "@reciple/core": "workspace:^",
+        "discord.js": "catalog:",
+        "reciple": "workspace:^",
       },
     },
     "packages/jsx": {
@@ -108,7 +110,7 @@
     },
     "packages/modules": {
       "name": "@reciple/modules",
-      "version": "10.0.7",
+      "version": "10.0.9",
       "dependencies": {
         "@sapphire/snowflake": "^3.5.5",
       },
@@ -119,7 +121,7 @@
     },
     "packages/reciple": {
       "name": "reciple",
-      "version": "10.0.7",
+      "version": "10.0.9",
       "bin": "./dist/bin/reciple.mjs",
       "dependencies": {
         "@clack/prompts": "^0.11.0",
@@ -132,13 +134,13 @@
         "commander": "^14.0.2",
         "github-slugger": "^2.0.0",
         "globby": "^16.1.0",
+        "jiti": "^2.6.1",
         "micromatch": "^4.0.8",
         "nypm": "^0.6.4",
         "pkg-types": "^2.3.0",
         "semver": "^7.7.3",
         "ts-mixer": "^6.0.4",
         "tsdown": "^0.20.1",
-        "unrun": "^0.2.26",
       },
       "devDependencies": {
         "@reciple/jsx": "^10.0.1",
