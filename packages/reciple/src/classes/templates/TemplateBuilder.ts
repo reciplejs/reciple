@@ -411,8 +411,8 @@ export namespace TemplateBuilder {
     export const dependencies: Record<'ts'|'js'|'both', Partial<Record<'dependencies'|'devDependencies', Record<string, string>>>> = {
         both: {
             dependencies: {
-                '@reciple/core': packageJSON.dependencies?.['@reciple/core']!,
-                '@reciple/jsx': packageJSON.dependencies?.['@reciple/jsx']!,
+                '@reciple/core': packageJSON.peerDependencies?.['@reciple/core']!,
+                '@reciple/jsx': packageJSON.devDependencies?.['@reciple/jsx']!,
                 'discord.js': packageJSON.peerDependencies?.['discord.js']!,
                 'reciple': `^${packageJSON.version}`,
             },
