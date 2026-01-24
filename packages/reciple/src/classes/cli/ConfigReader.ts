@@ -9,10 +9,9 @@ import type { UserConfig as TsdownConfig } from 'tsdown';
 import path from 'node:path';
 import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { resolveTSConfig } from 'pkg-types';
-import { unrun, type Options as UnrunOptions } from 'unrun';
 import { colors } from '@prtty/prtty';
 import type { ShardingManagerOptions } from 'discord.js';
-import { isDebugging } from '@reciple/utils';
+import { createJiti, type JitiResolveOptions } from 'jiti';
 
 declare module "@reciple/core" {
     interface Config {
@@ -57,12 +56,11 @@ export class ConfigReader {
 
     constructor(public readonly filepath: string) {}
 
-    public async read(options?: Omit<UnrunOptions, 'path'>): Promise<ConfigReader> {
-        const { module } = await unrun<Config>({
-            ...options,
-            debug: isDebugging(),
-            preset: 'bundle-require',
-            path: this.filepath
+    public async read(options?: JitiResolveOptions): Promise<ConfigReader> {
+        const jiti = createJiti(path.resolve(path.dirname(this.filepath)));
+        const module = await jiti.import<any>(`./${path.basename(this.filepath)}`, {
+            default: true,
+            ...options
         });
 
         if (!module || !module.client) {
@@ -123,7 +121,7 @@ export namespace ConfigReader {
         overwrite?: boolean;
         throwIfExists?: boolean;
         type: LangType;
-        readOptions?: Omit<UnrunOptions, 'path'>|false;
+        readOptions?: JitiResolveOptions|false;
     }
 
     export interface FindOptions {
