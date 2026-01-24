@@ -21,6 +21,8 @@
     "directory": "packages/create-reciple"
   },
   "dependencies": {
+    "@reciple/core": "workspace:^",
+    "discord.js": "catalog:",
     "reciple": "workspace:^"
   },
   "publishConfig": {

@@ -383,11 +383,14 @@ export class TemplateBuilder {
 
         console.log(`\n${colors.bold().green('✔')} Start developing:`);
 
-        if (this.relativeDirectory !== './') {
+        if (!this.relativeDirectory) {
             console.log(`  • ${colors.cyan().bold(`cd ${this.relativeDirectory}`)}`);
         }
 
-        console.log(`  • ${colors.cyan().bold(installDependenciesCommand(this.packageManager ?? 'npm'))} ${colors.dim('(Install dependencies)')}`);
+        if (!this.dependenciesInstalled) {
+            console.log(`  • ${colors.cyan().bold(installDependenciesCommand(this.packageManager ?? 'npm'))} ${colors.dim('(Install dependencies)')}`);
+        }
+
         console.log(`  • ${colors.cyan().bold(runScriptCommand(this.packageManager ?? 'npm', 'build'))} ${colors.dim('(Build)')}`);
         console.log(`  • ${colors.cyan().bold(runScriptCommand(this.packageManager ?? 'npm', 'dev'))} ${colors.dim('(Development)')}`);
         console.log(`  • ${colors.cyan().bold(runScriptCommand(this.packageManager ?? 'npm', 'start'))} ${colors.dim('(Production)')}`);
