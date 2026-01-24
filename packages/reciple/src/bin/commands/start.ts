@@ -84,7 +84,7 @@ export default class StartSubcommand extends CLISubcommand {
 
         logger.log(colors.green(`📦 Version Info:`));
         logger.log(` ├─ ${colors.cyan(`reciple`)}\t\t${colors.yellow(`${this.cli.version}`)}`);
-        logger.log(` ├─ ${colors.cyan(`@reciple/client`)}\t${colors.yellow(`${Client.version}`)}`);
+        logger.log(` ├─ ${colors.cyan(`@reciple/core`)}\t${colors.yellow(`${Client.version}`)}`);
         logger.log(` └─ ${colors.cyan(`discord.js`)}\t${colors.yellow(`${DiscordJsVersion}`)}`);
 
         const modules = await client.moduleLoader.findModules();

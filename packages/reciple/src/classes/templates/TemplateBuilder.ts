@@ -413,6 +413,7 @@ export namespace TemplateBuilder {
             dependencies: {
                 '@reciple/core': packageJSON.dependencies?.['@reciple/core']!,
                 '@reciple/jsx': packageJSON.dependencies?.['@reciple/jsx']!,
+                'discord.js': packageJSON.peerDependencies?.['discord.js']!,
                 'reciple': `^${packageJSON.version}`,
             },
             devDependencies: {

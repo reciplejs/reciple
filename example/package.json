@@ -9,12 +9,12 @@
     "dev": "nodemon"
   },
   "devDependencies": {
-    "@reciple/core": "^10.0.1",
-    "@reciple/jsx": "^10.0.1",
-    "@reciple/modules": "^10.0.1",
-    "reciple": "^10.0.1"
+    "@reciple/core": "workspace:^",
+    "@reciple/jsx": "workspace:^",
+    "@reciple/modules": "workspace:^",
+    "reciple": "workspace:^"
   },
   "dependencies": {
-    "@prtty/print": "^1.1.0"
+    "@prtty/print": "catalog:"
   }
 }
