@@ -9,11 +9,10 @@ import { inspect } from 'node:util';
 
 export default class CreateModuleSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('module')
-        .description('Creates new module')
-        .argument('[output]', 'The directory to create the module in')
+        .description('Creates new reciple module')
+        .argument('[project]', 'The root directory of your project')
         .option('--template, -t <template>', 'Template source name')
         .option('--filename', 'The filename of the module')
-        .option('-c, --config <path>', 'Path to the configuration file')
         .option('-T, --typescript', 'Use TypeScript')
         .option('-D, --default', 'Use defaults for prompts')
         .enablePositionalOptions(true);
@@ -23,11 +22,12 @@ export default class CreateModuleSubcommand extends CLISubcommand {
     public async execute(): Promise<void> {
         const flags = this.subcommand.opts<CreateModuleSubcommand.Flags>();
 
+        await this.cli.setCurrentDirectory(this.subcommand.args[0]);
+
         const configReader = await new ConfigReader(
-            flags.config
-            ?? await ConfigReader.find()
+            await ConfigReader.find()
             ?? ConfigReader.createConfigFilename('js')
-        ).read({ ignoreInstanceCheck: true });
+        ).read();
 
         const template = new ModuleTemplateBuilder({
             cli: this.cli,
@@ -55,7 +55,6 @@ export namespace CreateModuleSubcommand {
     export interface Flags {
         template?: string;
         filename?: string;
-        config?: string;
         typescript?: boolean;
         default?: boolean;
     }

@@ -15,7 +15,7 @@ import { detectPackageManager, installDependencies, installDependenciesCommand, 
 import { colors } from '@prtty/prtty';
 
 export class TemplateBuilder {
-    private _directory?: string;
+    public originalCwd: string = process.cwd();
 
     public cli: CLI;
     public typescript?: boolean;
@@ -28,25 +28,20 @@ export class TemplateBuilder {
     public packageManager?: PackageManagerName;
     public dependenciesInstalled: boolean = false;
 
-    get directory() {
-        return this._directory ?? process.cwd();
-    }
-
     get relativeDirectory() {
-        return path.relative(process.cwd(), this.directory) || './';
+        return path.relative(this.originalCwd, process.cwd());
     }
 
     get packageJsonPath() {
-        return path.join(this.directory, 'package.json');
+        return path.join(process.cwd(), 'package.json');
     }
 
     get name() {
-        return slug(path.basename(this.directory));
+        return slug(path.basename(process.cwd()));
     }
 
     constructor(options: TemplateBuilder.Options) {
         this.cli = options.cli;
-        this._directory = options.directory;
         this.typescript = options.typescript;
         this.defaultAll = options.defaultAll ?? false;
         this.packageManager = options.packageManager;
@@ -59,9 +54,9 @@ export class TemplateBuilder {
     }
 
     public async createDirectory(options?: TemplateBuilder.CreateDirectoryOptions): Promise<this> {
-        this._directory = options?.directory ?? this._directory;
+        let cwd: string = this.originalCwd;
 
-        if (!this._directory) {
+        if (!options?.directory) {
             const dir = this.defaultAll
                 ? process.cwd()
                 : await text({
@@ -69,47 +64,50 @@ export class TemplateBuilder {
                     placeholder: `Leave empty to use current directory`,
                     defaultValue: process.cwd(),
                     validate: value => {
-                        const dir = path.resolve(value);
-                        if (existsSync(dir) && !statSync(dir).isDirectory()) return 'Invalid folder directory';
+                        value = path.resolve(value);
+                        if (existsSync(value) && !statSync(value).isDirectory()) return 'Invalid folder directory';
                     }
                 });
 
             if (isCancel(dir)) throw new NotAnError('Operation cancelled');
-            this._directory = dir;
+
+            cwd = path.resolve(dir);
+        } else {
+            cwd = path.resolve(options.directory);
         }
 
-        this._directory = path.resolve(this._directory);
-
-        const stats = await stat(this.directory).catch(() => undefined);
+        const stats = await stat(cwd).catch(() => undefined);
+        const relative = path.relative(process.cwd(), cwd);
 
         if (stats) {
-            let files = await readdir(this.directory);
+            let files = await readdir(cwd);
                 files = micromatch.not(files, options?.ignoredFiles ?? TemplateBuilder.ignoredDirectoryFiles, { dot: true });
 
             if (files.length) {
                 switch (options?.onNotEmpty) {
                     case 'throw':
-                        throw new NotAnError(`Directory ${colors.cyan(this.relativeDirectory)} is not empty`);
+                        throw new NotAnError(`Directory ${colors.cyan(relative)} is not empty`);
                     case 'ignore':
                         return this;
                     default:
                         const overwrite = this.defaultAll
                             ? false
                             : await confirm({
-                                message: `Directory ${colors.cyan(this.relativeDirectory)} is not empty. Would you like to continue?`,
+                                message: `Directory ${colors.cyan(relative)} is not empty. Would you like to continue?`,
                                 active: 'Yes',
                                 inactive: 'No',
                                 initialValue: false
                             });
 
-                        if (!overwrite) throw new NotAnError(`Directory ${colors.cyan(this.relativeDirectory)} is not empty`);
+                        if (!overwrite) throw new NotAnError(`Directory ${colors.cyan(relative)} is not empty`);
                         if (isCancel(overwrite)) throw new NotAnError('Operation cancelled');
                         break;
                 }
             }
         }
 
-        await mkdir(this.directory, { recursive: true });
+        await mkdir(cwd, { recursive: true });
+        process.chdir(cwd);
         return this;
     }
 
@@ -135,7 +133,7 @@ export class TemplateBuilder {
 
     public async createEnvFile(options?: TemplateBuilder.CreateEnvFileOptions): Promise<this> {
         const tokenKey = options?.tokenKey ?? 'DISCORD_TOKEN';
-        const envFile = options?.envFile ? path.resolve(options.envFile) : path.join(this.directory, '.env');
+        const envFile = options?.envFile ? path.resolve(options.envFile) : '.env';
         const stats = await stat(envFile).catch(() => undefined);
 
         let env = options?.env ?? {};
@@ -177,19 +175,9 @@ export class TemplateBuilder {
     public async createConfig(options?: TemplateBuilder.CreateConfigOptions): Promise<this> {
         let filepath = options?.path;
 
-        if (!filepath) {
-            filepath = await ConfigReader.find({
-                cwd: this.directory,
-                lang: this.typescript
-                    ? 'ts'
-                    : this.typescript === false
-                        ? 'js'
-                        : undefined
-            }) ?? path.join(
-                    this.directory,
-                    ConfigReader.createConfigFilename(this.typescript ? 'ts' : 'js')
-                );
-        }
+        filepath ??= await ConfigReader.find({
+                lang: this.typescript ? 'ts' : this.typescript === false ? 'js' : undefined
+            }) ?? ConfigReader.createConfigFilename(this.typescript ? 'ts' : 'js');
 
         const exists = await ConfigReader.exists(filepath);
 
@@ -245,8 +233,8 @@ export class TemplateBuilder {
 
         const [template, loader] = CLI.createSpinnerPromise({
             promise: Promise.all([
-                TemplateBuilder.copy(source, this.directory, { ...options, rename, overwrite }),
-                TemplateBuilder.copy(globals, this.directory, { ...options, rename, overwrite })
+                TemplateBuilder.copy(source, process.cwd(), { ...options, rename, overwrite }),
+                TemplateBuilder.copy(globals, process.cwd(), { ...options, rename, overwrite })
             ]),
             message: 'Copying template files',
             successMessage: 'Files copied successfully',
@@ -261,7 +249,7 @@ export class TemplateBuilder {
         this.packageManager = options?.packageManager ?? this.packageManager;
 
         if (!this.packageManager) {
-            const defaultPackageManager = await detectPackageManager(this.directory).then(pm => pm?.name ?? 'npm');
+            const defaultPackageManager = await detectPackageManager(process.cwd()).then(pm => pm?.name ?? 'npm');
             const packageManager: PackageManagerName|symbol = this.defaultAll
                 ? defaultPackageManager
                 : await select({
@@ -319,7 +307,6 @@ export class TemplateBuilder {
 
             await CLI.createSpinnerPromise({
                 promise: installDependencies({
-                    cwd: this.directory,
                     packageManager: this.packageManager,
                     silent: !isDebugging()
                 }),
@@ -336,10 +323,9 @@ export class TemplateBuilder {
     }
 
     public async createModules(): Promise<this> {
-        const modulesDirectory = path.join(this.directory, 'src');
         const moduleTemplates = await ModuleTemplateBuilder.resolveModuleTemplates(this.typescript ? 'ts' : 'js');
 
-        await mkdir(modulesDirectory, { recursive: true });
+        await mkdir('src', { recursive: true });
 
         if (!this.dependenciesInstalled) {
             log.warn('Dependencies not installed. Skipping module creation.');
@@ -348,7 +334,7 @@ export class TemplateBuilder {
 
         const moduleOptions: ModuleTemplateBuilder.Options = {
             cli: this.cli,
-            config: await this.config?.read({ ignoreInstanceCheck: true })!,
+            config: await this.config?.read()!,
             defaultAll: true,
             typescript: this.typescript,
         };
@@ -357,7 +343,7 @@ export class TemplateBuilder {
             promise: Promise.all([
                 new ModuleTemplateBuilder({
                         ...moduleOptions,
-                        directory: path.join(modulesDirectory, 'commands'),
+                        directory: 'src/commands',
                         filename: `SlashCommand.${this.typescript ? 'ts' : 'js'}`,
                         template: moduleTemplates.find(t => t.name === 'SlashCommand')
                     })
@@ -365,7 +351,7 @@ export class TemplateBuilder {
                     .then(m => m.build({ silent: true })),
                 new ModuleTemplateBuilder({
                         ...moduleOptions,
-                        directory: path.join(modulesDirectory, 'events'),
+                        directory: 'src/events',
                         filename: `ClientEvent.${this.typescript ? 'ts' : 'js'}`,
                         template: moduleTemplates.find(t => t.name === 'ClientEvent')
                     })
@@ -384,7 +370,6 @@ export class TemplateBuilder {
     public async build(options?: TemplateBuilder.BuildOptions): Promise<this> {
         if (!options?.skipBuild && this.dependenciesInstalled) await CLI.createSpinnerPromise({
             promise: runScript('build', {
-                cwd: this.directory,
                 packageManager: this.packageManager,
                 silent: !isDebugging()
             }),
@@ -415,7 +400,6 @@ export class TemplateBuilder {
 export namespace TemplateBuilder {
     export interface Options {
         cli: CLI;
-        directory?: string;
         typescript?: boolean;
         packageManager?: PackageManagerName;
         defaultAll?: boolean;

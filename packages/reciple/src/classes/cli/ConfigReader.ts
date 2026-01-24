@@ -57,11 +57,7 @@ export class ConfigReader {
 
     constructor(public readonly filepath: string) {}
 
-    public async read(options?: Omit<UnrunOptions, 'path'> & { ignoreInstanceCheck?: boolean; }): Promise<ConfigReader> {
-        const originalPath = process.cwd();
-
-        process.chdir(path.dirname(this.filepath));
-
+    public async read(options?: Omit<UnrunOptions, 'path'>): Promise<ConfigReader> {
         const { module } = await unrun<Config>({
             ...options,
             debug: isDebugging(),
@@ -69,9 +65,7 @@ export class ConfigReader {
             path: this.filepath
         });
 
-        process.chdir(originalPath);
-
-        if (!module || !module.client || (!options?.ignoreInstanceCheck && !(module.client instanceof Client))) {
+        if (!module || !module.client) {
             throw new RecipleError(`exported client is not an instance of ${colors.cyan('Client')} from ${colors.green('"@reciple/core"')}.`);
         }
 
@@ -108,10 +102,7 @@ export class ConfigReader {
 
     public static async find(options?: ConfigReader.FindOptions): Promise<string|null> {
         const filenames = ConfigReader.configFilenames.filter(f => !options?.lang || f.endsWith(options.lang));
-        const cwd = options?.cwd ?? process.cwd();
-        const directories = [cwd];
-
-        directories.push(...(options?.directories ?? [path.join(cwd, '.config')]));
+        const directories = options?.directories ?? ['.', '.config'];
 
         for (const directory of directories) {
             const stats = await stat(directory).catch(() => undefined);
@@ -136,14 +127,16 @@ export namespace ConfigReader {
     }
 
     export interface FindOptions {
-        cwd?: string;
         lang?: LangType;
         directories?: string[];
     }
 
     export async function getProjectLang(cwd: string): Promise<LangType> {
         const hasTsConfig = !!await resolveTSConfig(cwd, { try: true });
-        const configLangIsTypescript = !!(await ConfigReader.find({ cwd, lang: 'ts' }));
+        const configLangIsTypescript = !!(await ConfigReader.find({
+            directories: [cwd, path.join(cwd, '.config')],
+            lang: 'ts'
+        }));
 
         return hasTsConfig || configLangIsTypescript ? 'ts' : 'js';
     }

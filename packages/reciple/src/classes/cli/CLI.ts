@@ -100,6 +100,17 @@ export class CLI {
         this.logger.debug(`Loaded environment variables from ${this.flags.env.join(', ')}`);
     }
 
+    public async setCurrentDirectory(cwd?: string): Promise<void> {
+        cwd ??= process.cwd();
+
+        if (!(await stat(cwd).then(s => s.isDirectory()).catch(() => false))) {
+            console.log(colors.red('Please specify a valid project directory'));
+            process.exit(1);
+        }
+
+        process.chdir(cwd);
+    }
+
     public getFlags<Flags extends Record<string, any> = Record<string, any>>(command: Command|string, mergeDefault?: false): Flags|undefined;
     public getFlags<Flags extends Record<string, any> = Record<string, any>>(command: Command|string, mergeDefault: true): Flags & CLI.Flags|undefined;
     public getFlags(command?: undefined): CLI.Flags;

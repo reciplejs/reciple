@@ -15,7 +15,7 @@ export default class StartShardingSubcommand extends CLISubcommand {
 
     public subcommand: Command = new Command('sharding')
         .description('Start the reciple client in sharding mode')
-        .option('-c, --config <path>', 'Path to the configuration file')
+        .argument('[project]', 'The root directory of your project')
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
         .option('-b, --build', 'Build the modules before starting the client')
         .allowUnknownOption(true);
@@ -27,6 +27,8 @@ export default class StartShardingSubcommand extends CLISubcommand {
         const recipleFlags = this.cli.getFlags();
         const flags = this.subcommand.opts<ShardingSubcommand.Flags>();
 
+        await this.cli.setCurrentDirectory(this.subcommand.args[0]);
+
         const shardArgs: string[] = [
             ...CLI.stringifyFlags(recipleFlags, this.cli.command),
             'start',
@@ -34,13 +36,11 @@ export default class StartShardingSubcommand extends CLISubcommand {
         ];
 
         const configReader = new ConfigReader(
-            flags.config
-            ?? await ConfigReader.find()
+            await ConfigReader.find()
             ?? ConfigReader.createConfigFilename('js')
         );
 
-        const { config, build: buildConfig, sharding } = await configReader.read({ ignoreInstanceCheck: true });
-
+        const { config, build: buildConfig, sharding } = await configReader.read();
         const logger = config.logger instanceof Logger ? this.cli.logger = config.logger : this.cli.logger.clone(config.logger);
 
         logger.label = 'ShardingManager';

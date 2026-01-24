@@ -10,7 +10,7 @@ import { colors } from '@prtty/prtty';
 export default class CreateSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('create')
         .description('Create a new reciple project')
-        .argument('[output]', 'The directory to create the project in')
+        .argument('[project]', 'The root directory of your project')
         .option('-c, --config <path>', 'Path to the configuration file')
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
         .option('-T, --typescript', 'Use TypeScript')
@@ -28,7 +28,6 @@ export default class CreateSubcommand extends CLISubcommand {
         const flags = this.cli.getFlags<CreateSubcommand.Flags>('create');
         const template = new TemplateBuilder({
             cli: this.cli,
-            directory: this.subcommand.args[0],
             typescript: flags?.typescript,
             packageManager: flags?.packageManager,
             defaultAll: flags?.default,
@@ -37,7 +36,7 @@ export default class CreateSubcommand extends CLISubcommand {
 
         try {
             await template.init();
-            await template.createDirectory();
+            await template.createDirectory({ directory: this.subcommand.args[0] });
             await template.setupLanguage();
             await template.createConfig();
             await template.createEnvFile({ envFile: this.cli.flags.env[0] });

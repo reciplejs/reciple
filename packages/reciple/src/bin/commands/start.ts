@@ -16,16 +16,18 @@ import { colors } from '@prtty/prtty';
 export default class StartSubcommand extends CLISubcommand {
     public subcommand: Command = new Command('start')
         .description('Start the reciple client')
-        .option('-c, --config <path>', 'Path to the configuration file')
+        .argument('[project]', 'The root directory of your project')
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
         .option('-b, --build', 'Build the modules before starting the client')
         .allowUnknownOption(true);
 
     public async execute(): Promise<void> {
         const flags = this.subcommand.opts<StartSubcommand.Flags>();
+
+        await this.cli.setCurrentDirectory(this.subcommand.args[0]);
+
         const configReader = new ConfigReader(
-            flags.config
-            ?? await ConfigReader.find()
+            await ConfigReader.find()
             ?? ConfigReader.createConfigFilename('js')
         );
 
@@ -144,7 +146,6 @@ export default class StartSubcommand extends CLISubcommand {
 
 export namespace StartSubcommand {
     export interface Flags {
-        config?: string;
         token?: string;
         build?: boolean;
     }
