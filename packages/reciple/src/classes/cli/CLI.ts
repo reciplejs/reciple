@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { coerce } from 'semver';
 import { Format, isDebugging, recursiveDefaults } from '@reciple/utils';
 import { logger, Logger, LogLevel } from '@prtty/print';
 import { config as loadEnv } from '@dotenvx/dotenvx';
@@ -27,7 +26,7 @@ export class CLI {
 
     constructor(public readonly options: CLI.Options) {
         this.build = options.build;
-        this.version = String(coerce(this.build) ?? this.build);
+        this.version = String(this.build.split('-')[0]);
 
         this.command = new Command()
             .name(options.name)
