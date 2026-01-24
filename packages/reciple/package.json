@@ -56,15 +56,15 @@
   "devDependencies": {
     "@reciple/jsx": "^10.0.1",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "*",
+    "@types/node": "catalog:",
     "@types/semver": "^7.7.1",
     "nodemon": "^3.1.11",
     "rolldown": "^1.0.0-rc.1",
-    "typescript": "*"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
-    "@reciple/core": "*",
-    "discord.js": "*"
+    "@reciple/core": "workspace:^",
+    "discord.js": "catalog:"
   },
   "peerDependenciesMeta": {
     "@reciple/core": {
