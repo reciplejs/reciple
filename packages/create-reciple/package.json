@@ -1,6 +1,6 @@
 {
   "name": "create-reciple",
-  "version": "10.0.8",
+  "version": "10.0.9",
   "license": "LGPL-3.0-only",
   "description": "Alias for `reciple create`",
   "bin": "./dist/index.mjs",
