@@ -52,7 +52,7 @@
         }
     </style>
     <div
-        in:fade={{ delay: 500, duration: 300 }}
+        in:fade={{ delay: 300, duration: 300 }}
         class="fixed top-0 left-0 right-0 z-999 size-full cursor-progress bg-background/20 backdrop-blur-xs pointer-events-none"
     >
         <span class="absolute top-0 left-0 h-1 w-full bg-foreground/30">
