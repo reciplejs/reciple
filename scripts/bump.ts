@@ -27,7 +27,8 @@ const dependents = selected
 
 if (dependents.length) {
     const selectedDependents = await multiselect({
-        message: 'Packages with dependents will also be bumped',
+        message: 'Dependents that will also be bumped',
+        required: false,
         initialValues: dependents.map(p => p.root),
         options: dependents.map(pkg => ({ label: pkg.pkg.name, value: pkg.root }))
     });
