@@ -12,6 +12,7 @@ import { resolveTSConfig } from 'pkg-types';
 import { colors } from '@prtty/prtty';
 import type { ShardingManagerOptions } from 'discord.js';
 import { createJiti, type JitiResolveOptions } from 'jiti';
+import { RuntimeEnvironment } from './RuntimeEnvironment.js';
 
 declare module "@reciple/core" {
     interface Config {
@@ -57,19 +58,25 @@ export class ConfigReader {
     constructor(public readonly filepath: string) {}
 
     public async read(options?: JitiResolveOptions): Promise<ConfigReader> {
-        const jiti = createJiti(path.resolve(path.dirname(this.filepath)));
-        const module = await jiti.import<any>(`./${path.basename(this.filepath)}`, {
-            default: true,
-            ...options
-        });
+        let module: ConfigReader.ModuleData;
+
+        if (RuntimeEnvironment.get() === 'node') {
+            const jiti = createJiti(path.resolve(path.dirname(this.filepath)));
+            module = await jiti.import<ConfigReader.ModuleData>(`./${path.basename(this.filepath)}`, {
+                default: true,
+                ...options
+            });
+        } else {
+            module = await import(`file://${path.resolve(this.filepath)}`);
+        }
 
         if (!module || !module.client) {
             throw new RecipleError(`exported client is not an instance of ${colors.cyan('Client')} from ${colors.green('"@reciple/core"')}.`);
         }
 
         this._client = module.client;
-        this._config = module.config;
-        this._build = module.build;
+        this._config = module.config ?? null;
+        this._build = module.build ?? null;
         this._sharding = module.sharding ?? null;
 
         return this;
@@ -116,6 +123,13 @@ export class ConfigReader {
 }
 
 export namespace ConfigReader {
+    export interface ModuleData {
+        client: Client;
+        config?: Config;
+        build?: BuildConfig;
+        sharding?: ShardingManagerOptions;
+    }
+
     export interface CreateOptions {
         path: string;
         overwrite?: boolean;

@@ -8,7 +8,7 @@ export namespace RuntimeEnvironment {
     export type Type = 'node'|'deno'|'bun';
 
     export function get(): Type|null {
-        if ('isBun' in process && process.isBun) return 'bun';
+        if ('isBun' in process && process.isBun && process.versions.bun) return 'bun';
         if ('deno' in process.versions && process.versions.deno) return 'deno';
         if (process.versions.node) return 'node';
 
