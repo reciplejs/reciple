@@ -1,7 +1,8 @@
 import { cancel, confirm, intro, isCancel, log, multiselect, outro, select, text } from '@clack/prompts';
 import { colors } from '@prtty/prtty';
-import { findWorkspaceDependents, resolveWorkspaces, type WorkspaceData } from './workspaces.js';
+import { findWorkspaceDependents, resolveWorkspaces, root, type WorkspaceData } from './utils/workspaces.js';
 import { run } from './utils/run.js';
+import path from 'node:path';
 
 //#region Select workspaces
 const workspaces: WorkspaceData[] = await resolveWorkspaces();
@@ -45,15 +46,15 @@ if (dependents.length) {
 let bump: string|null|symbol = await select({
     message: 'Select a version increment type',
     options: [
-        { label: 'Custom', value: null },
-        { label: 'Major', value: 'major' },
         { label: 'Patch', value: 'patch' },
         { label: 'Minor', value: 'minor' },
+        { label: 'Major', value: 'major' },
         { label: 'Pre-patch', value: 'prepatch' },
         { label: 'Pre-minor', value: 'preminor' },
         { label: 'Pre-major', value: 'premajor' },
         { label: 'Pre-release', value: 'prerelease' },
-        { label: 'From git', value: 'from-git' }
+        { label: 'From git', value: 'from-git' },
+        { label: 'Custom', value: null },
     ]
 });
 
@@ -67,6 +68,13 @@ if (isCancel(bump)) {
     process.exit(0);
 }
 
+const preid = bump.startsWith('pre') ? await text({ message: 'Enter a preid (left empty for none)', initialValue: '' }) : null;
+
+if (isCancel(preid)) {
+    cancel(`Operation cancelled.`);
+    process.exit(0);
+}
+
 //#endregion
 //#region Perform bump
 
@@ -74,7 +82,11 @@ for (const dir of selected) {
     const workspace = workspaces.find(p => p.root === dir);
     if (!workspace) continue;
 
-    await run(`bun pm version ${bump}`, { cwd: workspace.root });
+    let command = `bun pm version ${bump} --no-git-tag-version`;
+
+    if (preid) command += ` --preid ${preid}`;
+
+    await run(command, { cwd: workspace.root });
     log.success(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
@@ -92,6 +104,22 @@ if (publish === true) {
         log.success(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
     }
 }
+
+//#endregion
+//#region Perform git operations
+
+const newWorkspaces = (await resolveWorkspaces()).filter(w => selected.includes(w.root));
+
+for (const workspace of newWorkspaces) {
+    const tag = `${workspace.pkg.name}@${workspace.pkg.version}`;
+    const message = `Bump: ${workspace.pkg.name} to ${workspace.pkg.version}`;
+
+    run(`git tag -a ${tag} -m "${message}"`, { cwd: workspace.root, pipe: true });
+    run(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root, pipe: true });
+}
+
+run(`git commit -m "chore: bump ${bump}"`, { cwd: root, pipe: true });
+run(`git push --dry-run`, { cwd: root, pipe: true });
 
 //#endregion
 //#region Done

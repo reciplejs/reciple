@@ -1,6 +1,7 @@
-import { execSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { mkdir, readdir, stat, rm, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { getGitRef, getGitRemote } from './utils/git.js';
 
 const root = path.join(import.meta.dirname, '../');
 const packages = await readdir(path.join(root, "./packages"));
@@ -42,16 +43,4 @@ for (const pkg of packages) {
     await rm(entry);
     await mkdir(newDir, { recursive: true });
     await writeFile(path.join(newDir, `docs.json`), JSON.stringify(data, null, 2));
-}
-
-async function getGitRef() {
-    const child = execSync(`git rev-parse HEAD`);
-    return child.toString().trim();
-}
-
-async function getGitRemote() {
-    const child = execSync(`git config --get remote.origin.url`);
-    const remote = child.toString().trim();
-
-    return remote.endsWith('.git') ? remote.slice(0, -4) : remote;
 }
