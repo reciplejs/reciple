@@ -1,0 +1,43 @@
+name: Website Bug Report
+description: Report an issue about the docs/guide website
+labels: ['Type: Bug']
+body:
+  - id: section
+    type: dropdown
+    attributes:
+      label: Which part of the website is this bug report for?
+      options:
+        - 'docs'
+        - 'guide'
+        - 'both'
+    validations:
+      required: true
+  - id: description
+    type: textarea
+    attributes:
+      label: Issue description
+      description: Describe the issue in as much detail as possible.
+    validations:
+      required: true
+  - id: snippet
+    type: textarea
+    attributes:
+      label: Code sample
+      description: |
+        Your code sample should be:
+        1. Minimal - Use as little code as possible that still produces the same problem (and is understandable)
+        2. Complete - Provide all parts someone else needs to reproduce your problem
+        3. Reproducible - Test the code you're about to provide to make sure it reproduces the problem
+
+        This will be automatically formatted into code, so no need for backticks.
+      render: typescript
+  - id: environment
+    type: textarea
+    attributes:
+      label: Environment
+      description: List necessary environment here (e.g. browser, operating system).
+      placeholder: |
+        - browser version
+        - operating system
+    validations:
+      required: true

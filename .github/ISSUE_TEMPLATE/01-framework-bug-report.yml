@@ -1,5 +1,5 @@
-name: Bug Report
-description: Report an issue with reciple or another package.
+name: Framework Bug Report
+description: Report an issue about the framework packages
 labels: ['Type: Bug']
 body:
   - id: package
@@ -8,7 +8,8 @@ body:
       label: Which package is this bug report for?
       options:
         - '@reciple/core'
-        - '@reciple/docgen'
+        - '@reciple/jsx'
+        - '@reciple/modules'
         - '@reciple/utils'
         - 'create-reciple'
         - 'reciple'
@@ -27,8 +28,8 @@ body:
         4. See error logs below
     validations:
       required: true
-  - type: textarea
-    id: snippet
+  - id: snippet
+    type: textarea
     attributes:
       label: Code sample
       description: |
@@ -39,17 +40,17 @@ body:
 
         This will be automatically formatted into code, so no need for backticks.
       render: typescript
-  - type: textarea
-    id: versions
+  - id: versions
+    type: textarea
     attributes:
       label: Versions
       description: List necessary versions here. This includes your package version, runtime version, operating system etc.
       placeholder: |
-        - @reciple/core 9.0.0 (`npm ls @reciple/core`)
-        - reciple 9.0.0 (`npm ls reciple`)
-        - discord.js 14.12.1 (`npm ls discord.js`)
-        - Node.js 16.11.0 (`node --version`)
-        - TypeScript 5.1.6 (`npm ls typescript` if you use it)
-        - macOS Ventura 13.3.1
+        - @reciple/core x.x.x
+        - reciple x.x.x
+        - discord.js 14.x.x
+        - node/bun/deno x.x.x
+        - npm/yarn/pnpm x.x.x
+        - operating system
     validations:
       required: true

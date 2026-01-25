@@ -5,13 +5,16 @@ body:
   - id: package
     type: dropdown
     attributes:
-      label: Which package is this feature request for?
+      label: Which package/app is this feature request for?
       options:
         - '@reciple/core'
-        - '@reciple/docgen'
+        - '@reciple/jsx'
+        - '@reciple/modules'
         - '@reciple/utils'
         - 'create-reciple'
         - 'reciple'
+        - 'website-docs'
+        - 'website-guide'
     validations:
       required: true
   - id: description
@@ -22,8 +25,8 @@ body:
       placeholder: Something new...
     validations:
       required: true
-  - type: textarea
-    id: context
+  - id: context
+    type: textarea
     attributes:
       label: Additional context
       description: Any other context, screenshots, or file uploads that help us understand your feature request.
