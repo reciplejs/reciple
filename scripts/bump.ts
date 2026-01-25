@@ -1,13 +1,15 @@
 import type { PackageJson } from '@reciple/utils';
-import { cancel, intro, isCancel, multiselect, select, text } from '@clack/prompts';
+import { cancel, intro, isCancel, multiselect, outro, select, text } from '@clack/prompts';
 import { colors } from '@prtty/prtty';
 import { glob } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { exec } from 'node:child_process';
 
+export interface WorkspaceData { root: string; pkg: PackageJson; }
+
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../');
-const packages: { root: string; pkg: PackageJson; }[] = [];
+const packages: WorkspaceData[] = [];
 
 const { workspaces } = await import('../package.json', { with: { type: 'json' } }).then(m => m.default ?? m);
 
@@ -23,7 +25,7 @@ for (const pattern of workspaces.packages) {
     }
 }
 
-intro(colors.bold().black().bgCyan(` Found ${packages.length} packages to bump. `));
+intro(colors.bold().black().bgCyan(` Found ${packages.length} packages `));
 
 const selected = await multiselect({
     message: 'Select a package to bump',
@@ -33,6 +35,25 @@ const selected = await multiselect({
 if (isCancel(selected)) {
     cancel(`Operation cancelled.`);
     process.exit(0);
+}
+
+const dependents = selected
+    .map(dir => packages.find(p => p.root === dir)!)
+    .flatMap(p => p ? findDependents(p.pkg) : []);
+
+if (dependents.length) {
+    const selectedDependents = await multiselect({
+        message: 'Packages with dependents will also be bumped',
+        initialValues: dependents.map(p => p.root),
+        options: dependents.map(pkg => ({ label: pkg.pkg.name, value: pkg.root }))
+    });
+
+    if (isCancel(selectedDependents)) {
+        cancel(`Operation cancelled.`);
+        process.exit(0);
+    }
+
+    selected.push(...selectedDependents);
 }
 
 let bump: string|null|symbol = await select({
@@ -60,22 +81,57 @@ if (isCancel(bump)) {
     process.exit(0);
 }
 
-for (const workspace of selected) {
+outro(colors.bold().black().bgCyan(` Bumping ${selected.length} packages `));
+
+for (const dir of selected) {
+    const workspace = packages.find(p => p.root === dir);
+    if (!workspace) continue;
+
+    await bumpWorkspace(workspace, bump);
+}
+
+async function bumpWorkspace(workspace: WorkspaceData, bump: string): Promise<void> {
     const child = exec(`bun pm version ${bump}`, {
-        cwd: workspace
+        cwd: workspace.root
     });
 
-    child.stdout?.pipe(process.stdout);
-    child.stderr?.pipe(process.stderr);
+    let output = '';
+
+    child.stdout?.on('data', chunk => output += chunk.toString());
+    child.stderr?.on('data', chunk => output += chunk.toString());
 
     await new Promise<void>((res, rej) => {
         child.once('error', rej);
         child.once('close', code => {
             if (code) {
-                rej(new Error(`Exited with code: ${code}`));
+                console.error(output);
+                rej(new Error(`Exited with code: ${code}`, { cause: output }));
             } else {
                 res(void 0);
             }
         });
     });
+
+    console.log(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
+}
+
+function findDependents(pkg: PackageJson): WorkspaceData[] {
+    if (!pkg.name) return [];
+
+    const dependents = packages.filter(p => Object.keys({
+        ...p.pkg.dependencies,
+        ...p.pkg.devDependencies,
+        ...p.pkg.peerDependencies,
+        ...p.pkg.optionalDependencies
+    }).includes(pkg.name!));
+
+    if (!dependents.length) return [];
+
+    for (const dependent of dependents) {
+        const deps = findDependents(dependent.pkg);
+
+        if (deps.length) dependents.push(...deps);
+    }
+
+    return dependents;
 }
