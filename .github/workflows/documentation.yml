@@ -85,6 +85,7 @@ jobs:
             mv "docs/${PACKAGE}/docs.json" "out/${PACKAGE}/${GITHUB_REF_NAME}.json"
           done
       - name: Push Documentation Files
+        if: ${{ github.ref_type == 'branch' || github.ref_type == 'tag' && contains(fromJson('["@reciple/core", "@reciple/jsx", "@reciple/modules", "reciple", "@reciple/utils"]'), steps.format-tag.outputs.package) }}
         run: |
           cd out
           git config --global user.name "github-actions[bot]"
