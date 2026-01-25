@@ -1,6 +1,7 @@
 import type { PackageJson } from '@reciple/utils';
 import { glob } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export interface WorkspaceData {
     root: string;
@@ -10,7 +11,7 @@ export interface WorkspaceData {
     };
 }
 
-export const root = path.join(path.dirname(import.meta.url), '../');
+export const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../');
 
 export async function resolveWorkspaces(): Promise<WorkspaceData[]> {
     const { workspaces } = await import(`file://${path.join(root, 'package.json')}`, { with: { type: 'json' } }).then(m => m.default ?? m);
