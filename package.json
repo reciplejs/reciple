@@ -12,13 +12,10 @@
     "check": "turbo run check",
     "test": "bun run dev -w example",
     "bump": "bun ./scripts/bump.ts",
-    "publish-pre": "changeset publish --tag next",
-    "publish-latest": "changeset publish",
     "test-create": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
     "test-create:default": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
     "@types/node": "catalog:",
     "rimraf": "^6.1.2",
     "tsdown": "catalog:",
