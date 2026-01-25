@@ -129,7 +129,8 @@ for (const workspace of newWorkspaces) {
 await run(`git commit -m "chore: bump ${bump}"`, { cwd: root, pipe: true });
 
 for (const tag of tags) {
-    await run(`git tag -a ${tag} -m "Bump ${tag}"`, { cwd: root, pipe: true });
+    await run(`git tag -a ${tag} -m "Bump ${tag}"`, { cwd: root, pipe: true })
+        .catch(() => {});
 }
 
 await run(`git push origin --tags --dry-run`, { cwd: root, pipe: true });
