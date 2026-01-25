@@ -1,7 +1,7 @@
 {
   "name": "@reciple/monorepo",
   "license": "LLGPL-3.0-only",
-  "version": "10.2.3",
+  "version": "10.2.4",
   "private": true,
   "type": "module",
   "scripts": {
