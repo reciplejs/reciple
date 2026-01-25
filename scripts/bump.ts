@@ -114,12 +114,12 @@ for (const workspace of newWorkspaces) {
     const tag = `${workspace.pkg.name}@${workspace.pkg.version}`;
     const message = `Bump: ${workspace.pkg.name} to ${workspace.pkg.version}`;
 
-    run(`git tag -a ${tag} -m "${message}"`, { cwd: workspace.root, pipe: true });
-    run(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root, pipe: true });
+    await run(`git tag -a ${tag} -m "${message}"`, { cwd: workspace.root, pipe: true });
+    await run(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root, pipe: true });
 }
 
-run(`git commit -m "chore: bump ${bump}"`, { cwd: root, pipe: true });
-run(`git push --dry-run`, { cwd: root, pipe: true });
+await run(`git commit -m "chore: bump ${bump}"`, { cwd: root, pipe: true });
+await run(`git push --dry-run`, { cwd: root, pipe: true });
 
 //#endregion
 //#region Done
