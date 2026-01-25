@@ -1,8 +1,8 @@
 import { cancel, confirm, intro, isCancel, log, multiselect, outro, select, text } from '@clack/prompts';
 import { colors } from '@prtty/prtty';
 import { findWorkspaceDependents, resolveWorkspaces, root, type WorkspaceData } from './utils/workspaces.js';
-import { run } from './utils/run.js';
 import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 //#region Select workspaces
 const workspaces: WorkspaceData[] = await resolveWorkspaces();
@@ -88,7 +88,7 @@ for (const dir of selected) {
 
     if (preid) command += ` --preid ${preid}`;
 
-    await run(command, { cwd: workspace.root });
+    execSync(command, { cwd: workspace.root });
     log.success(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
@@ -112,7 +112,7 @@ if (publish) for (const dir of selected) {
     const workspace = workspaces.find(p => p.root === dir);
     if (!workspace) continue;
 
-    await run(`bun publish ${dryRun ? '--dry-run' : ''}`, { cwd: workspace.root, pipe: true });
+    execSync(`bun publish ${dryRun ? '--dry-run' : ''}`, { cwd: workspace.root });
     console.log(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
@@ -125,14 +125,17 @@ const tags = [];
 for (const workspace of newWorkspaces) {
     tags.push(`${workspace.pkg.name}@${workspace.pkg.version}`);
 
-    await run(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root, pipe: true });
+    execSync(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root });
 }
 
-await run(`git commit -m "chore: bump ${bump}"`, { cwd: root, pipe: true });
+execSync(`git commit -m "chore: bump ${bump}"`, { cwd: root });
 
 for (const tag of tags) {
-    await run(`git tag ${tag}`, { cwd: root, pipe: true })
-        .catch(() => {});
+    try {
+        execSync(`git tag ${tag}`, { cwd: root });
+    } catch (e) {
+        console.log(colors.red(`An error occurred while tagging ${tag}: ${e}`));
+    }
 }
 
 //#endregion
