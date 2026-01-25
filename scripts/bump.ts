@@ -98,14 +98,20 @@ const publish = await confirm({
     initialValue: true
 });
 
-if (publish === true) {
-    for (const dir of selected) {
-        const workspace = workspaces.find(p => p.root === dir);
-        if (!workspace) continue;
+if (isCancel(publish)) {
+    cancel(`Operation cancelled.`);
+    process.exit(0);
+}
 
-        await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
-        log.success(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
-    }
+outro(colors.bold().green(publish ? `Publishing ${selected.length} packages.` : `Successfully bumped ${selected.length} packages.`));
+console.log();
+
+if (publish) for (const dir of selected) {
+    const workspace = workspaces.find(p => p.root === dir);
+    if (!workspace) continue;
+
+    await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
+    console.log(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
 //#endregion
@@ -127,10 +133,5 @@ for (const tag of tags) {
 }
 
 await run(`git push origin --tags --dry-run`, { cwd: root, pipe: true });
-
-//#endregion
-//#region Done
-
-outro(`${colors.bold().green('✔')} Finished!`);
 
 //#endregion
