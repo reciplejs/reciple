@@ -109,17 +109,21 @@ if (publish === true) {
 //#region Perform git operations
 
 const newWorkspaces = (await resolveWorkspaces()).filter(w => selected.includes(w.root));
+const tags = [];
 
 for (const workspace of newWorkspaces) {
-    const tag = `${workspace.pkg.name}@${workspace.pkg.version}`;
-    const message = `Bump: ${workspace.pkg.name} to ${workspace.pkg.version}`;
+    tags.push(`${workspace.pkg.name}@${workspace.pkg.version}`);
 
-    await run(`git tag -a ${tag} -m "${message}"`, { cwd: workspace.root, pipe: true });
     await run(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root, pipe: true });
 }
 
 await run(`git commit -m "chore: bump ${bump}"`, { cwd: root, pipe: true });
-await run(`git push --dry-run`, { cwd: root, pipe: true });
+
+for (const tag of tags) {
+    await run(`git tag -a ${tag} -m "Bump ${tag}"`, { cwd: root, pipe: true });
+}
+
+await run(`git push origin --tags --dry-run`, { cwd: root, pipe: true });
 
 //#endregion
 //#region Done
