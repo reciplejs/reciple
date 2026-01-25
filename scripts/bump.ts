@@ -1,35 +1,16 @@
-import type { PackageJson } from '@reciple/utils';
 import { cancel, confirm, intro, isCancel, log, multiselect, outro, select, text } from '@clack/prompts';
 import { colors } from '@prtty/prtty';
-import { glob } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import { exec, type ExecOptions } from 'node:child_process';
+import { findWorkspaceDependents, resolveWorkspaces, type WorkspaceData } from './workspaces.js';
+import { run } from './utils/run.js';
 
-export interface WorkspaceData { root: string; pkg: PackageJson; }
+//#region Select workspaces
+const workspaces: WorkspaceData[] = await resolveWorkspaces();
 
-const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../');
-const packages: WorkspaceData[] = [];
-
-const { workspaces } = await import('../package.json', { with: { type: 'json' } }).then(m => m.default ?? m);
-
-for (const pattern of workspaces.packages) {
-    for await (const dir of glob(pattern, { cwd: root })) {
-        const pkg = await import(`file://${path.join(root, dir, 'package.json')}`, { with: { type: 'json' } })
-            .then(m => m.default ?? m)
-            .catch(() => ({ private: false, version: '' }));
-
-        if (pkg.private || !pkg.version) continue;
-
-        packages.push({ root: path.join(root, dir), pkg });
-    }
-}
-
-intro(colors.bold().black().bgCyan(` Found ${packages.length} packages `));
+intro(colors.bold().black().bgCyan(` Found ${workspaces.length} packages `));
 
 const selected = await multiselect({
     message: 'Select a package to bump',
-    options: packages.map(pkg => ({ label: pkg.pkg.name, value: pkg.root }))
+    options: workspaces.map(pkg => ({ label: pkg.pkg.name, value: pkg.root }))
 });
 
 if (isCancel(selected)) {
@@ -38,8 +19,8 @@ if (isCancel(selected)) {
 }
 
 const dependents = selected
-    .map(dir => packages.find(p => p.root === dir)!)
-    .flatMap(p => p ? findDependents(p.pkg) : [])
+    .map(dir => workspaces.find(p => p.root === dir)!)
+    .flatMap(p => p ? findWorkspaceDependents(p.pkg.name, workspaces) : [])
     .filter(p => !selected.includes(p.root))
     .filter((p, i, arr) => arr.indexOf(p) === i);
 
@@ -58,8 +39,11 @@ if (dependents.length) {
     selected.push(...selectedDependents);
 }
 
+//#endregion
+//#region Get version increment
+
 let bump: string|null|symbol = await select({
-    message: 'Select a bump type',
+    message: 'Select a version increment type',
     options: [
         { label: 'Custom', value: null },
         { label: 'Major', value: 'major' },
@@ -83,12 +67,19 @@ if (isCancel(bump)) {
     process.exit(0);
 }
 
+//#endregion
+//#region Perform bump
+
 for (const dir of selected) {
-    const workspace = packages.find(p => p.root === dir);
+    const workspace = workspaces.find(p => p.root === dir);
     if (!workspace) continue;
 
-    await bumpWorkspace(workspace, bump);
+    await run(`bun pm version ${bump}`, { cwd: workspace.root });
+    log.success(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
+
+//#endregion
+//#region Publish packages
 
 const publish = await confirm({
     message: 'Would you like to publish?',
@@ -96,69 +87,15 @@ const publish = await confirm({
 });
 
 if (publish === true) {
-    for (const workspace of packages) {
-        await publishWorkspace(workspace);
+    for (const workspace of workspaces) {
+        await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
+        log.success(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
     }
 }
+
+//#endregion
+//#region Done
 
 outro(`${colors.bold().green('✔')} Finished!`);
 
-async function bumpWorkspace(workspace: WorkspaceData, bump: string): Promise<void> {
-    await run(`bun pm version ${bump}`, { cwd: workspace.root });
-    log.success(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
-}
-
-async function publishWorkspace(workspace: WorkspaceData): Promise<void> {
-    await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
-    log.success(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
-}
-
-function findDependents(pkg: PackageJson): WorkspaceData[] {
-    if (!pkg.name) return [];
-
-    const dependents = packages.filter(p => Object.keys({
-        ...p.pkg.dependencies,
-        ...p.pkg.devDependencies,
-        ...p.pkg.peerDependencies,
-        ...p.pkg.optionalDependencies
-    }).includes(pkg.name!));
-
-    if (!dependents.length) return [];
-
-    for (const dependent of dependents) {
-        const deps = findDependents(dependent.pkg);
-
-        if (deps.length) dependents.push(...deps);
-    }
-
-    return dependents;
-}
-
-async function run(command: string, options?: ExecOptions & { pipe?: boolean; }): Promise<string> {
-    const child = exec(command, options);
-
-    let output = '';
-
-    if (options?.pipe) {
-        child.stdout?.pipe(process.stdout);
-        child.stderr?.pipe(process.stderr);
-    } else {
-        child.stdout?.on('data', chunk => output += chunk.toString());
-        child.stderr?.on('data', chunk => output += chunk.toString());
-        child.stdin?.end();
-    }
-
-    await new Promise<void>((res, rej) => {
-        child.once('error', rej);
-        child.once('close', code => {
-            if (code) {
-                console.error(output);
-                rej(new Error(`Exited with code: ${code}`, { cause: output }));
-            } else {
-                res(void 0);
-            }
-        });
-    });
-
-    return output;
-}
+//#endregion
