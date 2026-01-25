@@ -8,6 +8,8 @@
 	import { ModeWatcher } from "mode-watcher";
 	import { Toaster } from '$lib/components/ui/sonner';
 	import { resolve } from '$app/paths';
+	import { navigating } from '$app/state';
+	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
 
@@ -21,4 +23,42 @@
 
 <ModeWatcher/>
 <Toaster/>
+
+{#if navigating.to}
+    <style>
+        body {
+            overflow: hidden;
+            cursor: progress;
+        }
+
+        .animate-progress {
+            animation: progress 3s ease-in-out forwards;
+            width: 90%;
+        }
+
+        @keyframes progress {
+            0% {
+                width: 0;
+            }
+            60% {
+                width: 40%;
+            }
+            80% {
+                width: 70%;
+            }
+            100% {
+                width: 90%;
+            }
+        }
+    </style>
+    <div
+        in:fade={{ delay: 500, duration: 300 }}
+        class="fixed top-0 left-0 right-0 z-999 size-full cursor-progress bg-background/20 backdrop-blur-xs pointer-events-none"
+    >
+        <span class="absolute top-0 left-0 h-1 w-full bg-foreground/30">
+            <span class="absolute top-0 left-0 h-full bg-primary animate-progress"></span>
+        </span>
+    </div>
+{/if}
+
 {@render children()}
