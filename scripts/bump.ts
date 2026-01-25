@@ -6,6 +6,7 @@ import path from 'node:path';
 
 //#region Select workspaces
 const workspaces: WorkspaceData[] = await resolveWorkspaces();
+const dryRun = process.argv.includes('--dry-run');
 
 intro(colors.bold().black().bgCyan(` Found ${workspaces.length} packages `));
 
@@ -111,7 +112,7 @@ if (publish) for (const dir of selected) {
     const workspace = workspaces.find(p => p.root === dir);
     if (!workspace) continue;
 
-    await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
+    await run(`bun publish ${dryRun ? '--dry-run' : ''}`, { cwd: workspace.root, pipe: true });
     console.log(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
@@ -133,7 +134,5 @@ for (const tag of tags) {
     await run(`git tag ${tag}`, { cwd: root, pipe: true })
         .catch(() => {});
 }
-
-await run(`git push origin --tags --dry-run`, { cwd: root, pipe: true });
 
 //#endregion
