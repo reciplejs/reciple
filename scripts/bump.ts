@@ -1,10 +1,10 @@
 import type { PackageJson } from '@reciple/utils';
-import { cancel, intro, isCancel, multiselect, outro, select, text } from '@clack/prompts';
+import { cancel, confirm, intro, isCancel, log, multiselect, outro, select, text } from '@clack/prompts';
 import { colors } from '@prtty/prtty';
 import { glob } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { exec } from 'node:child_process';
+import { exec, type ExecOptions } from 'node:child_process';
 
 export interface WorkspaceData { root: string; pkg: PackageJson; }
 
@@ -39,7 +39,9 @@ if (isCancel(selected)) {
 
 const dependents = selected
     .map(dir => packages.find(p => p.root === dir)!)
-    .flatMap(p => p ? findDependents(p.pkg) : []);
+    .flatMap(p => p ? findDependents(p.pkg) : [])
+    .filter(p => !selected.includes(p.root))
+    .filter((p, i, arr) => arr.indexOf(p) === i);
 
 if (dependents.length) {
     const selectedDependents = await multiselect({
@@ -81,8 +83,6 @@ if (isCancel(bump)) {
     process.exit(0);
 }
 
-outro(colors.bold().black().bgCyan(` Bumping ${selected.length} packages `));
-
 for (const dir of selected) {
     const workspace = packages.find(p => p.root === dir);
     if (!workspace) continue;
@@ -90,29 +90,27 @@ for (const dir of selected) {
     await bumpWorkspace(workspace, bump);
 }
 
+const publish = await confirm({
+    message: 'Would you like to publish?',
+    initialValue: true
+});
+
+if (publish === true) {
+    for (const workspace of packages) {
+        await publishWorkspace(workspace);
+    }
+}
+
+outro(`${colors.bold().green('✔')} Finished!`);
+
 async function bumpWorkspace(workspace: WorkspaceData, bump: string): Promise<void> {
-    const child = exec(`bun pm version ${bump}`, {
-        cwd: workspace.root
-    });
+    await run(`bun pm version ${bump}`, { cwd: workspace.root });
+    log.success(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
+}
 
-    let output = '';
-
-    child.stdout?.on('data', chunk => output += chunk.toString());
-    child.stderr?.on('data', chunk => output += chunk.toString());
-
-    await new Promise<void>((res, rej) => {
-        child.once('error', rej);
-        child.once('close', code => {
-            if (code) {
-                console.error(output);
-                rej(new Error(`Exited with code: ${code}`, { cause: output }));
-            } else {
-                res(void 0);
-            }
-        });
-    });
-
-    console.log(`Bumped ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
+async function publishWorkspace(workspace: WorkspaceData): Promise<void> {
+    await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
+    log.success(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
 function findDependents(pkg: PackageJson): WorkspaceData[] {
@@ -134,4 +132,33 @@ function findDependents(pkg: PackageJson): WorkspaceData[] {
     }
 
     return dependents;
+}
+
+async function run(command: string, options?: ExecOptions & { pipe?: boolean; }): Promise<string> {
+    const child = exec(command, options);
+
+    let output = '';
+
+    if (options?.pipe) {
+        child.stdout?.pipe(process.stdout);
+        child.stderr?.pipe(process.stderr);
+    } else {
+        child.stdout?.on('data', chunk => output += chunk.toString());
+        child.stderr?.on('data', chunk => output += chunk.toString());
+        child.stdin?.end();
+    }
+
+    await new Promise<void>((res, rej) => {
+        child.once('error', rej);
+        child.once('close', code => {
+            if (code) {
+                console.error(output);
+                rej(new Error(`Exited with code: ${code}`, { cause: output }));
+            } else {
+                res(void 0);
+            }
+        });
+    });
+
+    return output;
 }
