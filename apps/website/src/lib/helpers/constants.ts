@@ -34,3 +34,5 @@ export const proseClasses: ClassValue = [
     "prose-blockquote:prose-p:before:content-none prose-blockquote:prose-p:after:content-none",
     "prose-a:text-primary dark:prose-a:text-blue-400 prose-a:no-underline"
 ]
+
+export const semverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;

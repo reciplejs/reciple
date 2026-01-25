@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from "clsx";
 import { slug } from 'github-slugger';
 import { createHighlighter } from 'shiki';
 import { twMerge } from "tailwind-merge";
+import { semverRegex } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -70,4 +71,29 @@ export function filterArrayDuplicate<T extends any[]>(items: T, keyOrFn: ((data:
 export function resolveLocationURL(location: Location): string|null {
     const url = `${location.filename}#L${location.line}-${location.col}`;
     return url.startsWith('http') ? url : null;
+}
+
+export function filterAndSortTags(tags: string[]): string[] {
+    let versions = tags.filter(tag => semverRegex.test(tag));
+    let branches = tags.filter(tag => !versions.includes(tag));
+
+    const newVersions: string[] = [];
+    const latestPatches: Record<string, number> = {};
+
+    for (const version of versions) {
+        const [_, major, minor, patch] = version.match(semverRegex) || [];
+        if (!major || !minor || !patch) continue;
+
+        const majorMinor = `${major}.${minor}`;
+        const currentPatch = isNaN(Number(patch)) ? 0 : Number(patch);
+        const latestPatch = Math.max(latestPatches[majorMinor] ?? 0, currentPatch);
+
+        latestPatches[majorMinor] = latestPatch;
+    }
+
+    for (const [majorMinor, latestPatch] of Object.entries(latestPatches)) {
+        newVersions.push(`${majorMinor}.${latestPatch}`);
+    }
+
+    return [...branches, ...newVersions.reverse()];
 }

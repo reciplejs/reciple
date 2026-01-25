@@ -2,6 +2,7 @@ import { resolve } from '$app/paths';
 import type { ClassMethodDef, ClassPropertyDef, DocNode, DocNodeKind, EnumMemberDef, InterfaceMethodDef, InterfacePropertyDef, JsDoc, JsDocTagDoc, JsDocTagDocRequired, JsDocTagKind, JsDocTagNamed, JsDocTagNamedTyped, JsDocTagOnly, JsDocTagParam, JsDocTagReturn, JsDocTagTags, JsDocTagTyped, JsDocTagUnsupported, JsDocTagValued } from '@deno/doc';
 import { slug } from 'github-slugger';
 import path from 'pathe';
+import { filterAndSortTags } from '../utils';
 
 export class Documentation {
     private static files: Documentation.APIFilesResponse|null = null;
@@ -151,9 +152,11 @@ export class Documentation {
     public static async fetchTags(pkg: string, fetch?: Documentation.FetchClient): Promise<string[]> {
         const { files } = await this.fetchFiles(false, fetch);
 
-        return files
-            .filter(file => file.path.startsWith(pkg))
-            .map(file => path.basename(file.path).replace('.json', ''));
+        return filterAndSortTags(
+            files
+                .filter(file => file.path.startsWith(pkg))
+                .map(file => path.basename(file.path).replace('.json', ''))
+        );
     }
 
     public static async fetchPackages(fetch?: Documentation.FetchClient): Promise<string[]> {
