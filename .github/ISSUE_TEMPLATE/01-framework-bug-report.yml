@@ -1,6 +1,6 @@
 name: Framework Bug Report
 description: Report an issue about the framework packages
-labels: ['Type: Bug']
+labels: ['type: bug']
 body:
   - id: package
     type: dropdown

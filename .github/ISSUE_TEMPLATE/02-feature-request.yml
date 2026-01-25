@@ -1,6 +1,6 @@
 name: Feature Request
 description: Request a new feature
-labels: ['Type: Feature']
+labels: ['type: feature']
 body:
   - id: package
     type: dropdown

@@ -1,6 +1,6 @@
 name: Website Bug Report
 description: Report an issue about the docs/guide website
-labels: ['Type: Bug']
+labels: ['type: bug']
 body:
   - id: section
     type: dropdown
