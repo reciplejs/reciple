@@ -63,7 +63,7 @@ jobs:
         if: ${{ github.ref_type == 'tag' }}
         env:
           PACKAGE_NAME: ${{ steps.format-tag.outputs.package }}
-          PACKAGE_VERSION: ${{ steps.format-tag.outputs.version }}
+          PACKAGE_VERSION: ${{ steps.format-tag.outputs.semver }}
         run: |
           mkdir -p "out/${PACKAGE_NAME}"
           mv "docs/${PACKAGE_NAME}/docs.json" "out/${PACKAGE_NAME}/${PACKAGE_VERSION}.json"
