@@ -99,7 +99,10 @@ const publish = await confirm({
 });
 
 if (publish === true) {
-    for (const workspace of workspaces) {
+    for (const dir of selected) {
+        const workspace = workspaces.find(p => p.root === dir);
+        if (!workspace) continue;
+
         await run(`bun publish --dry-run`, { cwd: workspace.root, pipe: true });
         log.success(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
     }
