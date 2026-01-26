@@ -6,6 +6,7 @@ export async function load({ url }) {
             title: 'reciple',
             description: '⚡ Reciple is a Discord.js command framework that just works.',
             keywords: ['reciple', 'discord.js', 'framework'],
+            canonical: new URL(url.pathname, url.origin).href,
             openGraph: {
                 type: 'website',
                 title: 'reciple',

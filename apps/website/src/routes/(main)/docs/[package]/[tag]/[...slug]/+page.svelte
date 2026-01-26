@@ -34,6 +34,7 @@
         searchState.open = false;
     });
 
+    // svelte-ignore state_referenced_locally
     documentationState.set(docState);
 </script>
 
