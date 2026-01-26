@@ -24,7 +24,7 @@
     let slugId = $derived(docState.documentation.getElementSlug(item));
 </script>
 
-<script module>
+<script lang="ts" module>
     export function isClassPropertyDef(method: unknown): method is ClassPropertyDef {
         return 'accessibility' in (method as ClassPropertyDef);
     }

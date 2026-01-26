@@ -28,7 +28,7 @@
     let method = $derived(overloads[0]);
 </script>
 
-<script module>
+<script lang="ts" module>
     export function isClassMethodDef(method: unknown): method is ClassMethodDef {
         return 'functionDef' in (method as ClassMethodDef);
     }
