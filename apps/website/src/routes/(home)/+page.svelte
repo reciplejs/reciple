@@ -23,7 +23,7 @@
             siteName: "reciple",
             images: [
                 {
-                    url: resolve('/') + 'assets/reciple-art.png',
+                    url: `${page.url.origin}/assets/reciple-art.png`,
                     width: 2560,
                     height: 1440,
                     alt: "reciple"
@@ -34,7 +34,7 @@
         }}
         twitter={{
             ...baseMetaTags,
-            image: resolve('/') + 'assets/reciple-art.png',
+            image: `${page.url.origin}/assets/reciple-art.png`,
             cardType: "summary_large_image"
         }}
     />

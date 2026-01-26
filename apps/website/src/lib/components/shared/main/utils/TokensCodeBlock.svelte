@@ -23,7 +23,7 @@
     }));
 
     const commonClasses: ClassValue = [
-        "top-0 left-0 whitespace-normal"
+        "top-0 left-0 whitespace-normal w-full"
     ];
 </script>
 
