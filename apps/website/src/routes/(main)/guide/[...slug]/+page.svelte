@@ -1,7 +1,6 @@
 <script lang="ts">
     import '$lib/styles/markdown.css';
-    import { pageMetadata, searchDialogState } from '$lib/helpers/contexts.js';
-    import { MetaTags } from 'svelte-meta-tags';
+    import { searchDialogState } from '$lib/helpers/contexts.js';
     import SearchDialog, { fromSidebarGroups, type SearchData } from '$lib/components/shared/main/SearchDialog.svelte';
     import Pagination from '$lib/components/shared/main/guide/Pagination.svelte';
     import Fuse from 'fuse.js';
@@ -10,13 +9,7 @@
 
     let { data } = $props();
 
-    let metadata = pageMetadata.get();
     let searchState = searchDialogState.get();
-
-    $effect(() => {
-        metadata.title = data.metadata?.title;
-        metadata.description = data.metadata?.description;
-    });
 
     let searchIndex: SearchData[] = $derived(fromSidebarGroups(data.sidebarData.content?.groups ?? []));
     let fuse: Fuse<SearchData> = $derived(new Fuse(searchIndex, {
@@ -33,15 +26,6 @@
         searchState.open = false;
     });
 </script>
-
-<svelte:head>
-    <MetaTags
-        titleTemplate="reciple | %s"
-        {...data.metadata}
-        openGraph={data.metadata}
-        twitter={data.metadata}
-    />
-</svelte:head>
 
 {#if searchState.open !== undefined}
     <SearchDialog

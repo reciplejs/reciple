@@ -3,17 +3,23 @@
     import '@fontsource-variable/roboto-mono';
     import '@fontsource/archivo-black';
     import '$lib/styles/app.css';
+
     import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+    import { ModeWatcher } from "mode-watcher";
+    import { Toaster } from '$lib/components/ui/sonner';
+    import { resolve } from '$app/paths';
+    import { navigating, page } from '$app/state';
+    import { fade } from 'svelte/transition';
+    import { deepMerge, MetaTags } from 'svelte-meta-tags';
 
-	import { ModeWatcher } from "mode-watcher";
-	import { Toaster } from '$lib/components/ui/sonner';
-	import { resolve } from '$app/paths';
-	import { navigating } from '$app/state';
-	import { fade } from 'svelte/transition';
-
-	let { children } = $props();
+	let {
+        data,
+        children
+    } = $props();
 
     injectSpeedInsights();
+
+    let metatags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
 </script>
 
 <svelte:head>
@@ -21,6 +27,7 @@
     <link rel="apple-touch-icon" href={resolve('/') + "apple-touch-icon-180x180.png"}>
 </svelte:head>
 
+<MetaTags {...metatags}/>
 <ModeWatcher/>
 <Toaster/>
 

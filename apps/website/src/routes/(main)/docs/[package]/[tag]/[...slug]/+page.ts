@@ -1,11 +1,12 @@
 import { error, redirect } from '@sveltejs/kit';
-import { DocType, type MarkdownMetadata, type SidebarData } from '$lib/helpers/types.js';
+import { DocType, type SidebarData } from '$lib/helpers/types.js';
 import { resolve } from '$app/paths';
 import { DocTypeIcons } from '$lib/helpers/constants.js';
 import { Documentation } from '$lib/helpers/classes/Documentation.svelte.js';
-import { markdownToTxt } from 'markdown-to-txt';
 import type { DocNodeKind } from '@deno/doc';
 import { PackageIcon, TagIcon } from '@lucide/svelte';
+import { definePageMetaTags } from 'svelte-meta-tags';
+import markdownToTxt from 'markdown-to-txt';
 
 export async function load(data) {
     const pkg = data.params.package;
@@ -30,10 +31,8 @@ export async function load(data) {
 
     if (!documentation || !nodes?.length && type !== 'home') error(404, 'Not found');
 
-    const metadata: MarkdownMetadata = {
-        title: nodes?.length ? nodes[0].name : `${pkg}@${tag}`,
-        description: markdownToTxt(documentation.readme)
-    };
+    const title = nodes?.length ? nodes[0].name : `${pkg}@${tag}`;
+    const description = markdownToTxt((nodes?.length ? nodes[0].jsDoc?.doc : documentation?.readme) || '');
 
     return {
         package: pkg,
@@ -41,8 +40,20 @@ export async function load(data) {
         type: type || null,
         name: name || null,
         documentation,
-        metadata,
         nodes,
+        ...definePageMetaTags({
+            title,
+            description,
+            openGraph: {
+                title,
+                description
+            },
+            twitter: {
+                title,
+                description
+            }
+        }),
+        metadata: { title },
         sidebarData: {
             header: {
                 title: `${pkg}@${tag}`,

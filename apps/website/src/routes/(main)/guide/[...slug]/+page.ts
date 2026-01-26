@@ -3,6 +3,7 @@ import { error } from '@sveltejs/kit';
 import { normalizeGuideCategoryId, normalizeGuidePageId } from '$lib/helpers/utils.js';
 import { resolve } from '$app/paths';
 import BoxIcon from '@lucide/svelte/icons/box';
+import { definePageMetaTags } from 'svelte-meta-tags';
 
 export async function load(data) {
     const parts = data.params.slug.split('/');
@@ -26,8 +27,21 @@ export async function load(data) {
 
     return {
         component,
-        metadata,
         modules,
+        metadata,
+        ...definePageMetaTags({
+            title: metadata?.title,
+            description: metadata?.description,
+            keywords: metadata?.keywords,
+            openGraph: {
+                title: metadata?.title,
+                description: metadata?.description
+            },
+            twitter: {
+                title: metadata?.title,
+                description: metadata?.description
+            }
+        }),
         sidebarData: await getSidebarData(modules)
     };
 }

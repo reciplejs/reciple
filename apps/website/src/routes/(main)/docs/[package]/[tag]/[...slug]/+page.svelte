@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { documentationState, pageMetadata, searchDialogState } from '$lib/helpers/contexts.js';
+    import { searchDialogState } from '$lib/helpers/contexts.js';
     import { page } from '$app/state';
-    import { MetaTags } from 'svelte-meta-tags';
     import ClassPage from '$lib/components/shared/main/docs/ClassPage.svelte';
     import NamespacePage from '$lib/components/shared/main/docs/NamespacePage.svelte';
     import EnumPage from '$lib/components/shared/main/docs/EnumPage.svelte';
@@ -18,8 +17,7 @@
     let { data } = $props();
 
     let searchState = searchDialogState.get();
-    let documentation = $derived(data.documentation);
-    let docState = $derived({ documentation });
+
     let searchIndex: SearchData[] = $derived(fromSidebarGroups(data.sidebarData.content?.groups ?? []));
     let fuse: Fuse<SearchData> = $derived(new Fuse(searchIndex, {
         keys: [
@@ -31,29 +29,10 @@
         threshold: 0.3
     }));
 
-    const metadata = pageMetadata.get();
-
     onMount(() => {
         searchState.open = false;
     });
-
-    $effect(() => {
-        metadata.title = data.metadata.title;
-        metadata.description = data.metadata.description;
-        metadata.keywords = data.metadata.keywords;
-    });
-
-    documentationState.set(docState);
 </script>
-
-<svelte:head>
-    <MetaTags
-        titleTemplate="reciple | %s"
-        {...data.metadata}
-        openGraph={data.metadata}
-        twitter={data.metadata}
-    />
-</svelte:head>
 
 {#if searchState.open !== undefined}
     <SearchDialog
