@@ -6,7 +6,7 @@ import { Documentation } from '$lib/helpers/classes/Documentation.svelte.js';
 import type { DocNodeKind } from '@deno/doc';
 import { PackageIcon, TagIcon } from '@lucide/svelte';
 import { definePageMetaTags } from 'svelte-meta-tags';
-import markdownToTxt from 'markdown-to-txt';
+import { markdownToTxt } from 'markdown-to-txt';
 
 export async function load(data) {
     const pkg = data.params.package;
