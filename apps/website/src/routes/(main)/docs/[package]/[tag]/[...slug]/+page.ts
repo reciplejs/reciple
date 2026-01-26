@@ -31,7 +31,7 @@ export async function load(data) {
 
     if (!documentation || !nodes?.length && type !== 'home') error(404, 'Not found');
 
-    const title = nodes?.length ? nodes[0].name : `${pkg}@${tag}`;
+    const title = nodes?.length ? `${pkg}@${tag} | (${nodes[0].kind.substring(0, 1).toUpperCase()}) ${nodes[0].name}` : `${pkg}@${tag}`;
     const description = markdownToTxt((nodes?.length ? nodes[0].jsDoc?.doc : documentation?.readme) || '');
 
     return {
@@ -53,7 +53,9 @@ export async function load(data) {
                 description
             }
         }),
-        metadata: { title },
+        metadata: {
+            title: nodes?.length ? nodes[0].name : `${pkg}@${tag}`
+        },
         sidebarData: {
             header: {
                 title: `${pkg}@${tag}`,
