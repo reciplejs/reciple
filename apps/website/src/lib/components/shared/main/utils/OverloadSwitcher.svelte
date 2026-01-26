@@ -42,11 +42,11 @@
     </div>
 {/snippet}
 
-{@render children({ index, item, selectMenu: SelectMenu })}
+{@render children({ index, item, selectMenu: SelectMenu as Snippet })}
 
 {#if data.length > 1}
     {#if typeof select === 'function'}
-        {@render select({ values: data, selectMenu: SelectMenu })}
+        {@render select({ values: data, selectMenu: SelectMenu as Snippet })}
     {:else if select}
         {@render SelectMenu()}
     {/if}

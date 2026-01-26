@@ -5,7 +5,11 @@ import { hasMixin, mix } from 'ts-mixer';
 import { SlashCommand, type SlashCommandBuilder } from '@reciple/core';
 import type { AnyCommandBuilderMethods } from '../../../helpers/types.js';
 
-export interface SlashCommandModule extends Omit<BaseModule, 'moduleType'>, SlashCommandModule.SlashCommandWithoutBuilderMethods {}
+export interface SlashCommandModule extends Omit<BaseModule, 'moduleType'|'onEnable'|'onReady'|'onDisable'>, SlashCommandModule.SlashCommandWithoutBuilderMethods {
+    onEnable(data: BaseModule.EventData<boolean>): Promise<void>;
+    onReady(data: BaseModule.EventData<true>): Promise<void>;
+    onDisable(data: BaseModule.EventData<boolean>): Promise<void>;
+}
 
 @mix(SlashCommand, BaseModule)
 export abstract class SlashCommandModule implements SlashCommandModule {

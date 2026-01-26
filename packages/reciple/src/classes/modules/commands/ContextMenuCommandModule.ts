@@ -5,7 +5,11 @@ import { hasMixin, mix } from 'ts-mixer';
 import type { AnyCommandBuilderMethods } from '../../../helpers/types.js';
 import { ContextMenuCommand, type ContextMenuCommandBuilder } from '@reciple/core';
 
-export interface ContextMenuCommandModule extends Omit<BaseModule, 'moduleType'>, ContextMenuCommandModule.ContextMenuCommandWithoutBuilderMethods {}
+export interface ContextMenuCommandModule extends Omit<BaseModule, 'moduleType'|'onEnable'|'onReady'|'onDisable'>, ContextMenuCommandModule.ContextMenuCommandWithoutBuilderMethods {
+    onEnable(data: BaseModule.EventData<boolean>): Promise<void>;
+    onReady(data: BaseModule.EventData<true>): Promise<void>;
+    onDisable(data: BaseModule.EventData<boolean>): Promise<void>;
+}
 
 @mix(ContextMenuCommand, BaseModule)
 export abstract class ContextMenuCommandModule implements ContextMenuCommandModule {

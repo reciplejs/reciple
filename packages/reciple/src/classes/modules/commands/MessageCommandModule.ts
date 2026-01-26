@@ -5,7 +5,11 @@ import { DiscordSnowflake } from '@sapphire/snowflake';
 import { hasMixin, mix } from 'ts-mixer';
 import type { AnyCommandBuilderMethods } from '../../../helpers/types.js';
 
-export interface MessageCommandModule extends Omit<BaseModule, 'moduleType'>, MessageCommandModule.MessageCommandWithoutBuilderMethods {}
+export interface MessageCommandModule extends Omit<BaseModule, 'moduleType'|'onEnable'|'onReady'|'onDisable'>, MessageCommandModule.MessageCommandWithoutBuilderMethods {
+    onEnable(data: BaseModule.EventData<boolean>): Promise<void>;
+    onReady(data: BaseModule.EventData<true>): Promise<void>;
+    onDisable(data: BaseModule.EventData<boolean>): Promise<void>;
+}
 
 @mix(MessageCommand, BaseModule)
 export abstract class MessageCommandModule implements MessageCommandModule {
@@ -33,4 +37,13 @@ export namespace MessageCommandModule {
     }
 
     export type MessageCommandWithoutBuilderMethods = Omit<MessageCommand, AnyCommandBuilderMethods|'options'|'flags'>;
+}
+
+class Test extends MessageCommandModule {
+    public data: MessageCommandBuilder.Data = new MessageCommandBuilder()
+        .toJSON();
+
+    public async execute(data: MessageCommand.ExecuteData): Promise<void> {
+        
+    }
 }

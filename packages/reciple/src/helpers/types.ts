@@ -9,7 +9,8 @@ import type { CommandType } from '@reciple/core';
 import type { UserConfig } from 'tsdown';
 import type { ShardingManagerOptions } from 'discord.js';
 
-export type AnyCommandBuilderMethods = 'setCommand'
+export type AnyCommandBuilderMethods =
+    |'setCommand'
     |'setCommand'
     |'setCooldown'
     |'addPreconditions'
@@ -22,13 +23,15 @@ export type AnyCommandBuilderMethods = 'setCommand'
     |'setDisabledPostconditions'
     |'setExecute';
 
-export type AnyModule = BaseModule
+export type AnyModule =
+    |BaseModule
     |AnyCommandModule
     |PreconditionModule
     |PostconditionModule
     |EventModule;
 
-export type AnyModuleData = BaseModule.Data
+export type AnyModuleData =
+    |BaseModule.Data
     |AnyCommandModuleData
     |PreconditionModule.Data
     |PostconditionModule.Data
@@ -50,7 +53,7 @@ export type AnyCommandModuleData<T extends CommandType = CommandType> = T extend
             ? ContextMenuCommandModule.Data
             : MessageCommandModule.Data|SlashCommandModule.Data|ContextMenuCommandModule.Data;
 
-export type BuildConfig = Omit<UserConfig, 
+export type BuildConfig = Omit<UserConfig,
     |'watch'
     |'skipNodeModulesBundle'
     |'platform'
