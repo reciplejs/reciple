@@ -68,11 +68,7 @@ export class ConfigReader {
             case 'deno':
             case 'node':
             default:
-                const jiti = createJiti(path.resolve(path.dirname(this.filepath)), {
-                    alias: runtime === 'deno' ? {
-                        '@reciple/core': path.join(CLI.root, './dist/index.mjs')
-                    } : undefined
-                });
+                const jiti = createJiti(path.resolve(path.dirname(this.filepath)));
                 module = await jiti.import<ConfigReader.ModuleData>(`./${path.basename(this.filepath)}`, {
                     default: true,
                     ...options
