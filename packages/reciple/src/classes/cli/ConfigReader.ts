@@ -60,14 +60,23 @@ export class ConfigReader {
     public async read(options?: JitiResolveOptions): Promise<ConfigReader> {
         let module: ConfigReader.ModuleData;
 
-        if (RuntimeEnvironment.get() === 'node') {
-            const jiti = createJiti(path.resolve(path.dirname(this.filepath)));
-            module = await jiti.import<ConfigReader.ModuleData>(`./${path.basename(this.filepath)}`, {
-                default: true,
-                ...options
-            });
-        } else {
-            module = await import(`file://${path.resolve(this.filepath)}`);
+        const runtime = RuntimeEnvironment.get();
+        switch (runtime) {
+            case 'bun':
+                module = await import(`file://${path.resolve(this.filepath)}`);
+                break;
+            case 'deno':
+            case 'node':
+            default:
+                const jiti = createJiti(path.resolve(path.dirname(this.filepath)), {
+                    alias: runtime === 'deno' ? {
+                        '@reciple/core': path.join(CLI.root, './dist/index.mjs')
+                    } : undefined
+                });
+                module = await jiti.import<ConfigReader.ModuleData>(`./${path.basename(this.filepath)}`, {
+                    default: true,
+                    ...options
+                });
         }
 
         if (!module || !module.client) {
