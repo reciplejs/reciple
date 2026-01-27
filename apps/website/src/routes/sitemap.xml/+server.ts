@@ -7,8 +7,8 @@ export async function GET({ fetch, url }) {
     const entries: string[] = [];
     const packages = await Documentation.fetchPackages(fetch);
 
-    entries.push(createSitemapEntry(url.origin, { priority: '1.0' }));
-    entries.push(createSitemapEntry(resolve('/(home)'), { priority: '0.80' }));
+    entries.push(createSitemapEntry(concatURLPath(url.origin, resolve('/')), { priority: '1.0' }));
+    entries.push(createSitemapEntry(concatURLPath(url.origin, resolve('/(main)/docs')), { priority: '0.30' }));
 
     for (const pkg of packages) {
         const tags = await Documentation.fetchTags(pkg, fetch);
@@ -16,14 +16,14 @@ export async function GET({ fetch, url }) {
 
         entries.push(createSitemapEntry(concatURLPath(
             url.origin,
-            resolve('/docs/[package]', { package: pkg })), { priority: '0.50' })
+            resolve('/docs/[package]', { package: pkg })), { priority: '0.60' })
         );
 
         for (const tag of tags) {
             entries.push(createSitemapEntry(concatURLPath(
                 url.origin,
                 resolve('/(main)/docs/[package]/[tag]', { package: pkg, tag })
-            ), { priority: '0.40' }));
+            ), { priority: '0.30' }));
         }
 
         const firstTag = tags[0];
@@ -33,7 +33,7 @@ export async function GET({ fetch, url }) {
             entries.push(createSitemapEntry(concatURLPath(
                 url.origin,
                 resolve('/(main)/docs/[package]/[tag]/[...slug]', { package: pkg, tag: firstTag, slug: node.name })
-            ), { priority: '0.30' }));
+            ), { priority: '0.70' }));
         }
     }
 
@@ -52,7 +52,7 @@ export async function GET({ fetch, url }) {
         entries.push(createSitemapEntry(concatURLPath(
             url.origin,
             resolve('/(main)/guide/[...slug]', { slug: `${categoryId}/${pageId}` })
-        )));
+        ), { priority: '0.80' }));
     }
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">${entries.join('')}</urlset>`;
