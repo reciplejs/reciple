@@ -6,7 +6,7 @@ import { execSync } from 'node:child_process';
 
 //#region Select workspaces
 const workspaces: WorkspaceData[] = await resolveWorkspaces();
-const dryRun = process.argv.includes('--dry-run');
+const dryRun = process.argv.includes('--dry-run') ? '--dry-run' : '';
 
 intro(colors.bold().black().bgCyan(` Found ${workspaces.length} packages `));
 
@@ -112,7 +112,7 @@ if (publish) for (const dir of selected) {
     const workspace = workspaces.find(p => p.root === dir);
     if (!workspace) continue;
 
-    execSync(`bun publish ${dryRun ? '--dry-run' : ''}`, { cwd: workspace.root, stdio: 'inherit' });
+    execSync(`bun publish ${dryRun}`, { cwd: workspace.root, stdio: 'inherit' });
     console.log(`Published ${colors.cyan(`(${workspace.pkg.name})`)} ${colors.green(workspace.root)}`);
 }
 
@@ -125,17 +125,24 @@ const tags = [];
 for (const workspace of newWorkspaces) {
     tags.push(`${workspace.pkg.name}@${workspace.pkg.version}`);
 
-    execSync(`git add ${path.join(workspace.root, 'package.json')} ${dryRun ? '--dry-run' : ''}`, { cwd: root, stdio: 'ignore' });
+    execSync(`git add ${path.join(workspace.root, 'package.json')} ${dryRun}`, { cwd: root, stdio: 'ignore' });
+    console.log(`${colors.bold().green('+')} ${colors.gray('[commit]')} ${colors.cyan(workspace.root)}`);
 }
 
-execSync(`git commit -m "chore: bump ${bump}" ${dryRun ? '--dry-run' : ''}`, { cwd: root, stdio: 'ignore' });
+if (!dryRun) {
+    execSync(`git commit -m "chore: bump ${bump}" ${dryRun}`, { cwd: root, stdio: 'ignore' });
+    console.log(`${colors.bold().green('✔')} Committed bump to git`);
 
-for (const tag of tags) {
-    try {
-        execSync(`git tag ${tag} ${dryRun ? '--dry-run' : ''}`, { cwd: root, stdio: 'ignore' });
-    } catch (e) {
-        console.log(colors.red(`An error occurred while tagging ${tag}: ${e}`));
+    for (const tag of tags) {
+        try {
+            execSync(`git tag ${tag} ${dryRun}`, { cwd: root, stdio: 'ignore' });
+            console.log(`${colors.bold().green('✔')} Tagged ${tag}`);
+        } catch (e) {
+            console.log(colors.red(`An error occurred while tagging ${tag}: ${e}`));
+        }
     }
 }
+
+console.log(`${colors.bold().green('✔')} Successfully bumped ${selected.length} packages.`);
 
 //#endregion
