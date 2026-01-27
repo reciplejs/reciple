@@ -125,14 +125,14 @@ const tags = [];
 for (const workspace of newWorkspaces) {
     tags.push(`${workspace.pkg.name}@${workspace.pkg.version}`);
 
-    execSync(`git add ${path.join(workspace.root, 'package.json')}`, { cwd: root, stdio: 'ignore' });
+    execSync(`git add ${path.join(workspace.root, 'package.json')} ${dryRun ? '--dry-run' : ''}`, { cwd: root, stdio: 'ignore' });
 }
 
-execSync(`git commit -m "chore: bump ${bump}"`, { cwd: root, stdio: 'ignore' });
+execSync(`git commit -m "chore: bump ${bump}" ${dryRun ? '--dry-run' : ''}`, { cwd: root, stdio: 'ignore' });
 
 for (const tag of tags) {
     try {
-        execSync(`git tag ${tag}`, { cwd: root, stdio: 'ignore' });
+        execSync(`git tag ${tag} ${dryRun ? '--dry-run' : ''}`, { cwd: root, stdio: 'ignore' });
     } catch (e) {
         console.log(colors.red(`An error occurred while tagging ${tag}: ${e}`));
     }
