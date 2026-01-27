@@ -2,7 +2,6 @@ import { resolve } from '$app/paths';
 import { Documentation } from '../../lib/helpers/classes/Documentation.svelte';
 import type { MarkdownModules } from '../../lib/helpers/types';
 import { normalizeGuideCategoryId, normalizeGuidePageId } from '../../lib/helpers/utils';
-import path from 'node:path';
 
 export async function GET({ fetch, url }) {
     const entries: string[] = [];
@@ -15,13 +14,13 @@ export async function GET({ fetch, url }) {
         const tags = await Documentation.fetchTags(pkg, fetch);
         if (!tags.length) continue;
 
-        entries.push(createSitemapEntry(path.join(
+        entries.push(createSitemapEntry(concatURLPath(
             url.origin,
             resolve('/docs/[package]', { package: pkg })), { priority: '0.50' })
         );
 
         for (const tag of tags) {
-            entries.push(createSitemapEntry(path.join(
+            entries.push(createSitemapEntry(concatURLPath(
                 url.origin,
                 resolve('/(main)/docs/[package]/[tag]', { package: pkg, tag })
             ), { priority: '0.40' }));
@@ -31,7 +30,7 @@ export async function GET({ fetch, url }) {
         const documentation = await (new Documentation({ package: pkg, tag: firstTag })).fetch(fetch);
 
         for (const node of documentation.data) {
-            entries.push(createSitemapEntry(path.join(
+            entries.push(createSitemapEntry(concatURLPath(
                 url.origin,
                 resolve('/(main)/docs/[package]/[tag]/[...slug]', { package: pkg, tag: firstTag, slug: node.name })
             ), { priority: '0.30' }));
@@ -50,7 +49,7 @@ export async function GET({ fetch, url }) {
 
         if (!pageId || !categoryId) continue;
 
-        entries.push(createSitemapEntry(path.join(
+        entries.push(createSitemapEntry(concatURLPath(
             url.origin,
             resolve('/(main)/guide/[...slug]', { slug: `${categoryId}/${pageId}` })
         )));
@@ -72,4 +71,8 @@ function createSitemapEntry(url: string, data?: Record<string, string>): string 
     const loc = `<loc>${url}</loc>`;
     const others = Object.entries(data || {}).map(([key, value]) => `<${key}>${value}</${key}>`).join('');
     return `<url>${loc}${others}</url>`;
+}
+
+function concatURLPath(origin: string, path: string): string {
+    return `${origin}${path.startsWith('/') ? path.startsWith('.') ? path.slice(1) : path : `/${path}`}`;
 }
