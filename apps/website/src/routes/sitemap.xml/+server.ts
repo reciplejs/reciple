@@ -74,5 +74,7 @@ function createSitemapEntry(url: string, data?: Record<string, string>): string 
 }
 
 function concatURLPath(origin: string, path: string): string {
-    return `${origin}${path.startsWith('/') ? path.startsWith('.') ? path.slice(1) : path : `/${path}`}`;
+    if (path.startsWith('/') || path.startsWith('./')) path = path.slice(1);
+
+    return `${origin}${path}`;
 }
