@@ -1,10 +1,10 @@
 ---
-title: How It Works
-description: The behind the scenes of reciple
+title: Modules
+description: The structure of reciple modules and how to create a module
 keywords:
   - modules
   - schema
-category: Home
+category: Getting Started
 ---
 
 # Modules
