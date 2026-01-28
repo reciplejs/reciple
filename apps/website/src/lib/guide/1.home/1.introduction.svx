@@ -6,7 +6,7 @@ category: Home
 
 # Introduction
 
-Reciple is a [Discord.js](https://discordjs.dev) framework that aims to extend its functionality to its fullest. This guide will provide you the enough knowledge to get started with your Discord bot.
+Reciple is a [Discord.js](https://discordjs.dev) framework that aims to simplify the structure and development of Discord bots. This guide will provide you the enough knowledge to get started with your Discord bot.
 
 # Before you begin...
 

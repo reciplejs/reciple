@@ -9,89 +9,116 @@ category: Home
 
 # Modules
 
-Reciple utilizes a module system in which a single `.js` file can contain commands, event handlers, and other components.
+Reciple utilizes a class based structure for modules. Modules are loaded from the `modules` directory by default and can be configured in `reciple.config.js` or `reciple.config.ts`.
 
 ## Structure
 
-Reciple modules are saved in the folder specified in the `reciple.mjs` config.
+A module should be an extention of the [`BaseModule`](/docs/reciple/main/class/BaseModule) class.
 
 ```js
-// Module config (reciple.mjs)
-export const config = {
-    // other things
-    modules: {
-        dirs: ['./modules', './modules/*', './modules/*/*'],
-        exclude: ['halts', 'preconditions', '_*'],
-        filter: file => true,
-        disableModuleVersionCheck: false
-    },
-    // other things
-};
-```
-> `dirs` can accept [glob](https://en.wikipedia.org/wiki/Glob_(programming)) patterns
+import { BaseModule } from "reciple";
 
-Here's an example project directory. Reciple will load modules from the specified folders and ignores `halts`, `preconditions`, and any file or folders that starts with an underscore ` _ `.
+class MyModule extends BaseModule {}
 ```
-mybot/
-├── reciple.mjs
+
+Now you've created a module, reciple modules contains `onEnable`, `onReady`, and `onDisable` methods that may contain a logic for your module.
+
+### `onEnable`
+
+This method is called when the bot is starting up. Before the client is ready (logged in). You can use this method to setup your module.
+
+```js
+import { BaseModule } from "reciple";
+
+class MyModule extends BaseModule {
+  logger = useLogger();
+
+  onEnable() {
+    this.logger.log("MyModule is enabled!");
+  }
+}
+```
+
+> The `useLogger()` function is a global helper function that returns a logger instance that is used by reciple.
+
+### `onReady`
+
+This method is called when reciple enabled all modules and when the bot is ready (logged in).
+
+```js
+import { BaseModule } from "reciple";
+
+class MyModule extends BaseModule {
+  logger = useLogger();
+
+  onEnable() {
+    this.logger.log("MyModule is enabled!");
+  }
+
+  onReady() {
+    this.logger.log("MyModule is ready!");
+  }
+}
+```
+
+### `onDisable`
+
+This method is called when the bot is shutting down. You can use this method to cleanup your module.
+
+```js
+import { BaseModule } from "reciple";
+
+class MyModule extends BaseModule {
+  logger = useLogger();
+
+  onEnable() {
+    this.logger.log("MyModule is enabled!");
+  }
+
+  onReady() {
+    this.logger.log("MyModule is ready!");
+  }
+
+  onDisable() {
+    this.logger.log("MyModule is disabled!");
+  }
+}
+```
+
+## Module ID
+
+Modules by default are assigned a random snowflake ID. You can set your own module ID by setting the `id` property in your module.
+
+```js
+import { BaseModule } from "reciple";
+
+class MyModule extends BaseModule {
+  id = "my-module";
+}
+```
+
+## Folders Structure
+
+When create modules, it should be created inside `src` folder or subfolder of `src`. The `src` folder is the root of your project. The folder structure is used to group modules.
+
+> The modules inside `src` will be built into the `modules` folder using the `reciple build` command.
+
+```bash
+mybot
+├──
+├── src
+│    ├── folder1
+│    │    └── Module1.ts
+│    └── folder2
+│    │    └── Module2.ts
+│    └── _utils
+│        └── utils.ts
+├── .env
+├── .gitignore
+├── nodemon.json
 ├── package.json
-├── package-lock.json
-├── node_modules
-└── modules/
-    ├── addons/
-    │   └── ....
-    ├── commands/
-    │   └── PingCommand.js
-    ├── events/
-    │   └── WelcomeEvent.js
-    ├── halts/
-    │   └── CommandErrorHalt.js
-    └── preconditions/
-        └── ExamplePrecondition.js
+├── reciple.config.js
+└── tsconfig.json
 ```
 
-## Schema
-
-Reciple modules requires `onStart` properties to load. 
-[View Docs](/docs/core/main/interfaces:RecipleModuleData)
-
-```js
-class MyModule {
-    id = 'my.module';
-    name = 'Display Name';
-    versions = ['^9'];
-    commands = [];
-
-    async onStart({ client }) {
-        return true; // Always return true if the module is loaded
-    }
-
-    async onLoad({ client }) {}
-    async onUnload({ client }) {}
-};
-
-// ESM
-export default new MyModule();
-```
-
-## Id
-`optional` Your module [`id`](/docs/core/main/interfaces:RecipleModuleData#id) is the unique identifier of your module. It is used to easily find the module from the [`ModuleManager#cache`](/docs/core/main/interfaces:ModuleManager#cache).
-> IDs are randomly generated if undefined
-
-## Name
-`optional` Your module [`name`](/docs/core/main/interfaces:RecipleModuleData#name) serves as the display name of your module. This is used when logging the module; the logger will use the module name rather than the full file path.
-
-## Versions
-`optional` The [`versions`](/docs/core/main/interfaces:RecipleModuleData#versions) property defines the supported versions of reciple it can be loaded with.
-
-## Commands
-`optional` The [`commands`](/docs/core/main/interfaces:RecipleModuleData#commands) property is an array of command objects that define the commands your module will register.
-
-## onStart()
-The [`onStart`](/docs/core/main/interfaces:RecipleModuleData#onstart) method is executed when the module is resolved before the bot is logged in. This can be useful for starting the module and setting up its commands.
-
-## onLoad()
-`optional` However, the [`onLoad`](/docs/core/main/interfaces:RecipleModuleData#onload) method is executed after the bot is logged in.
-
-## onUnload()
-`optional` Meanwhile, [`onUnload`](/docs/core/main/interfaces:RecipleModuleData#onunload) is executed when the module is unloaded or the bot process is stopping. This can be used for cache cleanup or to gracefully close down the module.
+> By default subfolders of `src` that start with `_` are ignored. You can use this to create utility modules that are not loaded by reciple.
