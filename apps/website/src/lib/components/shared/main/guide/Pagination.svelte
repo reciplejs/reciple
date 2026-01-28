@@ -13,8 +13,8 @@
     }, [] as SidebarData.GroupCategoryItem[]) || []);
 
     let current = $derived(items.findIndex(item => !!page.params.slug && item.href.endsWith(page.params.slug)));
-    let previous = $derived(current >= 0 ? items.at(current - 1) : undefined);
-    let next = $derived(current >= 0 ? items.at(current + 1) : undefined);
+    let previous = $derived(current > 0 ? items.at(current - 1) : undefined);
+    let next = $derived(current < items.length - 1 ? items.at(current + 1) : undefined);
 </script>
 
 <div class="grid @lg:grid-cols-2 gap-2 p-4">
