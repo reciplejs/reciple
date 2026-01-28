@@ -1,0 +1,57 @@
+---
+title: Preconditions
+description: Learn how to create and use preconditions
+category: Modules
+---
+
+# Preconditions
+
+Preconditions are modules that contains logics that are used to check if a command can be executed.
+
+You can create a precondition by creating a module that extends the built-in precondition module [`PreconditionModule`](/docs/reciple/main/class/PreconditionModule)
+
+## Structure
+
+```ts
+import { PreconditionModule } from "reciple";
+
+class MyPrecondition extends PreconditionModule {
+    async execute(data) {
+        return true;
+    }
+}
+
+export default MyPrecondition;
+```
+
+A precondition must implement the abstract method [`execute()`](/docs/reciple/main/class/PreconditionModule#execute). The method must return a value whether the command can be executed or not.
+
+### Return Values
+
+- `true` -- The command precondition succeeded and the command can be executed.
+- `false` -- The command precondition failed and the command cannot be executed.
+- `string` -- The command precondition failed and the command cannot be executed. The given string will be used as reason message (Not an error).
+- `Error` -- The command precondition failed with an error and the command cannot be executed.
+- [`CommandPrecondition.ResultData`](/docs/reciple/main/namespace/CommandPrecondition#interface:ResultData) -- The full result data of the command precondition.
+
+## Failed vs Error
+
+A precondition fail and error are different.
+
+### Failed
+
+A failed precondition is identified when the precondition's [`execute()`](/docs/reciple/main/class/PreconditionModule#execute) method returns `false`, `string`, or result data with a `success` property set to `false`.
+
+> If the value returned is `false` or `string` values, it will be coerced to a result data with a `success` property set to `false` and the given string as message.
+
+When a precondition fails, the command will not be executed. However, the command's postconditions will still be executed.
+
+> A precondition can assign a specific postcondition to be executed when the precondition fails by defining [`.postconditionExecute`](/docs/reciple/main/namespace/CommandPrecondition#postconditionExecute) property of the result data.
+
+### Error
+
+A precondition error is identified when a precondition returns a result data with a `success` property set to `false` and `error` property is defined. It is also possible to return or throw an error from a precondition to indicate an error.
+
+> If the precondition throws or returns an error, it will be coerced to a result data with a `success` property set to `false` and the error assigned to the `error` property.
+
+The postconditions will still be executed. However, the error will be thrown when these postconditions doesn't handle the error.
