@@ -89,7 +89,7 @@
     },
     "packages/create-reciple": {
       "name": "create-reciple",
-      "version": "10.0.18",
+      "version": "10.0.19",
       "bin": "./dist/index.mjs",
       "dependencies": {
         "@reciple/core": "workspace:^",
@@ -106,7 +106,7 @@
     },
     "packages/modules": {
       "name": "@reciple/modules",
-      "version": "10.0.18",
+      "version": "10.0.19",
       "dependencies": {
         "@sapphire/snowflake": "^3.5.5",
       },
@@ -117,7 +117,7 @@
     },
     "packages/reciple": {
       "name": "reciple",
-      "version": "10.0.17",
+      "version": "10.0.18",
       "bin": "./dist/bin/reciple.mjs",
       "dependencies": {
         "@clack/prompts": "^0.11.0",
