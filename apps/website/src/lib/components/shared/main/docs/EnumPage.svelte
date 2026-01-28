@@ -25,7 +25,7 @@
     let members = $derived(node.enumDef.members);
 </script>
 
-<section class="mt-2 grid gap-2">
+<section class="mt-2 flex flex-col gap-2">
     <NodeDocHeader {node} removeIcon={tiny}/>
     <TableOfContents {members} open={!tiny}/>
 </section>

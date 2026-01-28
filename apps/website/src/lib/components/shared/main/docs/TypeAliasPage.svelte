@@ -11,6 +11,6 @@
     } = $props();
 </script>
 
-<section class="mt-2 grid gap-2">
+<section class="mt-2">
     <NodeDocHeader {node} removeIcon={tiny}/>
 </section>

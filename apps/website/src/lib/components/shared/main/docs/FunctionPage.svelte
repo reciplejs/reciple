@@ -24,7 +24,7 @@
 <OverloadSwitcher data={nodes}>
     {#snippet children({ item })}
         <NodeDocHeader node={item} removeIcon={tiny}/>
-        <section class="mt-2 grid gap-2">
+        <section class="mt-2 flex flex-col gap-2">
             {#if item.functionDef.params.length}
                 <DocAccordion
                     open={!tiny}

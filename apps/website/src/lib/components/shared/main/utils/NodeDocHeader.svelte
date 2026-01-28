@@ -23,7 +23,7 @@
     let Icon = $derived(DocTypeIcons[node.kind as DocType]);
 </script>
 
-<section class="grid">
+<section>
     <div class="grid mb-4">
         <span class:ml-8={!removeIcon} class="text-sm font-normal text-muted-foreground">{node.kind}</span>
         <div class="flex gap-2 items-center overflow-hidden">
