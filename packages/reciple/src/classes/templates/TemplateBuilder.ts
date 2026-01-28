@@ -158,7 +158,7 @@ export class TemplateBuilder {
         const token = await text({
             message: 'Enter Discord Bot Token',
             placeholder: 'Bot Token from Discord Developer Portal',
-            defaultValue: env[tokenKey]
+            defaultValue: env[tokenKey] || ''
         });
 
         if (isCancel(token)) throw new NotAnError('Operation cancelled');
@@ -383,7 +383,7 @@ export class TemplateBuilder {
 
         console.log(`\n${colors.bold().green('✔')} Start developing:`);
 
-        if (!this.relativeDirectory) {
+        if (this.relativeDirectory) {
             console.log(`  • ${colors.cyan().bold(`cd ${this.relativeDirectory}`)}`);
         }
 
