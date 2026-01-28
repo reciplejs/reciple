@@ -126,7 +126,7 @@
             </CommandEmpty>
             {#each Object.entries(categories) as [category, items] (category)}
                 <CommandGroup heading={category}>
-                    {#each items as item (item)}
+                    {#each items as item (item.href)}
                         <CommandLinkItem
                             class="rounded"
                             href={item.href}
@@ -136,6 +136,7 @@
                             {#if item.icon}
                                 <item.icon class="me-2 size-4"/>
                             {/if}
+                            <span class="sr-only">{category}:</span>
                             <span>{item.title}</span>
                         </CommandLinkItem>
                     {/each}
