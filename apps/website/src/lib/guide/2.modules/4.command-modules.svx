@@ -1,0 +1,108 @@
+---
+title: Command Modules
+description: Learn how to create slash commands, context menu commands, and message commands
+keywords:
+  - command
+  - slash
+  - message
+  - context menu
+  - builder
+  - interaction
+  - message
+category: Modules
+---
+
+# Commands
+
+You can create commands in reciple by creating a module that extends the built-in command modules:
+
+- [`SlashCommandModule`](/docs/reciple/main/class/SlashCommandModule)
+- [`ContextMenuCommandModule`](/docs/reciple/main/class/ContextMenuCommandModule)
+- [`MessageCommandModule`](/docs/reciple/main/class/MessageCommandModule)
+
+The given module classes extends [`BaseModule`](/docs/reciple/main/class/BaseModule), which is the base class for all reciple modules.
+
+## Structure
+
+- `data` -- A property that contains the command data. The command data is the definition of the command, such as the command name, description, options, etc.
+- `execute` -- An async method that is called when the command is executed. The first parameter of the method is the command execute data.
+
+## Slash Command
+
+For better compatibility, import [`SlashCommandBuilder`](/docs/reciple/main/class/SlashCommandBuilder) from reciple if you're using a slash command builder.
+
+```ts
+import { SlashCommandBuilder, SlashCommandModule } from 'reciple';
+import { InteractionContextType } from 'discord.js';
+
+export class ExampleCommand extends SlashCommandModule {
+  data = new SlashCommandBuilder()
+    .setName('example')
+    .setDescription('An example command')
+    .setContext(InteractionContextType.Guild);
+
+  async execute({ interaction }) {
+    await interaction.reply('Hello world!');
+  }
+}
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+        <discord-command slot="reply" profile="cat" command="example"></discord-command>
+        Hello world!
+    </discord-message>
+</discord-messages>
+
+## Context Menu Command
+
+For better compatibility, import [`ContextMenuCommandBuilder`](/docs/reciple/main/class/ContextMenuCommandBuilder) from reciple if you're using a context menu command builder.
+
+```ts
+import { ContextMenuCommandBuilder, ContextMenuCommandModule } from 'reciple';
+import { ApplicationCommandType } from 'discord.js';
+
+export class ExampleCommand extends ContextMenuCommandModule {
+  data = new ContextMenuCommandBuilder()
+    .setName('example')
+    .setType(ApplicationCommandType.Message)
+    .setDescription('An example command');
+
+  async execute({ interaction }) {
+    await interaction.reply('Hello world!');
+  }
+}
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+        <discord-command slot="reply" profile="cat" command="example"></discord-command>
+        Hello world!
+    </discord-message>
+</discord-messages>
+
+## Message Command
+
+Message command or prefix commands are commands that are executed when a message starts with a certain prefix. This is the ancient way of creating commands in discord.
+
+```ts
+import { MessageCommandBuilder, MessageCommandModule } from 'reciple';
+
+export class ExampleCommand extends MessageCommandModule {
+  data = new MessageCommandBuilder()
+    .setName('example')
+    .setDescription('An example command');
+
+  async execute({ message }) {
+    await message.reply('Hello world!');
+  }
+}
+```
+
+<discord-messages>
+    <discord-message profile="cat">!example</discord-message>
+    <discord-message profile="bot">
+        <discord-reply slot="reply" profile="cat">!example</discord-reply>
+        Hello world!
+    </discord-message>
+</discord-messages>

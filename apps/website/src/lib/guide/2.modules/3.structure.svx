@@ -1,10 +1,10 @@
 ---
-title: Modules
+title: Module Structure
 description: The structure of reciple modules and how to create a module
 keywords:
   - modules
   - schema
-category: Getting Started
+category: Modules
 ---
 
 # Modules
