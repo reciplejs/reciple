@@ -16,11 +16,11 @@ category: Modules
 
 You can create commands in reciple by creating a module that extends the built-in command modules:
 
-- [`SlashCommandModule`](/docs/reciple/main/class/SlashCommandModule)
-- [`ContextMenuCommandModule`](/docs/reciple/main/class/ContextMenuCommandModule)
-- [`MessageCommandModule`](/docs/reciple/main/class/MessageCommandModule)
+- [SlashCommandModule](/docs/reciple/main/class/SlashCommandModule)
+- [ContextMenuCommandModule](/docs/reciple/main/class/ContextMenuCommandModule)
+- [MessageCommandModule](/docs/reciple/main/class/MessageCommandModule)
 
-The given module classes extends [`BaseModule`](/docs/reciple/main/class/BaseModule), which is the base class for all reciple modules.
+The given module classes are subclasses of [`BaseModule`](/docs/reciple/main/class/BaseModule), which is the base class for all reciple modules.
 
 ## Structure
 
@@ -35,7 +35,7 @@ For better compatibility, import [`SlashCommandBuilder`](/docs/reciple/main/clas
 import { SlashCommandBuilder, SlashCommandModule } from 'reciple';
 import { InteractionContextType } from 'discord.js';
 
-export class ExampleCommand extends SlashCommandModule {
+class ExampleCommand extends SlashCommandModule {
   data = new SlashCommandBuilder()
     .setName('example')
     .setDescription('An example command')
@@ -45,6 +45,8 @@ export class ExampleCommand extends SlashCommandModule {
     await interaction.reply('Hello world!');
   }
 }
+
+export default new ExampleCommand();
 ```
 
 <discord-messages>
@@ -62,7 +64,7 @@ For better compatibility, import [`ContextMenuCommandBuilder`](/docs/reciple/mai
 import { ContextMenuCommandBuilder, ContextMenuCommandModule } from 'reciple';
 import { ApplicationCommandType } from 'discord.js';
 
-export class ExampleCommand extends ContextMenuCommandModule {
+class ExampleCommand extends ContextMenuCommandModule {
   data = new ContextMenuCommandBuilder()
     .setName('example')
     .setType(ApplicationCommandType.Message)
@@ -72,6 +74,8 @@ export class ExampleCommand extends ContextMenuCommandModule {
     await interaction.reply('Hello world!');
   }
 }
+
+export default new ExampleCommand();
 ```
 
 <discord-messages>
@@ -88,7 +92,7 @@ Message command or prefix commands are commands that are executed when a message
 ```ts
 import { MessageCommandBuilder, MessageCommandModule } from 'reciple';
 
-export class ExampleCommand extends MessageCommandModule {
+class ExampleCommand extends MessageCommandModule {
   data = new MessageCommandBuilder()
     .setName('example')
     .setDescription('An example command');
@@ -97,6 +101,8 @@ export class ExampleCommand extends MessageCommandModule {
     await message.reply('Hello world!');
   }
 }
+
+export default new ExampleCommand();
 ```
 
 <discord-messages>

@@ -19,6 +19,8 @@ A module should be an extention of the [`BaseModule`](/docs/reciple/main/class/B
 import { BaseModule } from "reciple";
 
 class MyModule extends BaseModule {}
+
+export default new MyModule();
 ```
 
 Now you've created a module, reciple modules contains `onEnable`, `onReady`, and `onDisable` methods that may contain a logic for your module.
@@ -37,6 +39,8 @@ class MyModule extends BaseModule {
     this.logger.log("MyModule is enabled!");
   }
 }
+
+export default new MyModule();
 ```
 
 > The `useLogger()` function is a global helper function that returns a logger instance that is used by reciple.
@@ -59,6 +63,8 @@ class MyModule extends BaseModule {
     this.logger.log("MyModule is ready!");
   }
 }
+
+export default new MyModule();
 ```
 
 ### `onDisable`
@@ -83,6 +89,8 @@ class MyModule extends BaseModule {
     this.logger.log("MyModule is disabled!");
   }
 }
+
+export default new MyModule();
 ```
 
 ## Module ID
@@ -95,6 +103,8 @@ import { BaseModule } from "reciple";
 class MyModule extends BaseModule {
   id = "my-module";
 }
+
+export default new MyModule();
 ```
 
 ## Folders Structure

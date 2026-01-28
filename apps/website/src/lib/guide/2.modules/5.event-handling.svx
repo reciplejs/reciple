@@ -3,183 +3,93 @@ title: Event Handling
 description: Learn how to handle events in Reciple
 keywords:
     - event
-    - buttons
-    - modals
-    - select menus
-    - autocompletes
-    - slash commands
-    - context menus
-    - components
-    - message
-    - interactions
+    - handler
+    - listener
 category: Modules
 ---
 
 # Event Handling
-Rather than creating a separate file for events, Reciple allows you to create them within the module containing your command or another module.
 
-You can add an event listener using the `client` property passed to the `onStart` method of your module. You can create a separate event module by creating a new file in the `./modules/events` folder.
+Similar to the commands, reciple also provides built-in modules for handling events.
 
-> You can create a subfolders for the <code>events</code> folder so your event files doesn't end up in the same place.
+- [EventModule](/docs/reciple/main/class/EventModule)
+- [ClientEventModule](/docs/reciple/main/class/ClientEventModule)
+- [RESTEventModule](/docs/reciple/main/class/RESTEventModule)
+
+## Structure
+
+You can use the [`EventModule`](/docs/reciple/main/class/EventModule) class to handle events of any event emitter. The [`EventModule`](/docs/reciple/main/class/EventModule) class is a subclass of [`BaseModule`](/docs/reciple/main/class/BaseModule). This module requires the following properties:
+
+- `emitter` -- The event emitter to listen to.
+- `event` -- The event to listen to.
+
+To execute the event, you can use the `onEvent` method. The `onEvent` method takes the parameters of the event.
 
 ```js
-export class MyModule {
-    onStart({ client }) {
-        client.on('messageCreate', message => this.handleMessageCreate(message));
+import { EventModule } from 'reciple';
 
-        return true;
-    }
+class ExampleModule extends EventModule {
+    emitter = process;
+    event = 'warning';
 
-    async handleMessageCreate(message) {
-        if (!message.author.bot || !message.content.includes(message.client.user.id)) return;
-
-        await message.react('👀').catch(() => null);
-    }
-}
-
-export default new MyModule();
-```
-
-That module now has an event listener that listens for messages containing the bot's user ID.
-
-<discord-messages>
-    <discord-message profile="cat">
-        Hi <discord-mention profile="bot" type="user">Guide Bot</discord-mention>
-        <discord-reactions role="reactions">
-            <discord-reaction name="👀" emoji="https://raw.githubusercontent.com/skyra-project/discord-components-implementations/main/shared/public/eyes.svg"></discord-reaction>
-        </discord-reactions>
-    </discord-message>
-</discord-messages>
-
-## Interaction Events
-Working with message components and modals can make handling interactions difficult, so Reciple provides an external module called [`reciple-interaction-events`](https://npmjs.org/package/reciple-interaction-events) to make things easier.
-
-### Two ways to install `reciple-interaction-events`
-- Select the addon `reciple-interaction-events` when creating the bot project using `npm create reciple@latest`
-- Install the package `reciple-interaction-events` using `npm i reciple-interaction-events`.
-  - Then create a new module in your `./modules/addons` folder. In this case we will name it `reciple-interaction-events.js`.
-    ```js
-    import { RecipleInteractionEvents } from 'reciple-interaction-events';
-    export default new RecipleInteractionEvents();
-    ```
-
-After installing `reciple-interaction-events`, You can now add new property called `interactionEvents` in any of your modules to handle certain types of interactions.
-
-In this example, we will create a slash command with a surprise button 🎉. First, create the command module.
-```js
-import { SlashCommandBuilder } from 'reciple';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-
-export class MyModule {
-    commands = [
-        new SlashCommandBuilder()
-            .setName('surpise')
-            .setDescription('Get surprised!')
-            .setExecute(async ({ interaction }) => {
-                await interaction.reply({
-                    content: 'Click the button bellow',
-                    components: [
-                        new ActionRowBuilder()
-                            .setComponents(
-                                new ButtonBuilder()
-                                    .setLabel('Surpise')
-                                    .setEmoji('🎉')
-                                    .setCustomId('surprise')
-                                    .setStyle(ButtonStyle.Secondary)
-                            );
-                    ]
-                });
-            })
-    ];
-
-    onStart({ client }) {
-        return true;
+    onEvent(warning) {
+        useLogger().warn(warning);
     }
 }
 
-export default new MyModule();
+export default new ExampleModule();
 ```
 
-After creating the command, add the interaction listener to the `interactionEvents` property.
+## Client Events
+
+You can use the [`ClientEventModule`](/docs/reciple/main/class/ClientEventModule) class to handle client events. This module class is a subclass of [`EventModule`](/docs/reciple/main/class/EventModule). This module automatically uses the client as the event emitter, means that you don't need to set the `emitter` property. This module requires the following properties:
+
+- `event` -- The event to listen to.
+
+An `onEvent` method is required to handle the event.
 
 ```js
-import { SlashCommandBuilder } from 'reciple';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { InteractionListenerType } from 'reciple-interaction-events';
+import { ClientEventModule } from 'reciple';
 
-export class MyModule {
-    commands = [
-        new SlashCommandBuilder()
-            .setName('surpise')
-            .setDescription('Get surprised!')
-            .setExecute(async ({ interaction }) => {
-                await interaction.reply({
-                    content: 'Click the button below',
-                    components: [
-                        new ActionRowBuilder()
-                            .setComponents(
-                                new ButtonBuilder()
-                                    .setLabel('Surpise')
-                                    .setEmoji('🎉')
-                                    .setCustomId('surprise')
-                                    .setStyle(ButtonStyle.Success)
-                            );
-                    ]
-                });
-            })
-    ];
+class ExampleModule extends ClientEventModule {
+    event = 'messageCreate';
 
-    interactionEvents = [
-        {
-            type: InteractionListenerType.Button,
-            customId: 'surprise',
-            execute: async interaction => {
-                await interaction.reply({
-                    content: 'You are awesome 💖',
-                    ephemeral: true
-                });
-            }
+    onEvent(message) {
+        if (message.content === 'hello') {
+            message.reply('world');
         }
-    ];
-
-    onStart({ client }) {
-        return true;
     }
 }
 
-export default new MyModule();
+export default new ExampleModule();
 ```
 
-When you run that command and press the button, it will send a response message.
-
 <discord-messages>
+    <discord-message profile="cat">hello</discord-message>
     <discord-message profile="bot">
-        <discord-components>
-            Click the button below
-            <discord-action-row>
-                <discord-button type="success" emoji="https://em-content.zobj.net/source/twitter/376/party-popper_1f389.png" emoji-name="🎉">Surprise</discord-button>
-            </discord-action-row>
-        </discord-components>
-    </discord-message>
-    <discord-message profile="bot" ephemeral>
-        <discord-reply slot="reply" profile="bot" attachment><i>Click to see attachment</i></discord-reply>
-        You are awesome 💖
+        <discord-reply slot="reply" profile="cat">hello</discord-reply>
+        world
     </discord-message>
 </discord-messages>
-<br/>
 
-> You can use dynamic custom id/command name by setting the `customId`/`commandName` property of your event listener to a function.
+## REST Events
+
+Similar to the [`ClientEventModule`](/docs/reciple/main/class/ClientEventModule), you can use the [`RESTEventModule`](/docs/reciple/main/class/RESTEventModule) class to handle rest events. This module also automatically uses the rest client as the event emitter, means that you don't need to set the `emitter` property. This module requires the following properties:
+
+- `event` -- The event to listen to.
+
+An `onEvent` method is required to handle the event.
+
 ```js
-interactionEvents = [
-    {
-        type: InteractionListenerType.Button,
-        customId: i => i.customId.startsWith('surprise'),
-        execute: async interaction => {
-            await interaction.reply({
-                content: 'You are awesome 💖',
-                ephemeral: true
-            });
-        }
+import { RESTEventModule } from 'reciple';
+
+class ExampleModule extends RESTEventModule {
+    event = 'rateLimited';
+
+    onEvent() {
+        useLogger().warn('Rate limited');
     }
-];
+}
+
+export default new ExampleModule();
 ```
