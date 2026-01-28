@@ -23,6 +23,8 @@ class MyModule extends BaseModule {}
 export default new MyModule();
 ```
 
+> A module instance must be exported as a default in every module files.
+
 Now you've created a module, reciple modules contains `onEnable`, `onReady`, and `onDisable` methods that may contain a logic for your module.
 
 ### `onEnable`
