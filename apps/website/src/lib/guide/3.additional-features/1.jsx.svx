@@ -5,3 +5,233 @@ category: Additional Features
 ---
 
 # JSX
+
+You can create embeds, buttons, modals, and more using a JSX syntax. You can find the documentation [here](/docs/jsx).
+
+## @reciple/jsx
+
+To use JSX, you need to have `@reciple/jsx` installed in your project. This package contains all the components and runtime for JSX. If you don't have `@reciple/jsx` installed, you can install it using:
+
+```
+npm i @reciple/jsx
+```
+
+In your build config, you must set the `react-jsx` as your `jsx`, and set `@reciple/jsx` as your `jsxImportSource`. This will allow reciple JSX to work in your project. In your tsconfig.json, you can set the following:
+
+```json
+{
+  "compilerOptions": {
+    ...
+    "jsx": "react-jsx",
+    "jsxImportSource": "@reciple/jsx"
+  }
+}
+```
+
+Now, when you build your project, whenever you use JSX, reciple JSX will be used.
+
+## Components
+
+You can find all the components in the [reciple JSX documentation](/docs/jsx).
+
+### Embeds
+
+```js
+import { Embed, EmbedAuthor, EmbedDescription, EmbedFields, EmbedField, EmbedFooter, EmbedImage, EmbedThumbnail, EmbedTitle } from '@reciple/jsx';
+
+await channel.send({
+  embeds: [
+    <Embed color="Green" timestamp={Date.now()}>
+      <EmbedAuthor name="Embed Author" iconURL="https://avatars.githubusercontent.com/u/69035887?v=4"/>
+      <EmbedTitle>Embed Title</EmbedTitle>
+      <EmbedDescription>Embed Description</EmbedDescription>
+      <EmbedThumbnail url="https://avatars.githubusercontent.com/u/69035887?v=4"/>
+      <EmbedImage url="https://avatars.githubusercontent.com/u/69035887?v=4"/>
+      <EmbedFields>
+        <EmbedField name="Field" inline={true}>
+          Value
+        </EmbedField>
+      </EmbedFields>
+      <EmbedFooter text="Embed Footer" iconURL="https://avatars.githubusercontent.com/u/69035887?v=4"/>
+    </Embed>
+  ]
+})
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+      <discord-embed slot="embeds" color="#2ecc71" author-name="Embed Author" author-image="https://avatars.githubusercontent.com/u/69035887?v=4" embed-title="Embed Title" image="https://avatars.githubusercontent.com/u/69035887?v=4" thumbnail="https://avatars.githubusercontent.com/u/69035887?v=4">
+        <discord-embed-description slot="description">Embed Description</discord-embed-description>
+        <discord-embed-fields slot="fields">
+          <discord-embed-field fieldTitle="Field">
+            Value
+          </discord-embed-field>
+        </discord-embed-fields>
+        <discord-embed-footer slot="footer" footer-image="https://avatars.githubusercontent.com/u/69035887?v=4" timestamp={Date.now()}>
+          Embed Footer
+        </discord-embed-footer>
+      </discord-embed>
+    </discord-message>
+</discord-messages>
+
+### Buttons
+
+```js
+import { ActionRow, Button } from '@reciple/jsx';
+import { ButtonStyle } from 'discord.js';
+
+await channel.send({
+  components: [
+    <ActionRow>
+      <Button customId="my-button-1" style={ButtonStyle.Primary}>Primary</Button>
+      <Button customId="my-button-2" style={ButtonStyle.Secondary}>Secondary</Button>
+      <Button customId="my-button-3" style={ButtonStyle.Success}>Success</Button>
+      <Button customId="my-button-4" style={ButtonStyle.Danger}>Danger</Button>
+      <Button customId="my-button-5" style={ButtonStyle.Premium}>Premium</Button>
+      <Button url="https://google.com" style={ButtonStyle.Link}>Link</Button>
+    </ActionRow>
+  ]
+})
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+      <discord-action-row slot="components">
+        <discord-button customId="my-button-1" type="primary">Primary</discord-button>
+        <discord-button customId="my-button-2" type="secondary">Secondary</discord-button>
+        <discord-button customId="my-button-3" type="success">Success</discord-button>
+        <discord-button customId="my-button-4" type="destructive">Danger</discord-button>
+        <discord-button customId="my-button-5" type="primary">Premium</discord-button>
+        <discord-button url="https://google.com">Link</discord-button>
+      </discord-action-row>
+    </discord-message>
+</discord-messages>
+
+### Select Menus
+
+```js
+import { ActionRow, StringSelectMenu, RoleSelectMenu, ChannelSelectMenu, UserSelectMenu } from '@reciple/jsx';
+import { ChannelType } from 'discord.js';
+
+await channel.send({
+  components: [
+    <ActionRow>
+      <StringSelectMenu customId="my-select-menu-1">
+        <StringSelectMenuOption value="option-1" emoji="👍" description="Hello, world">
+          Option
+        </StringSelectMenuOption>
+      </StringSelectMenu>
+      <RoleSelectMenu customId="my-select-menu-2"/>
+      <ChannelSelectMenu customId="my-select-menu-3"/>
+      <UserSelectMenu customId="my-select-menu-4" channelTypes={[ChannelType.GuildText]} />
+    </ActionRow>
+  ]
+})
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+      <discord-attachments slot="components">
+        <discord-string-select-menu>
+          <discord-string-select-menu-option label="Option" value="option-1" emoji="👍" description="Hello, world"></discord-string-select-menu-option>
+        </discord-string-select-menu>
+        <discord-string-select-menu>
+          <discord-string-select-menu-option label="@some role" value="some-role"></discord-string-select-menu-option>
+        </discord-string-select-menu>
+        <discord-string-select-menu>
+          <discord-string-select-menu-option label="#some channel" value="some-channel"></discord-string-select-menu-option>
+        </discord-string-select-menu>
+        <discord-string-select-menu>
+          <discord-string-select-menu-option label="@some user" value="some-user"></discord-string-select-menu-option>
+        </discord-string-select-menu>
+      </discord-attachments>
+    </discord-message>
+</discord-messages>
+
+### Polls
+
+```js
+import { Poll, PollQuestionMedia, PollAnswers, PollAnswer } from '@reciple/jsx';
+
+await channel.send({
+  components: [
+    <Poll duration={1000 * 60 * 60 * 24} allowMultiselect={true}>
+      <PollQuestionMedia>Poll Question</PollQuestionMedia>
+      <PollAnswers>
+        <PollAnswer emoji="✅">Yes</PollAnswer>
+        <PollAnswer emoji="❌">No</PollAnswer>
+      </PollAnswers>
+    </Poll>
+  ]
+})
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+        <discord-attachments slot="components">
+            <discord-poll question="Poll Question" multipleAnswers>
+                <discord-poll-answer multipleAnswers emoji="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2705.png" answer="Yes"></discord-poll-answer>
+                <discord-poll-answer multipleAnswers emoji="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/274c.png" answer="No"></discord-poll-answer>
+            </discord-poll>
+        </discord-attachments>
+    </discord-message>
+</discord-messages>
+
+### Modals
+
+```js
+import { Modal, Label, TextInput, FileUpload } from '@reciple/jsx';
+import { TextInputStyle } from 'discord.js';
+
+await interaction.showModal(
+  <Modal customId="my-modal" title="This is a modal rawr">
+    <Label label="My Input" description="This is an example input">
+      <TextInput customId="my-input" style={TextInputStyle.Short}/>
+    </Label>
+    <Label label="My Paragraph" description="This is an example paragraph input">
+      <TextInput customId="my-paragraph" style={TextInputStyle.Paragraph}/>
+    </Label>
+    <Label label="My File" description="This is an example file upload">
+      <FileUpload customId="my-file-upload" maxValues={3} required={false}/>
+    </Label>
+  </Modal>
+)
+```
+
+See implementation in [`modal.tsx`](https://github.com/reciplejs/reciple/blob/471949901067ecafaf8098c7f73e4a7edfa77f9a/example/src/commands/modal.tsx#L1-L2)
+
+### Components v2
+
+```js
+import { TextDisplay, Separator, File } from '@reciple/jsx';
+import { AttachmentBuilder } from 'discord.js';
+
+await channel.send({
+  flags: ['IsComponentsV2'],
+  components: <>
+    <TextDisplay># Title Display</TextDisplay>
+    <TextDisplay>Lorem ipsum dolor sit amet consectetur adipiscing elit.</TextDisplay>
+    <Separator/>
+    <File url="attachment://file.png"/>
+  </>,
+  files: [
+    new AttachmentBuilder('path/to/file.png', { name: 'file.png' })
+  ]
+})
+```
+
+<discord-messages>
+    <discord-message profile="bot">
+        <h1>Title Display</h1>
+        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit.</p>
+        <hr class="m-0!"/>
+        <discord-image-attachment slot="attachments" custom-image-element spoiler>
+            <img
+                src="https://avatars.githubusercontent.com/u/69035887?v=4"
+                height={200}
+                width={200}
+                alt="lit-logo"
+            />
+        </discord-image-attachment>
+    </discord-message>
+</discord-messages>
