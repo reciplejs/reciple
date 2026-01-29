@@ -56,3 +56,39 @@ The postcondition error will be thrown. You can handle postcondition errors by u
 ## Execution
 
 All postconditions are executed first, then each result data of each postcondition are stored in a [`PostconditionResultManager`](/docs/core/main/class/PostconditionResultManager). The postcondition result manager is then used to determine whether the postconditions has an error or failed.
+
+## Execute Data
+
+The data passed to the postcondition's [`execute()`](/docs/reciple/main/class/PostconditionModule#execute) method is a [`PostconditionData`](/docs/core/main/class/PostconditionData) instance. These data describes what is need to be handled. You may encounter the following execute data:
+
+### [`UnknownExecuteData`](/docs/core/main/namespace/CommandPostcondition#UnknownExecuteData)
+
+The execute data is unknown. This is most likely a custom data passed from a precondition.
+
+### [`CooldownExecuteData`](/docs/core/main/namespace/CommandPostcondition#CooldownExecuteData)
+
+The execute data is a cooldown. This is used to handle cooledown commands.
+
+### [`PreconditionErrorExecuteData`](/docs/core/main/namespace/CommandPostcondition#PreconditionErrorExecuteData)
+
+The execute data is a precondition error. This is used to handle precondition errors. The error is thrown if the precondition error is not handled.
+
+### [`PreconditionFailedExecuteData`](/docs/core/main/namespace/CommandPostcondition#PreconditionFailedExecuteData)
+
+The execute data that is used when a precondition fails. This is used to handle precondition results with a `success` property set to `false`.
+
+### [`InvalidArgsExecuteData`](/docs/core/main/namespace/CommandPostcondition#InvalidArgsExecuteData)
+
+This is an execute data for invalid arguments. This is only used for message commands to handle invalid arguments.
+
+### [`MissingArgsExecuteData`](/docs/core/main/namespace/CommandPostcondition#MissingArgsExecuteData)
+
+This is an execute data for missing arguments. This is only used for message commands to handle missing arguments.
+
+### [`InvalidFlagsExecuteData`](/docs/core/main/namespace/CommandPostcondition#InvalidFlagsExecuteData)
+
+This is an execute data for invalid flags. This is only used for message commands to handle invalid flags.
+
+### [`MissingFlagsExecuteData`](/docs/core/main/namespace/CommandPostcondition#MissingFlagsExecuteData)
+
+This is an execute data for missing flags. This is only used for message commands to handle missing flags.
