@@ -92,3 +92,7 @@ This is an execute data for invalid flags. This is only used for message command
 ### [`MissingFlagsExecuteData`](/docs/core/main/namespace/CommandPostcondition#MissingFlagsExecuteData)
 
 This is an execute data for missing flags. This is only used for message commands to handle missing flags.
+
+## Precondition Trigger
+
+Whenever a precondition specifically triggers a certain postcondition, the result data of that precondition is passed to the second parameter of the postcondition's [`execute()`](/docs/reciple/main/class/PostconditionModule#execute) method.

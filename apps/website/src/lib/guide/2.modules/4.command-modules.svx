@@ -20,7 +20,7 @@ You can create commands in reciple by creating a module that extends the built-i
 - [ContextMenuCommandModule](/docs/reciple/main/class/ContextMenuCommandModule)
 - [MessageCommandModule](/docs/reciple/main/class/MessageCommandModule)
 
-The given module classes are subclasses of [`BaseModule`](/docs/reciple/main/class/BaseModule), which is the base class for all reciple modules.
+The given module classes are mixin of [`BaseModule`](/docs/reciple/main/class/BaseModule) and Command Classes (which extends [`BaseCommand`](/docs/reciple/main/class/BaseCommand`]), which is the base class for all reciple modules.
 
 ## Structure
 
