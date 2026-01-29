@@ -55,3 +55,7 @@ A precondition error is identified when a precondition returns a result data wit
 > If the precondition throws or returns an error, it will be coerced to a result data with a `success` property set to `false` and the error assigned to the `error` property.
 
 The postconditions will still be executed. However, the error will be thrown when these postconditions doesn't handle the error.
+
+## Execution
+
+All precondition are executed first before the command executes, then each result data of each precondition are stored in a [`PreconditionResultManager`](/docs/core/main/class/PreconditionResultManager). The precondition result manager is then used to determine whether the preconditions has an error or failed.
