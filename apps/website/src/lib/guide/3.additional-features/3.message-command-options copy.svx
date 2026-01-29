@@ -37,7 +37,7 @@ To access the unresolved value (or the string value) of the option, you can use 
 const optionValue = options.getOptionValue('option', true);
 ```
 
-> The second parameter is whether the option is required or not.
+> The second parameter is whether the option is required or not. If the option is optional, the value will be `null` if the option is not provided.
 
 ## Resolved Values
 
@@ -56,8 +56,7 @@ class ExampleCommand extends MessageCommandModule {
         );
 
     async execute({ message, options }) {
-        const string = options.getOptionValue('option', true);               // Unresolved value
-        const number = await options.getOptionResolvedValue('option', true); // Resolved value
+        const number = await options.getOptionResolvedValue('option', true);
 
         await message.reply(`Option value: ${number}`);
     }
@@ -92,7 +91,9 @@ class ExampleCommand extends MessageCommandModule {
         );
 
     async execute({ message, options }) {
-        await options.getOptionValue('option', true); // Option value will be validated in a precondition
+        const number = await options.getOptionValue('option', true);
+
+        await message.reply(`Option value: ${number}`);
     }
 }
 ```

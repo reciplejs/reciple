@@ -5,3 +5,133 @@ category: Additional Features
 ---
 
 # Message Command Flags
+
+Message command flags can be used to add additional options to a message command. Message command flags are not positional. The usage of flags is similar to most CLI flags.
+
+To add a flag to a message command, use the [`addFlag`](/docs/core/main/class/MessageCommandBuilder#addFlag) method. This method is similar to the [`addOption`](/docs/core/main/class/MessageCommandBuilder#addOption) method.
+
+```js
+class ExampleCommand extends MessageCommandModule {
+    data = new MessageCommandBuilder()
+        .setName('example')
+        .setDescription('An example command')
+        .addFlag(flag => flag
+            .setName('flag')
+            .setShortcut('f')
+            .setDescription('A flag')
+            .setValueType('string')
+            .setRequired(true)
+        );
+
+    async execute({ message, flags }) {
+        const values = flags.getFlagValues('flag', { required: true, type: 'string' });
+
+        await message.reply(`Flag value: ${values.join(', ')}`);
+    }
+}
+```
+
+<discord-messages>
+    <discord-message profile="cat">!example -f flag</discord-message>
+    <discord-message profile="bot">
+        <discord-command slot="reply" profile="cat" command="example">!example -f flag</discord-command>
+        Flag value: flag
+    </discord-message>
+    <discord-message profile="cat">!example --flag test</discord-message>
+    <discord-message profile="bot">
+        <discord-command slot="reply" profile="cat" command="example">!example --flag test</discord-command>
+        Flag value: test
+    </discord-message>
+</discord-messages>
+
+> A flag can be used multiple times. When a flag is used multiple times, it will return the values as an array.
+
+## Flag Types
+
+There are two types of flags that can be used.
+
+- `string` -- A string flags are flags that follow a string value. You can assign a value to a flag by `--flag value` or using its shortcut form `-f value`.
+- `boolean` -- A boolean flag is a flag that does not follow a value. When trying to get the value of a boolean flag, it will return `true` if the flag is used, and `false` if the flag is not used.
+
+To access the values of a flag, use the [`getFlagValues`](/docs/core/main/class/MessageCommandFlagValueManager#getFlagValues) method. This returns an array of values.
+
+> The second parameter is an object that contains the type of the flag and whether the flag is required or not.
+- If the type is not specified, it will default to `string`.
+- If the required parameter is not specified, it will default to `false`. If the flag is optional, it will return `null` if the flag is not used.
+
+## Resolved Values
+
+To add other types of values to a flag, you can also add a resolver function to the flag using [`setResolve`](/docs/core/main/class/MessageCommandFlagBuilder#method:setResolve). The values that is passed to the function is an unresolved value of the flag.
+
+> The unresolved values can be an array of string or array of boolean based on the type of the flag. If the flag is not used, it will return `null`.
+
+```js
+class ExampleCommand extends MessageCommandModule {
+    data = new MessageCommandBuilder()
+        .setName('example')
+        .setDescription('An example command')
+        .addFlag(flag => flag
+            .setName('flag')
+            .setShortcut('f')
+            .setDescription('A flag')
+            .setValueType('string')
+            .setResolve(data => data.values?.map(Number) ?? [])
+            .setRequired(true)
+        );
+
+    async execute({ message, flags }) {
+        const numbers = await flags.getFlagResolvedValues('flag', true);
+
+        await message.reply(`Flag value: ${numbers.join(', ')}`);
+    }
+}
+```
+
+> A resolved value must be an array of the new values.
+
+To access the resolved values, you can use [`getFlagResolvedValues`](/docs/core/main/class/MessageCommandFlagValueManager#getFlagResolvedValues) method. This method will resolve the values of the flag asynchronously based on the resolver function.
+
+> The second parameter is whether the flag is required or not. If the flag is optional, the value will be `null` if the flag is not provided.
+
+## Validation
+
+To add a validation function to a flag, use the [`setValidate`](/docs/core/main/class/MessageCommandFlagBuilder#method:setValidate) method. The values that is passed to the function is an unresolved values of the flag.
+
+```js
+class ExampleCommand extends MessageCommandModule {
+    data = new MessageCommandBuilder()
+        .setName('example')
+        .setDescription('An example command')
+        .addFlag(flag => flag
+            .setName('flag')
+            .setShortcut('f')
+            .setDescription('A flag')
+            .setValueType('string')
+            .setValidate(data => data.values?.every(value => !isNaN(Number(value))) ?? false)
+            .setResolve(data => data.values?.map(Number) ?? [])
+            .setRequired(true)
+        );
+
+    async execute({ message, flags }) {
+        const numbers = await flags.getFlagResolvedValues('flag', true);
+
+        await message.reply(`Flag value: ${numbers.join(', ')}`);
+    }
+}
+```
+
+> The validate function should return a boolean value. If the value is valid, it should return `true`, otherwise it should return `false`.
+
+The validation of message command flags is done before the command is executed, the precondition [`MessageCommandFlagValidatePrecondition`](/docs/core/main/class/MessageCommandFlagValidatePrecondition) is the default precondition for validating message command flags.
+
+### Invalid Flags
+
+If the flag is invalid, the command will not be executed. Postconditions will be executed with an execute data in the structure of [`CommandPostcondition.InvalidFlagsExecuteData`](/docs/core/main/namespace/CommandPostcondition#interface:InvalidFlagsExecuteData).
+
+> By default, when a flag is invalid, the command will simply not be executed without any feedback to the user. The postconditions will be responsible for handling the invalid flag.
+
+### Missing Flags
+
+If the flag is required but not provided, the command will not be executed. Postconditions will be executed with an execute data in the structure of [`CommandPostcondition.MissingFlagsExecuteData`](/docs/core/main/namespace/CommandPostcondition#interface:MissingFlagsExecuteData).
+
+> Similar to invalid flags, the postconditions will be responsible for handling the missing flag.
