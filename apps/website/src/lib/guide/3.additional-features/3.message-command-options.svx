@@ -27,6 +27,8 @@ class ExampleCommand extends MessageCommandModule {
         await message.reply(`Option value: ${option.value}`);
     }
 }
+
+export default new ExampleCommand();
 ```
 
 To access the options value, reciple provides an [`options`](/docs/core/main/namespace/MessageCommand#interface:ExecuteData) object which is an instance of [`MessageCommandOptionValueManager`](/docs/core/main/class/MessageCommandOptionValueManager).
@@ -61,6 +63,8 @@ class ExampleCommand extends MessageCommandModule {
         await message.reply(`Option value: ${number}`);
     }
 }
+
+export default new ExampleCommand();
 ```
 
 <discord-messages>
@@ -96,6 +100,8 @@ class ExampleCommand extends MessageCommandModule {
         await message.reply(`Option value: ${number}`);
     }
 }
+
+export default new ExampleCommand();
 ```
 
 > The validate function should return a boolean value. If the value is valid, it should return `true`, otherwise it should return `false`.

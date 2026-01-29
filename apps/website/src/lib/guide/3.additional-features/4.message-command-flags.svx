@@ -29,6 +29,8 @@ class ExampleCommand extends MessageCommandModule {
         await message.reply(`Flag value: ${values.join(', ')}`);
     }
 }
+
+export default new ExampleCommand();
 ```
 
 <discord-messages>
@@ -85,6 +87,8 @@ class ExampleCommand extends MessageCommandModule {
         await message.reply(`Flag value: ${numbers.join(', ')}`);
     }
 }
+
+export default new ExampleCommand();
 ```
 
 > A resolved value must be an array of the new values.
@@ -118,6 +122,8 @@ class ExampleCommand extends MessageCommandModule {
         await message.reply(`Flag value: ${numbers.join(', ')}`);
     }
 }
+
+export default new ExampleCommand();
 ```
 
 > The validate function should return a boolean value. If the value is valid, it should return `true`, otherwise it should return `false`.

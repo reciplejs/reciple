@@ -1,0 +1,52 @@
+---
+title: Commands Cache
+description: Learn how to use the commands cache
+keywords:
+  - command
+  - cache
+  - registry
+  - modules
+category: Topics
+---
+
+# Commands Cache
+
+By default when running your bot using `npm run dev`, whenever the bot is restarted, the bot will re-register all commands. This is not good since it will register commands that are already registered. 
+
+Registry cache is a cache of all your commands and commands config. To avoid unnecessary API requests, the bot will use the cache to check if the commands have changed. If the commands have not changed, the bot will not re-register the commands.
+
+A module [`RecipleRegistryCache`](/docs/modules/main/class/RecipleRegistryCache) is provided by reciple. This module is used to cache commands and commands config.
+
+## Usage
+
+Create a new module file and export an instance of [`RecipleRegistryCache`](/docs/modules/main/class/RecipleRegistryCache) as a default export.
+
+```js
+import { RecipleRegistryCache } from '@reciple/modules';
+
+export default new RecipleRegistryCache();
+```
+
+Now your bot will use the cache to check if the commands have changed.
+
+> By default, the cache is stored in your project's root directory under `.cache/reciple-registry/`. The file name is the application ID of the logged in bot.
+
+### Configuration
+
+You can configure the module by passing an object to the constructor. The following options are available:
+
+- `cacheDir` -- The directory to store the cache. Default is `.cache/reciple-registry/`.
+- `maxCacheAgeMs` -- The maximum age of the cache in milliseconds. Default is 24 hours.
+- `cacheEnabledEnv` -- The environment variable to enable the cache. Default is `RECIPLE_REGISTRY_CACHE`.
+- `createCacheEntryEvenIfDisabled` -- Whether to create a cache entry even if the cache is disabled. Default is `true`.
+
+```js
+import { RecipleRegistryCache } from '@reciple/modules';
+
+export default new RecipleRegistryCache({
+  cacheDir: '.cache/mycache',
+  maxCacheAgeMs: 1000 * 60 * 60 * 24, // 1 day
+  cacheEnabledEnv: 'MY_CACHE_ENABLED',
+  createCacheEntryEvenIfDisabled: false,
+});
+```
