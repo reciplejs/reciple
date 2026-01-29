@@ -5,3 +5,110 @@ category: Additional Features
 ---
 
 # Message Command Options
+
+Message commands can have options as positional arguments.
+
+You can use [`.addOption`](/docs/core/main/class/MessageCommandBuilder#addOption) to add an option to a message command. This provides a similar syntax to [`SlashCommandBuilder`](/docs/core/main/class/SlashCommandBuilder)
+
+```js
+class ExampleCommand extends MessageCommandModule {
+    data = new MessageCommandBuilder()
+        .setName('example')
+        .setDescription('An example command')
+        .addOption(option => option
+            .setName('option')
+            .setDescription('An option')
+            .setRequired(true)
+        );
+
+    async execute({ message, options }) {
+        const option = options.getOptionValue('option', true);
+
+        await message.reply(`Option value: ${option.value}`);
+    }
+}
+```
+
+To access the options value, reciple provides an [`options`](/docs/core/main/namespace/MessageCommand#interface:ExecuteData) object which is an instance of [`MessageCommandOptionValueManager`](/docs/core/main/class/MessageCommandOptionValueManager).
+
+To access the unresolved value (or the string value) of the option, you can use [`getOptionValue`](/docs/core/main/class/MessageCommandOptionValueManager#getOptionValue).
+
+```js
+const optionValue = options.getOptionValue('option', true);
+```
+
+> The second parameter is whether the option is required or not.
+
+## Resolved Values
+
+By default all options can only be a string, you can add a resolvers to the option using [`setResolve`](/docs/core/main/class/MessageCommandOptionBuilder#method:setResolve) method of [`MessageCommandOptionBuilder`](/docs/core/main/class/MessageCommandOptionBuilder).
+
+```js
+class ExampleCommand extends MessageCommandModule {
+    data = new MessageCommandBuilder()
+        .setName('example')
+        .setDescription('An example command')
+        .addOption(option => option
+            .setName('option')
+            .setDescription('An option')
+            .setResolve(data => Number(data.value))
+            .setRequired(true)
+        );
+
+    async execute({ message, options }) {
+        const string = options.getOptionValue('option', true);               // Unresolved value
+        const number = await options.getOptionResolvedValue('option', true); // Resolved value
+
+        await message.reply(`Option value: ${number}`);
+    }
+}
+```
+
+<discord-messages>
+    <discord-message profile="cat">!example 123</discord-message>
+    <discord-message profile="bot">
+        <discord-reply slot="reply" profile="cat">!example 123</discord-reply>
+        Option value: 123
+    </discord-message>
+</discord-messages>
+
+To access the resolved value, you can use [`getOptionResolvedValue`](/docs/core/main/class/MessageCommandOptionValueManager#getOptionResolvedValue) method. This method will resolve the value of the option asynchronously based on the resolver function.
+
+## Validation
+
+You can add a validation function to an option using [`setValidate`](/docs/core/main/class/MessageCommandOptionBuilder#method:setValidate) method of [`MessageCommandOptionBuilder`](/docs/core/main/class/MessageCommandOptionBuilder). The value that is passed to the function is an unresolved value of the option.
+
+```js
+class ExampleCommand extends MessageCommandModule {
+    data = new MessageCommandBuilder()
+        .setName('example')
+        .setDescription('An example command')
+        .addOption(option => option
+            .setName('option')
+            .setDescription('An option')
+            .setResolve(data => Number(data.value))
+            .setValidate(data => isNaN(Number(data.value)) ? false : true)
+            .setRequired(true)
+        );
+
+    async execute({ message, options }) {
+        await options.getOptionValue('option', true); // Option value will be validated in a precondition
+    }
+}
+```
+
+> The validate function should return a boolean value. If the value is valid, it should return `true`, otherwise it should return `false`.
+
+The validation of message command options is done before the command is executed, the precondition [`MessageCommandOptionValidatePrecondition`](/docs/core/main/class/MessageCommandOptionValidatePrecondition) is the default precondition for validating message command options.
+
+### Invalid Options
+
+If the option is invalid, the command will not be executed. Postconditions will be executed with an execute data in the structure of [`CommandPostcondition.InvalidArgsExecuteData`](/docs/core/main/namespace/CommandPostcondition#interface:InvalidArgsExecuteData).
+
+> By default, when an option is invalid, the command will simply not be executed without any feedback to the user. The postconditions will be responsible for handling the invalid option.
+
+### Missing Options
+
+If the option is required but not provided, the command will not be executed. This will also trigger the postconditions with an execute data in the structure of [`CommandPostcondition.MissingArgsExecuteData`](/docs/core/main/namespace/CommandPostcondition#interface:MissingArgsExecuteData).
+
+> Similar to invalid options, the postconditions will be responsible for handling the missing option.
