@@ -143,6 +143,8 @@ if (!dryRun) {
     }
 }
 
+execSync(`git push --tags ${dryRun}`, { cwd: root, stdio: 'ignore' });
+
 console.log(`${colors.bold().green('✔')} Successfully bumped ${selected.length} packages.`);
 
 //#endregion
