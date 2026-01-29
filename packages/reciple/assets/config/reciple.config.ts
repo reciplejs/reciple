@@ -1,5 +1,14 @@
-import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, MessageCommandFlagValidatePrecondition, MessageCommandOptionValidatePrecondition, type BuildConfig, type Config } from 'reciple';
-import type { ShardingConfig } from '../../src/index.js';
+import {
+    Client,
+    CommandType,
+    CooldownAdapter,
+    CooldownCommandPrecondition,
+    MessageCommandFlagValidatePrecondition,
+    MessageCommandOptionValidatePrecondition,
+    type BuildConfig,
+    type Config,
+    type ShardingConfig
+} from 'reciple';
 
 export const client = new Client({
     token: process.env.TOKEN,
@@ -10,7 +19,11 @@ export const client = new Client({
     ],
     preconditions: [
         new CooldownCommandPrecondition({
-            scope: [CommandType.Message, CommandType.Slash, CommandType.ContextMenu],
+            scope: [
+                CommandType.Message,
+                CommandType.Slash,
+                CommandType.ContextMenu
+            ],
             matchWithin: 'global',
             deleteWhenExpired: true
         }),
@@ -26,8 +39,8 @@ export const config: Config = {
     token: process.env.DISCORD_TOKEN,
     commands: {
         message: {
-            prefix: context => '!',
-            separator: context => ' ',
+            prefix: ctx => '!',
+            separator: ctx => ' ',
             splitOptions: {},
             throwOnExecuteError: true
         },
