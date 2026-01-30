@@ -9,63 +9,81 @@ category: Topics
 ---
 
 # Logger
-When trying to log information to the console, using the default `console.log()` will not contain the current time stamp of the log and its context. It will also not be written to the log file making tracing previous error difficult.
 
-> Reciple uses a custom logger that is built on top of `Console`. We used the logger from [`prtyprnt`](https://github.com/thenorthsolution/prtyprnt) to provide more custimization and to have similar API to the default `console.log()`.
+Reciple uses a custom logger to print messages to the console. This logger is based on [@prtty/print](https://github.com/catplvsplus/prtty/tree/main/packages/print).
 
-You can use the logger from the [`.logger`](/docs/core/main/classes:Client#logger) property of the client that is passed from the [`onStart`](/docs/core/main/interfaces:RecipleModuleData#onstart), [`onLoad`](/docs/core/main/interfaces:RecipleModuleData#onload), and [`onUnload`](/docs/core/main/interfaces:RecipleModuleData#onunload) data.
+You can use the existing logger instance by calling `useLogger()`, it is available in the global scope. This instance is a singleton, so you can use it across multiple modules.
 
-```js
-export class MyModule {
-    async onStart({ client }) {
-        client.logger?.log(`Module is started`);
-        return true;
-    }
+```ts
+import { BaseModule } from "reciple";
 
-    async onLoad({ client }) {
-        client.logger?.log(`Module is loaded`);
-        return true;
-    }
-
-    async onUnload({ client }) {
-        client.logger?.log(`Module is unloaded`);
-    }
+class MyModule extends BaseModule {
+  onEnable() {
+    useLogger().log("MyModule is enabled!");
+    useLogger().warn("MyModule is enabled!");
+    useLogger().error("MyModule is enabled!");
+  }
 }
 ```
 
-> We used the <code>?.</code> operator because the <code>.logger</code> property could be undefined depending on your logger configuration.
-> Logger currently doesn't support the <a href="https://cplusplus.com/reference/cstdio/printf/#parameters">printf format specifier</a>
+It is also possible to create your own logger instance by cloning the existing one.
 
-## Creating Logger Context
+```ts
+const myLogger = useLogger().clone();
+myLogger.log("Hello, world!");
+```
 
-Creating your own logger context will allow you to differentiate between different log messages and easily locate where the logs are coming from. This example is going to use the logger's [`.clone()`](/docs/core/main/classes:Logger#clone) method.
+The cloned logger instance will only be available in the current module.
+
+> You can also configure the cloned logger instance by passing an object to the `clone` method. This object will be merged with the existing logger options.
+```js
+const myLogger = useLogger().clone({ label: 'MyModule' });
+myLogger.log("Hello, world!");
+```
+
+## Coniguration
+
+To configure the global logger, you can add a new property to the exported `config` object in your `reciple.config.js` or `reciple.config.ts` file. You can set a custom logger instance that can be used globally.
 
 ```js
-export class MyModule {
-    logger = null;
+// reciple.config.js
 
-    async onStart({ client }) {
-        // Clone the logger into the MyModule#logger property
-        this.logger = client.logger?.clone({ label: 'MyModule' });
+export const config = {
+  // ...
+  logger: useLogger().clone({ label: 'My Logger' })
+  // ...
+}
 
-        this.logger?.log(`Module is started`);
-        return true;
-    }
+```
 
-    async onLoad({ client }) {
-        this.logger?.log(`Module is loaded`);
-        return true;
-    }
+### Log Files
 
-    async onUnload({ client }) {
-        this.logger?.log(`Module is unloaded`);
-    }
+The logger can also be configured to log to a file. This can be useful if you want to preserve logs for debugging purposes.
+
+```ts
+import { FileWriteStreamMode, Utils } from "@prtty/print";
+
+await useLogger().createFileWriteStream({
+  mode: FileWriteStreamMode.Rename,
+  filename: './logs/latest.log',
+  renameFile: Utils.gzipCompressLog
+});
+```
+
+The `createFileWriteStream` method creates a new file write stream and returns the logger instance. This can be used in your configuration to make sure the global logger logs to a file.
+
+```js
+// reciple.config.js
+
+export const config = {
+  // ...
+  logger: await useLogger().createFileWriteStream({
+    mode: FileWriteStreamMode.Rename,
+    filename: './logs/latest.log',
+    renameFile: Utils.gzipCompressLog
+  })
+  // ...
 }
 ```
 
-The module will now have its own logger, which will print the context name to the console and log file.
-```
-[19:53:36][MyModule/INFO] Module is started
-[19:53:36][MyModule/INFO] Module is loaded
-[19:53:36][MyModule/INFO] Module is unloaded
-```
+> When a write stream is created, all clones of the logger will use the same write stream unless the clone is configured with a different write stream.
