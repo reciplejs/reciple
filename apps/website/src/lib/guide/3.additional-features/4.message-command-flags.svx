@@ -12,22 +12,22 @@ To add a flag to a message command, use the [`addFlag`](/docs/core/main/class/Me
 
 ```js
 class ExampleCommand extends MessageCommandModule {
-    data = new MessageCommandBuilder()
-        .setName('example')
-        .setDescription('An example command')
-        .addFlag(flag => flag
-            .setName('flag')
-            .setShortcut('f')
-            .setDescription('A flag')
-            .setValueType('string')
-            .setRequired(true)
-        );
+  data = new MessageCommandBuilder()
+    .setName('example')
+    .setDescription('An example command')
+    .addFlag(flag => flag
+      .setName('flag')
+      .setShortcut('f')
+      .setDescription('A flag')
+      .setValueType('string')
+      .setRequired(true)
+    );
 
-    async execute({ message, flags }) {
-        const values = flags.getFlagValues('flag', { required: true, type: 'string' });
+  async execute({ message, flags }) {
+    const values = flags.getFlagValues('flag', { required: true, type: 'string' });
 
-        await message.reply(`Flag value: ${values.join(', ')}`);
-    }
+    await message.reply(`Flag value: ${values.join(', ')}`);
+  }
 }
 
 export default new ExampleCommand();
@@ -69,23 +69,23 @@ To add other types of values to a flag, you can also add a resolver function to 
 
 ```js
 class ExampleCommand extends MessageCommandModule {
-    data = new MessageCommandBuilder()
-        .setName('example')
-        .setDescription('An example command')
-        .addFlag(flag => flag
-            .setName('flag')
-            .setShortcut('f')
-            .setDescription('A flag')
-            .setValueType('string')
-            .setResolve(data => data.values?.map(Number) ?? [])
-            .setRequired(true)
-        );
+  data = new MessageCommandBuilder()
+    .setName('example')
+    .setDescription('An example command')
+    .addFlag(flag => flag
+      .setName('flag')
+      .setShortcut('f')
+      .setDescription('A flag')
+      .setValueType('string')
+      .setResolve(data => data.values?.map(Number) ?? [])
+      .setRequired(true)
+    );
 
-    async execute({ message, flags }) {
-        const numbers = await flags.getFlagResolvedValues('flag', true);
+  async execute({ message, flags }) {
+    const numbers = await flags.getFlagResolvedValues('flag', true);
 
-        await message.reply(`Flag value: ${numbers.join(', ')}`);
-    }
+    await message.reply(`Flag value: ${numbers.join(', ')}`);
+  }
 }
 
 export default new ExampleCommand();
@@ -103,24 +103,24 @@ To add a validation function to a flag, use the [`setValidate`](/docs/core/main/
 
 ```js
 class ExampleCommand extends MessageCommandModule {
-    data = new MessageCommandBuilder()
-        .setName('example')
-        .setDescription('An example command')
-        .addFlag(flag => flag
-            .setName('flag')
-            .setShortcut('f')
-            .setDescription('A flag')
-            .setValueType('string')
-            .setValidate(data => data.values?.every(value => !isNaN(Number(value))) ?? false)
-            .setResolve(data => data.values?.map(Number) ?? [])
-            .setRequired(true)
-        );
+  data = new MessageCommandBuilder()
+    .setName('example')
+    .setDescription('An example command')
+    .addFlag(flag => flag
+      .setName('flag')
+      .setShortcut('f')
+      .setDescription('A flag')
+      .setValueType('string')
+      .setValidate(data => data.values?.every(value => !isNaN(Number(value))) ?? false)
+      .setResolve(data => data.values?.map(Number) ?? [])
+      .setRequired(true)
+    );
 
-    async execute({ message, flags }) {
-        const numbers = await flags.getFlagResolvedValues('flag', true);
+  async execute({ message, flags }) {
+    const numbers = await flags.getFlagResolvedValues('flag', true);
 
-        await message.reply(`Flag value: ${numbers.join(', ')}`);
-    }
+    await message.reply(`Flag value: ${numbers.join(', ')}`);
+  }
 }
 
 export default new ExampleCommand();

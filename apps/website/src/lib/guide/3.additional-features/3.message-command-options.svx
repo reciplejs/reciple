@@ -12,20 +12,20 @@ You can use [`.addOption`](/docs/core/main/class/MessageCommandBuilder#addOption
 
 ```js
 class ExampleCommand extends MessageCommandModule {
-    data = new MessageCommandBuilder()
-        .setName('example')
-        .setDescription('An example command')
-        .addOption(option => option
-            .setName('option')
-            .setDescription('An option')
-            .setRequired(true)
-        );
+  data = new MessageCommandBuilder()
+    .setName('example')
+    .setDescription('An example command')
+    .addOption(option => option
+      .setName('option')
+      .setDescription('An option')
+      .setRequired(true)
+    );
 
-    async execute({ message, options }) {
-        const option = options.getOptionValue('option', true);
+  async execute({ message, options }) {
+    const option = options.getOptionValue('option', true);
 
-        await message.reply(`Option value: ${option.value}`);
-    }
+    await message.reply(`Option value: ${option.value}`);
+  }
 }
 
 export default new ExampleCommand();
@@ -83,22 +83,22 @@ You can add a validation function to an option using [`setValidate`](/docs/core/
 
 ```js
 class ExampleCommand extends MessageCommandModule {
-    data = new MessageCommandBuilder()
-        .setName('example')
-        .setDescription('An example command')
-        .addOption(option => option
-            .setName('option')
-            .setDescription('An option')
-            .setResolve(data => Number(data.value))
-            .setValidate(data => isNaN(Number(data.value)) ? false : true)
-            .setRequired(true)
-        );
+  data = new MessageCommandBuilder()
+    .setName('example')
+    .setDescription('An example command')
+    .addOption(option => option
+      .setName('option')
+      .setDescription('An option')
+      .setResolve(data => Number(data.value))
+      .setValidate(data => isNaN(Number(data.value)) ? false : true)
+      .setRequired(true)
+    );
 
-    async execute({ message, options }) {
-        const number = await options.getOptionValue('option', true);
+  async execute({ message, options }) {
+    const number = await options.getOptionValue('option', true);
 
-        await message.reply(`Option value: ${number}`);
-    }
+    await message.reply(`Option value: ${number}`);
+  }
 }
 
 export default new ExampleCommand();

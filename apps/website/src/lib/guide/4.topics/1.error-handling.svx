@@ -38,9 +38,9 @@ This module can also be configured with options for reporting errors to a channe
 import { RecipleAnticrash } from '@reciple/modules';
 
 export default new RecipleAnticrash({
-    reportChannels: ['000000000000000000'],
+  reportChannels: ['000000000000000000'],
     baseReportMessageOptions: {
-        content: 'An error has occurred!',
-    }
+      content: 'An error has occurred!',
+  }
 });
 ```

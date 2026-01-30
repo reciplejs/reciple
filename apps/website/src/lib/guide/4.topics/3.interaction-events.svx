@@ -10,3 +10,50 @@ category: Topics
 ---
 
 # Interaction Events
+
+To easily interact with interactions, reciple provides a built-in module for handling interaction events. This module works by listening to the `interactionCreate` event and executing all registered listeners for the interaction type.
+
+You can use the [`RecipleInteractionEvents`](/docs/reciple/main/class/RecipleInteractionEvents) class to handle interaction events. You can import the class from the [`@reciple/modules`](/docs/reciple/main/class/RecipleInteractionEvents).
+
+## Usage
+
+Create a new module file and export the instance of [`RecipleInteractionEvents`](/docs/reciple/main/class/RecipleInteractionEvents) as a default export.
+
+```js
+import { RecipleInteractionEvents } from 'reciple';
+
+export default new RecipleInteractionEvents();
+```
+
+You can now add your even listeners to the `interactions` property of every modules. You can also use the `moduleEventListenersProperty` option to specify the property to resolve listeners from.
+
+```js
+import { RecipleInteractionEvents } from 'reciple';
+
+export default new RecipleInteractionEvents({
+  moduleEventListenersProperty: 'interactions' // The default property to resolve listeners from
+});
+```
+
+## Listeners
+
+To register a listener, you can now add an `interactions` property to your module. This property should be an array of listeners. Each listener should be a type of [`InteractionListenerData`](/docs/modules/main/interface/InteractionListenerData).
+
+
+[`InteractionListenerBuilder`](/docs/modules/main/class/InteractionListenerBuilder) can be used to build a listener using chainable methods.
+```js
+import { BaseModule } from 'reciple';
+
+class HandleButtons extends BaseModule {
+  interactions = [
+    new InteractionListenerBuilder()
+      .setType(InteractionListenerType.Button)
+      .setFilter(interaction => interaction.customId === 'get-date')
+      .setExecute(async interaction => {
+        await interaction.deferUpdate();
+        await interaction.message.edit(`The current date is ${new Date().toDateString()}`);
+      })
+  ]
+}
+```
+

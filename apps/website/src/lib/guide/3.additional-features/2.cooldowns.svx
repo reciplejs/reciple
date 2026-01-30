@@ -11,15 +11,15 @@ Cooldowns are useful for preventing users from repeating the same actions in a s
 import { SlashCommandModule, SlashCommandBuilder } from 'reciple';
 
 class ExampleCommand extends SlashCommandModule {
-    data = new SlashCommandBuilder()
-        .setName('test')
-        .setDescription('Test command');
+  data = new SlashCommandBuilder()
+    .setName('test')
+    .setDescription('Test command');
 
-    cooldown = 1000 * 10; // 10 seconds
+  cooldown = 1000 * 10; // 10 seconds
 
-    async execute(interaction) {
-        await interaction.reply('Hello world!');
-    }
+  async execute(interaction) {
+    await interaction.reply('Hello world!');
+  }
 }
 
 export default new ExampleCommand();
@@ -36,23 +36,23 @@ import { CommandPostconditionReason, CommandType, PostconditionModule, type Comm
 import { time } from 'discord.js';
 
 export class CooldownHandler extends PostconditionModule {
-    public async execute(data) {
-        if (data.reason !== CommandPostconditionReason.Cooldown) return false; // Only handle cooldowns
+  async execute(data) {
+    if (data.reason !== CommandPostconditionReason.Cooldown) return false; // Only handle cooldowns
 
-        switch (data.executeData.type) {
-            case CommandType.Message:
-                const message = data.executeData.message;
+    switch (data.executeData.type) {
+      case CommandType.Message:
+        const message = data.executeData.message;
 
-                await message.reply(`You cannot use this command for ${time(data.cooldown.endsAt, 'R')}`);
-                return true;
-            case CommandType.Slash:
-            case CommandType.ContextMenu:
-                const interaction = data.executeData.interaction;
+        await message.reply(`You cannot use this command for ${time(data.cooldown.endsAt, 'R')}`);
+        return true;
+      case CommandType.Slash:
+      case CommandType.ContextMenu:
+        const interaction = data.executeData.interaction;
 
-                await interaction.reply(`You cannot use this command for ${time(data.cooldown.endsAt, 'R')}`);
-                return true;
-        }
+        await interaction.reply(`You cannot use this command for ${time(data.cooldown.endsAt, 'R')}`);
+        return true;
     }
+  }
 }
 
 export default new CooldownHandler();
