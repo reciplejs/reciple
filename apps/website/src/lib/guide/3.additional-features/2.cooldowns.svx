@@ -13,7 +13,8 @@ import { SlashCommandModule, SlashCommandBuilder } from 'reciple';
 class ExampleCommand extends SlashCommandModule {
   data = new SlashCommandBuilder()
     .setName('test')
-    .setDescription('Test command');
+    .setDescription('Test command')
+    .toJSON();
 
   cooldown = 1000 * 10; // 10 seconds
 

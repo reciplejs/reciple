@@ -10,57 +10,36 @@ category: Topics
 ---
 
 # TypeScript
-If you want type safety, you should probably consider TypeScript. Reciple supports TypeScript because it was written in TypeScript!
+If you want type safety, you should probably consider TypeScript. Reciple supports building TypeScript module files out of the box thanks to [`tsdown`](https://tsdown.dev).
 
-## Project Structure
-You can create a TypeScript project automatically by choosing TypeScript as the programming language when setting up your bot using `npm create reciple@latest`. This process will generate a directory structure similar to that used in JavaScript.
+During setup, reciple will prompt you if you want to use TypeScript. Select yes to use TypeScript for your project.
 
-```
-mybot/
-├── reciple.mjs
-├── tsconfig.json
-├── package.json
-├── package-lock.json
-├── node_modules
-└── src/
-    ├── addons/
-    │   └── ....
-    ├── commands/
-    │   └── PingCommand.ts
-    ├── events/
-    │   └── WelcomeEvent.ts
-    ├── halts/
-    │   └── CommandErrorHalt.ts
-    └── preconditions/
-        └── ExamplePrecondition.ts
-```
+## Modules
 
-When you used the JavaScript project, you'll notice that the `modules` folder is replaced with `src`, that's because TypeScript will automatically generate the JavaScript version of your modules into that directory during transpilation.
+To create a new TypeScript module, just create a new file with the `.ts` extension. Reciple will automatically build it into a JavaScript module when you run `npm run build`.
 
-## Writting Modules
+```js
+import { SlashCommandModule } from "reciple";
 
-When writting modules, your modules directory by default is set to `src` and instead of `.js` we will use `.ts`.
+class ExampleCommand extends SlashCommandModule {
+  public data: SlashCommandBuilder.Data = new SlashCommandBuilder()
+    .setName("example")
+    .setDescription("An example command")
+    .toJSON();
 
-The way you code your modules may change, but not significantly. For example, here's how to write a Ping command in TypeScript.
-```ts
-import { AnyCommandResolvable, RecipleModuleData, SlashCommandBuilder } from 'reciple';
+  public async execute(data: SlashCommand.ExecuteData): Promise<void> {
+    const { interaction } = data;
 
-export class PingCommand implements RecipleModuleData {
-    public commands: AnyCommandResolvable[] = [
-        new SlashCommandBuilder()
-            .setName('ping')
-            .setDescription('Ping command')
-            .setExecute(async ({ interaction }) => {
-                await interaction.reply('Pong!');
-            })
-    ];
-
-    public async onStart(): Promise<boolean> {
-        return true;
-    }
+    await interaction.reply("Hello, world!");
+  }
 }
 
-export default new PingCommand();
+export default new ExampleCommand();
 ```
 
-As you can see, it is best to explicitly type your properties and returns of a function.
+<discord-messages>
+    <discord-message profile="bot">
+        <discord-command slot="reply" profile="cat" command="example"></discord-command>
+        Hello, world!
+    </discord-message>
+</discord-messages>

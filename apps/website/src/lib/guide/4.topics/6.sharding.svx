@@ -9,16 +9,16 @@ category: Topics
 ---
 
 # Sharding
-Please keep in mind that sharding is a highly advanced topic! Sharding is only required on 2,500 servers; otherwise, Discord will not allow your bot to log in.
+Please keep in mind that sharding is a highly advanced topic! Sharding is only required on 2,500 servers or more.
 
-> This guide will only tackle the basics of sharding using Discord.js <a href="https://discordjs.dev/docs/packages/discord.js/main/ShardingManager:Class"><code>ShardingManager</code></a>.
+> This guide will only tackle the basics of sharding using Discord.js [`ShardingManager`](https://discordjs.dev/docs/packages/discord.js/main/ShardingManager:Class).
 
 ## Reciple Sharding Setup
 
-To use Reciple with sharding, you can use the `reciple shard` command to start the built-in sharding manager. Every command flags will be passed to the shard instance when supported.
+To use Reciple with sharding, you can use the the built-in reciple command to start the built-in sharding manager. Every command flags will be passed to the shard instance when supported.
 
 ```bash
-reciple shard
+npx reciple shard
 ```
 
 You can configure the sharding manager by exporting a `sharding` object in your `reciple.mjs` config.
@@ -27,7 +27,7 @@ You can configure the sharding manager by exporting a `sharding` object in your 
 // reciple.mjs
 
 /**
- * @satisfies {import('reciple').RecipleConfigJS['sharding']}
+ * @satisfies {import('reciple').ShardingConfig}
  */
 export const sharding = {
     mode: 'process',
