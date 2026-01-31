@@ -11,7 +11,7 @@ export namespace JSX {
     }
 
     export function useStringify(value: any|any[], fallback?: string): string {
-        return (Array.isArray(value) ? value.join(' ') : String(value ?? '')) || String(fallback ?? '');
+        return (Array.isArray(value) ? value.join('') : String(value ?? '')) || String(fallback ?? '');
     }
 
     export function useSingleToArray<T = any>(value: T|T[]): T[] {
