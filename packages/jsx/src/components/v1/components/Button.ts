@@ -12,7 +12,9 @@ export function Button(props: Button.Props): ButtonBuilder {
     if (props.style !== undefined) builder.setStyle(props.style);
     if (props.url !== undefined) builder.setURL(props.url);
 
-    builder.setLabel(JSX.useStringify(props.children, props.label));
+    const label = JSX.useStringify(props.children, props.label);
+
+    if (label) builder.setLabel(label);
 
     return builder;
 }

@@ -10,7 +10,9 @@ export function StringSelectMenuOption(props: StringSelectMenuOption.Props): Str
     if (props.emoji !== undefined) builder.setEmoji(props.emoji);
     if (props.default !== undefined) builder.setDefault(props.default);
 
-    if (props.children !== undefined) builder.setDescription(JSX.useStringify(props.children, props.description));
+    const description = JSX.useStringify(props.children, props.description);
+
+    if (description) builder.setDescription(description);
 
     return builder;
 }
