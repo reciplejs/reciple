@@ -15,6 +15,7 @@
     "reciple": "workspace:^"
   },
   "dependencies": {
-    "@prtty/print": "catalog:"
+    "@prtty/print": "catalog:",
+    "discord.js": "catalog:"
   }
 }

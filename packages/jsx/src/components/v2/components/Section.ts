@@ -32,7 +32,7 @@ export function Section(props: Section.Props): SectionBuilder {
 }
 
 export namespace Section {
-    export interface Props extends Omit<SectionComponentData, 'type'> {
+    export interface Props extends Omit<SectionComponentData, 'type'|'components'|'accessory'> {
         children?: JSX.SingleOrArray<JSX.SingleOrArray<ComponentBuilder|APIComponent>|AccessoryBuilder|APIAccessory>;
     }
 
