@@ -15,6 +15,6 @@ export namespace JSX {
     }
 
     export function useSingleToArray<T = any>(value: T|T[]): T[] {
-        return Array.isArray(value) ? value.flat() as T[] : [value];
+        return (Array.isArray(value) ? value.flat() : [value]).filter(t => typeof t !== 'undefined') as T[];
     }
 }
