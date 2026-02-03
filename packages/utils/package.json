@@ -31,7 +31,7 @@
     "directory": "packages/utils"
   },
   "dependencies": {
-    "@prtty/prtty": "^1.1.0",
+    "@prtty/prtty": "catalog:",
     "pkg-types": "^2.3.0",
     "radash": "^12.1.1"
   },
