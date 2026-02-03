@@ -1,11 +1,12 @@
 import { phoneNumber } from 'discord.js';
+import { JSX } from '../../../jsx-runtime.js';
 
-export function PhoneNumber({ number }: PhoneNumber.Props): string {
-    return phoneNumber(number);
+export function PhoneNumber({ children }: PhoneNumber.Props): string {
+    return phoneNumber(JSX.useStringify(children) as `+${string}`);
 }
 
 export namespace PhoneNumber {
     export interface Props {
-        number: `+${string}`;
+        children: JSX.SingleOrArray<string>;
     }
 }
