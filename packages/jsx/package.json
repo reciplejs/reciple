@@ -15,13 +15,13 @@
       "import": "./dist/jsx-runtime.mjs",
       "types": "./dist/jsx-runtime.d.mts"
     },
-    "./interactive": {
-      "import": "./dist/components/interactive/index.mjs",
-      "types": "./dist/components/interactive/index.d.mts"
-    },
     "./embed": {
       "import": "./dist/components/embed/index.mjs",
       "types": "./dist/components/embed/index.d.mts"
+    },
+    "./formatting": {
+      "import": "./dist/components/formatting/index.mjs",
+      "types": "./dist/components/formatting/index.d.mts"
     },
     "./modals": {
       "import": "./dist/components/modals/index.mjs",

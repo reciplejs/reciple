@@ -11,10 +11,10 @@ export namespace JSX {
     }
 
     export function useStringify(value: any|any[], fallback?: string): string {
-        return (Array.isArray(value) ? value.join('') : String(value ?? '')) || String(fallback ?? '');
+        return (Array.isArray(value) ? value.flat().join('') : String(value ?? '')) || String(fallback ?? '');
     }
 
     export function useSingleToArray<T = any>(value: T|T[]): T[] {
-        return (Array.isArray(value) ? value.flat() : [value]).filter(t => typeof t !== 'undefined') as T[];
+        return (Array.isArray(value) ? value.flat() : [value]).filter(t => typeof t !== 'undefined' && t !== null) as T[];
     }
 }
