@@ -15,7 +15,7 @@
 		"@fontsource-variable/roboto-mono": "^5.2.8",
 		"@fontsource/archivo-black": "^5.2.8",
 		"@icons-pack/svelte-simple-icons": "^6.5.0",
-		"@internationalized/date": "^3.10.1",
+		"@internationalized/date": "^3.11.0",
 		"@lucide/svelte": "^0.563.1",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/kit": "^2.50.2",
@@ -27,7 +27,7 @@
 		"bits-ui": "^2.15.5",
 		"clsx": "^2.1.1",
 		"mdsvex": "^0.12.6",
-		"svelte": "^5.49.1",
+		"svelte": "^5.49.2",
 		"svelte-check": "^4.3.6",
 		"svelte-sonner": "^1.0.7",
 		"tailwind-merge": "^3.4.0",
@@ -38,7 +38,7 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
-		"@deno/doc": "npm:@jsr/deno__doc@^0.190.1",
+		"@deno/doc": "npm:@jsr/deno__doc@^0.191.0",
 		"@skyra/discord-components-core": "^4.0.2",
 		"fuse.js": "^7.1.0",
 		"github-slugger": "^2.0.0",
