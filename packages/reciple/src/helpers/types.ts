@@ -60,6 +60,7 @@ export type BuildConfig = Omit<UserConfig,
     |'format'
     |'unbundle'
     |'skipNodeModulesBundle'
+    |'noExternal'
     |'cjsDefault'
     |'workspace'
     |'customLogger'

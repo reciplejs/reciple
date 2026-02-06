@@ -81,9 +81,7 @@ export const config = {
 export const build = {
     entry: ['./src/**/*.{js,jsx,ts,tsx}'],
     tsconfig: './jsconfig.json',
-    outDir: './modules',
-    external: [],
-    noExternal: [],
+    outDir: './modules'
 };
 
 /**

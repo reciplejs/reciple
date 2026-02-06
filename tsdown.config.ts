@@ -8,7 +8,6 @@ export function createTsdownConfig(options?: UserConfig) {
 	return defineConfig({
 		entry: ['src/index.ts'],
 		external: ['reciple', /^@reciple\//],
-		noExternal: [],
 		platform: 'node',
 		format: ['esm'],
 		skipNodeModulesBundle: true,

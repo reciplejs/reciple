@@ -88,9 +88,7 @@ export const config: Config = {
 export const build: BuildConfig = {
     entry: ['./src/**/*.{js,jsx,ts,tsx}'],
     tsconfig: './jsconfig.json',
-    outDir: './modules',
-    external: [],
-    noExternal: [],
+    outDir: './modules'
 };
 
 export const sharding: ShardingConfig = {

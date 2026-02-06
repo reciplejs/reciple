@@ -64,7 +64,7 @@ export class TemplateBuilder {
                     placeholder: `Leave empty to use current directory`,
                     defaultValue: process.cwd(),
                     validate: value => {
-                        value = path.resolve(value);
+                        value = path.resolve(value ?? '');
                         if (existsSync(value) && !statSync(value).isDirectory()) return 'Invalid folder directory';
                     }
                 });

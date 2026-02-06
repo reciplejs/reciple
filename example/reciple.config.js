@@ -90,7 +90,6 @@ export const build = {
     outDir: './modules',
     tsconfig: './tsconfig.json',
     external: ['reciple', /^@reciple\//],
-    noExternal: [],
     minify: false,
     sourcemap: true
 };
