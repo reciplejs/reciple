@@ -32,7 +32,11 @@ export async function GET({ fetch, url }) {
         for (const node of documentation.data) {
             entries.push(createSitemapEntry(concatURLPath(
                 url.origin,
-                resolve('/(main)/docs/[package]/[tag]/[...slug]', { package: pkg, tag: firstTag, slug: node.name })
+                resolve('/(main)/docs/[package]/[tag]/[...slug]', {
+                    package: pkg,
+                    tag: firstTag,
+                    slug: `${node.kind}/${node.name}`
+                })
             ), { priority: '0.70' }));
         }
     }
