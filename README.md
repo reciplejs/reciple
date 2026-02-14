@@ -40,6 +40,15 @@ Reciple is a command framework for [Discord.js](https://discord.js.org/) that ju
 - [create-reciple](packages/create-reciple) - An alias for `reciple create`.
 - [reciple](packages/reciple) - The reciple CLI and main handler framework and loaders.
 
+## Contributing
+
+- [Contributing](https://github.com/reciplejs/reciple/blob/main/CONTRIBUTING.md)
+
+### Pre-requisites
+
+- [bun](https://bun.sh/) - Used as the main package manager and runtime environment for the project.
+- [deno](https://deno.land/) - Used for generating documentation. (See: [deno.land/x/deno_doc](https://deno.land/x/deno_doc))
+
 ## Links
 
 - [Website](https://reciple.js.org)
