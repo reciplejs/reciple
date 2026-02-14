@@ -160,7 +160,7 @@
     },
   },
   "catalog": {
-    "@prtty/print": "^1.1.1",
+    "@prtty/print": "^1.1.2",
     "@prtty/prtty": "^1.1.1",
     "@types/node": "^25.2.1",
     "discord.js": "^14.25.1",
@@ -380,7 +380,7 @@
 
     "@polka/url": ["@polka/url@1.0.0-next.29", "", {}, "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww=="],
 
-    "@prtty/print": ["@prtty/print@1.1.1", "", { "dependencies": { "@prtty/prtty": "^1.1.1", "ansi-regex": "^6.2.2" } }, "sha512-t41OmbFMgEmU3kXiWEFzyUyOmFuouvlGKJ0m9Gw6tm2xQrLIOiPAay2Q3p0W+2zA3SclsFJR6ImiZhDv9lWT+w=="],
+    "@prtty/print": ["@prtty/print@1.1.2", "", { "dependencies": { "@prtty/prtty": "^1.1.1", "ansi-regex": "^6.2.2" } }, "sha512-yU2KBEKfuEemMF9ucVeJMF2foGuDz/NKC5j8zjQTd2FXzCxOUhJKiBiuVJoCem+dwhM10xPvw1xEHoQmt5HUNw=="],
 
     "@prtty/prtty": ["@prtty/prtty@1.1.1", "", {}, "sha512-JSTklIU8I7CmtGLzdB+Hshg5xQr+wVy2VT2PbzQoRUbxIwVnbF1nuUc+Cy/Dclow8WL59TG565FH79IBDL66bw=="],
 

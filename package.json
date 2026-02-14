@@ -31,7 +31,7 @@
       "example"
     ],
     "catalog": {
-      "@prtty/print": "^1.1.1",
+      "@prtty/print": "^1.1.2",
       "@prtty/prtty": "^1.1.1",
       "@types/node": "^25.2.1",
       "discord.js": "^14.25.1",
