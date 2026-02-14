@@ -35,7 +35,7 @@
     "directory": "packages/reciple"
   },
   "dependencies": {
-    "@clack/prompts": "^1.0.0",
+    "@clack/prompts": "^1.0.1",
     "@dotenvx/dotenvx": "^1.52.0",
     "@prtty/print": "catalog:",
     "@prtty/prtty": "catalog:",
@@ -57,7 +57,7 @@
     "@types/micromatch": "^4.0.10",
     "@types/node": "catalog:",
     "nodemon": "^3.1.11",
-    "rolldown": "^1.0.0-rc.3",
+    "rolldown": "^1.0.0-rc.4",
     "typescript": "catalog:"
   },
   "peerDependencies": {
