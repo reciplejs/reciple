@@ -47,7 +47,7 @@ Reciple is a command framework for [Discord.js](https://discord.js.org/) that ju
 ### Pre-requisites
 
 - [bun](https://bun.sh/) - Used as the main package manager and runtime environment for the project.
-- [deno](https://deno.land/) - Used for generating documentation. (See: [deno.land/x/deno_doc](https://deno.land/x/deno_doc))
+- [deno](https://deno.land/) - Used for generating documentation. (See: [@deno/doc](https://jsr.io/@deno/doc))
 
 ## Links
 
