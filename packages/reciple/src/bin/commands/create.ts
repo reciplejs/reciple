@@ -4,7 +4,7 @@ import { TemplateBuilder } from '../../classes/templates/TemplateBuilder.js';
 import { cancel } from '@clack/prompts';
 import { inspect } from 'node:util';
 import { NotAnError } from '../../classes/NotAnError.js';
-import type { PackageManagerName } from 'nypm';
+import { type PackageManagerName, packageManagers } from 'nypm';
 import { colors } from '@prtty/prtty';
 
 export default class CreateSubcommand extends CLISubcommand {
@@ -15,7 +15,7 @@ export default class CreateSubcommand extends CLISubcommand {
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
         .option('-T, --typescript', 'Use TypeScript')
         .addOption(new Option('-p, --package-manager <name>', 'The name of the package manager to use')
-            .choices(['npm', 'yarn', 'pnpm', 'bun', 'deno'])
+            .choices(packageManagers.map(pm => pm.name))
         )
         .option('-D, --default', 'Use defaults for prompts')
         .option('--install', 'Install dependencies during setup', true)

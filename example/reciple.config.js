@@ -88,10 +88,7 @@ export const config = {
 export const build = {
     entry: ['./src/**/*.{ts,tsx,js,jsx}'],
     outDir: './modules',
-    tsconfig: './tsconfig.json',
-    external: ['reciple', /^@reciple\//],
-    minify: false,
-    sourcemap: true
+    tsconfig: './tsconfig.json'
 };
 
 /**

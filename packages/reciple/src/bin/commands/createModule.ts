@@ -8,7 +8,7 @@ import { NotAnError } from '../../classes/NotAnError.js';
 import { inspect } from 'node:util';
 
 export default class CreateModuleSubcommand extends CLISubcommand {
-    public subcommand: Command = new Command('module')
+    public subcommand: Command = new Command('create-module')
         .description('Creates new reciple module')
         .argument('[project]', 'The root directory of your project')
         .option('--template, -t <template>', 'Template source name')
@@ -16,8 +16,6 @@ export default class CreateModuleSubcommand extends CLISubcommand {
         .option('-T, --typescript', 'Use TypeScript')
         .option('-D, --default', 'Use defaults for prompts')
         .enablePositionalOptions(true);
-
-    public parent: string = 'create';
 
     public async execute(): Promise<void> {
         const flags = this.subcommand.opts<CreateModuleSubcommand.Flags>();

@@ -59,11 +59,13 @@ export type BuildConfig = Omit<UserConfig,
     |'platform'
     |'format'
     |'unbundle'
+    |'bundle'
     |'skipNodeModulesBundle'
     |'noExternal'
     |'cjsDefault'
     |'workspace'
     |'customLogger'
-    |'logLevel'>;
+    |'logLevel'
+    |'deps'>;
 
 export type ShardingConfig = Omit<ShardingManagerOptions, 'shardArgs'|'token'|'execArgv'>;

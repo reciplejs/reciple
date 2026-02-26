@@ -7,10 +7,8 @@ const packageJSON = await import(`file://${path.join(process.cwd(), 'package.jso
 export function createTsdownConfig(options?: UserConfig) {
 	return defineConfig({
 		entry: ['src/index.ts'],
-		external: ['reciple', /^@reciple\//],
 		platform: 'node',
 		format: ['esm'],
-		skipNodeModulesBundle: true,
 		target: 'esnext',
 		clean: true,
 		minify: false,
@@ -24,6 +22,10 @@ export function createTsdownConfig(options?: UserConfig) {
                 'process.env.__VERSION__': `"${packageJSON.version}"`
             })
         ],
+        deps: {
+            neverBundle: ['reciple', /^@reciple\//],
+            skipNodeModulesBundle: true
+        },
         ...options
 	});
 }

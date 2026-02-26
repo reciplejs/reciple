@@ -187,7 +187,6 @@ export namespace ConfigReader {
             entry: [`./src/**/*.{ts,tsx,js,jsx}`],
             outDir: './modules',
             tsconfig: `./${type ?? 'ts'}config.json`,
-            external: [],
             sourcemap: true,
             treeshake: true,
             clean: true,
@@ -196,8 +195,15 @@ export namespace ConfigReader {
             platform: 'node',
             format: 'esm',
             unbundle: true,
+            deps: {
+                neverBundle: ['reciple', /^@reciple\//],
+                alwaysBundle: [],
+                skipNodeModulesBundle: true
+            },
+            // Deprecated
+            external: undefined,
             noExternal: undefined,
-            skipNodeModulesBundle: true
+            skipNodeModulesBundle: undefined,
         };
     }
 }
