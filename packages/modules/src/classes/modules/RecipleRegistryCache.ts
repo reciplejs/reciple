@@ -106,7 +106,7 @@ export class RecipleRegistryCache extends BaseModule implements RecipleRegistryC
 
     public isCacheHit(cached: RecipleRegistryCache.CacheEntry, current: RecipleRegistryCache.CacheEntry): boolean {
         this.logger.debug('Comparing cache entry with current application commands and configuration...');
-        if (this.maxCacheAgeMs) {
+        if (this.maxCacheAgeMs && Number.isFinite(this.maxCacheAgeMs)) {
             const age = Date.now() - cached.createdAt;
             if (age > this.maxCacheAgeMs) {
                 this.logger.debug(`Cache entry is too old (age: ${age}ms, max age: ${this.maxCacheAgeMs}ms).`);

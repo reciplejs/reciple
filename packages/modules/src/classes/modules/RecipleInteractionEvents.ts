@@ -5,6 +5,7 @@ import { InteractionListenerType } from '../../helpers/constants.js';
 
 export class RecipleInteractionEvents extends ClientEventModule<'interactionCreate'> implements RecipleInteractionEvents.Options {
     public readonly id: string = 'org.reciple.js.interaction-events';
+
     public event = 'interactionCreate' as const;
     public moduleEventListenersProperty: string|string[] = 'interactions';
     public ignoredModules?: (module: AnyModule) => Awaitable<boolean>;
