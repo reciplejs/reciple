@@ -197,7 +197,6 @@ export namespace ConfigReader {
             unbundle: true,
             deps: {
                 neverBundle: ['reciple', /^@reciple\//],
-                alwaysBundle: [],
                 skipNodeModulesBundle: true
             },
             // Deprecated
