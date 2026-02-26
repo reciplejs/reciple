@@ -7,6 +7,8 @@ export class V2 extends SlashCommandModule {
         .setDescription('A v2 components preview')
         .toJSON();
 
+    public cooldown: number = 20_000;
+
     public async execute(data: SlashCommand.ExecuteData): Promise<void> {
         await data.interaction.reply({
             flags: ['IsComponentsV2'],

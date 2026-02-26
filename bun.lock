@@ -79,6 +79,7 @@
         "@reciple/utils": "workspace:^",
         "@sapphire/shapeshift": "^4.0.0",
         "@sapphire/snowflake": "^3.5.3",
+        "qweery": "^0.0.9",
         "split-string": "^6.1.0",
         "ts-mixer": "^6.0.4",
       },
@@ -88,7 +89,7 @@
     },
     "packages/create-reciple": {
       "name": "create-reciple",
-      "version": "10.0.29",
+      "version": "10.0.31",
       "bin": "./dist/index.mjs",
       "dependencies": {
         "@reciple/core": "workspace:^",
@@ -105,7 +106,7 @@
     },
     "packages/modules": {
       "name": "@reciple/modules",
-      "version": "10.0.29",
+      "version": "10.0.31",
       "dependencies": {
         "@sapphire/snowflake": "^3.5.5",
       },
@@ -116,7 +117,7 @@
     },
     "packages/reciple": {
       "name": "reciple",
-      "version": "10.0.28",
+      "version": "10.0.30",
       "bin": "./dist/bin/reciple.mjs",
       "dependencies": {
         "@clack/prompts": "^1.0.1",
@@ -903,6 +904,8 @@
     "quansync": ["quansync@1.0.0", "", {}, "sha512-5xZacEEufv3HSTPQuchrvV6soaiACMFnq1H8wkVioctoH3TRha9Sz66lOxRwPK/qZj7HPiSveih9yAyh98gvqA=="],
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
+
+    "qweery": ["qweery@0.0.9", "", {}, "sha512-3AVHMaTfLEcbmzGHOxHITFGfVjUz6xB64vekBhPe3nhCqvDXK55NlezpNJ+czha52r3IR3xpX/yH59q25ChH4g=="],
 
     "radash": ["radash@12.1.1", "", {}, "sha512-h36JMxKRqrAxVD8201FrCpyeNuUY9Y5zZwujr20fFO77tpUtGa6EZzfKw/3WaiBX95fq7+MpsuMLNdSnORAwSA=="],
 

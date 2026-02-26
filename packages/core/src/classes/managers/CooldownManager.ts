@@ -84,7 +84,9 @@ export class CooldownManager<A extends BaseCooldownAdapter> {
         }
 
         await this.adapter.deleteMany({
-            where: deleted.map(cooldown => ({ id: cooldown.id })),
+            where: {
+                $OR: deleted.map(cooldown => ({ id: cooldown.id }))
+            },
         });
 
         this.emit('cooldownSweep', deleted);

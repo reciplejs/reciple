@@ -1,6 +1,7 @@
-import type { DateResolvable, RestOrArray } from 'discord.js';
+import type { RestOrArray } from 'discord.js';
 import type { Cooldown } from '../structures/Cooldown.js';
 import type { Client } from '../structures/Client.js';
+import type { Where } from 'qweery';
 
 export abstract class BaseCooldownAdapter {
     constructor() {}
@@ -29,17 +30,8 @@ export namespace BaseCooldownAdapter {
     export type Constructor = new () => BaseCooldownAdapter;
 
     export interface Filter {
-        where: FilterWhere|FilterWhere[];
+        where: Where.Options<Cooldown.Data>;
         take?: number;
         skip?: number;
-    }
-
-    export interface FilterWhere extends Partial<Omit<Cooldown.Data, 'endsAt'>> {
-        endsAt?: DateResolvable|{
-            gt?: DateResolvable;
-            gte?: DateResolvable;
-            lt?: DateResolvable;
-            lte?: DateResolvable;
-        };
     }
 }
