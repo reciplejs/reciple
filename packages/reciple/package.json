@@ -57,7 +57,7 @@
     "@types/micromatch": "^4.0.10",
     "@types/node": "catalog:",
     "nodemon": "^3.1.14",
-    "rolldown": "^1.0.0-rc.5",
+    "rolldown": "^1.0.0-rc.6",
     "typescript": "catalog:"
   },
   "peerDependencies": {
