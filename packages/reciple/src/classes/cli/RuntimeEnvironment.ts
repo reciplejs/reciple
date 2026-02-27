@@ -3,7 +3,7 @@ import type { Client } from '@reciple/core';
 import { setTimeout } from 'node:timers/promises';
 
 export namespace RuntimeEnvironment {
-    export let stopping = false;
+    let stopping = false;
 
     export type Type = 'node'|'deno'|'bun';
 

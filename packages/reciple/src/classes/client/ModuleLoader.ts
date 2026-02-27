@@ -184,7 +184,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 }
 
 export namespace ModuleLoader {
-    export let globby: typeof import('globby')|null = null;
+    let globby: typeof import('globby')|null = null;
 
     export const fileTypes = [
         'js',
