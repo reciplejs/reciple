@@ -25,7 +25,12 @@ export class CooldownAdapter extends BaseCooldownAdapter {
     }
 
     public async fetchMany(filter: BaseCooldownAdapter.Filter): Promise<Cooldown.Data[]> {
-        return Where.filter(this.cache.values(), filter.where);
+        let result = Where.filter(this.cache.values(), filter.where);
+
+        return result.slice(
+            filter.skip ?? 0,
+            filter.take ? (filter.skip ?? 0) + filter.take : undefined
+        );
     }
 
     public async fetchAll(): Promise<Cooldown.Data[]> {
