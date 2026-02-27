@@ -35,10 +35,9 @@
 
 ```bash
 npm create reciple@latest
-yarn dlx create-reciple@latest
-pnpx create-reciple@latest
-bunx create-reciple@latest
-deno run -A npm:create-reciple@latest
+pnpm create reciple@latest
+bun create reciple@latest
+deno create npm:reciple@latest
 ```
 
 ## Help

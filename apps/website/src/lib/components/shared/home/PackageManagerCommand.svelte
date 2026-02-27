@@ -23,7 +23,7 @@
         yarn: 'yarn dlx -p discord.js -p @reciple/core -p reciple reciple@latest create',
         pnpm: 'pnpx reciple@latest create',
         bun: 'bunx reciple@latest create',
-        deno: 'deno run -A npm:reciple@latest create'
+        deno: 'deno create -y npm:reciple@latest'
     };
 
     const commandIcons = {

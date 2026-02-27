@@ -55,10 +55,10 @@ Commands:
 
 ```bash
 npx reciple
-yarn dlx reciple
+yarn exec reciple
 pnpx reciple
 bunx reciple
-deno run -A npm:reciple
+deno x reciple
 ```
 
 ## Links
