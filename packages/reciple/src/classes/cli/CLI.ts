@@ -222,15 +222,4 @@ export namespace CLI {
             }
         };
     }
-
-    export const ignoredDefault = [
-        '.git',
-        '.log',
-        '.nyc_output',
-        '.sass-cache',
-        '.yarn',
-        'bower_components',
-        'coverage',
-        'node_modules'
-    ]
 }
