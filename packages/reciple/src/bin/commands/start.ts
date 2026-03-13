@@ -130,6 +130,20 @@ export default class StartSubcommand extends CLISubcommand {
                     logger.log(` ├─ Loaded ${colors.green(commands.slash.toLocaleString())} slash ${Format.plural(commands.slash, 'command')}.`);
                     logger.log(` ├─ Loaded ${colors.green(client.preconditions.cache.size.toLocaleString())} global ${Format.plural(client.preconditions.cache.size, 'precondition')}.`);
                     logger.log(` └─ Loaded ${colors.green(client.postconditions.cache.size.toLocaleString())} global ${Format.plural(client.postconditions.cache.size, 'postcondition')}.`);
+
+                    if (commands.message && !client.options.intents.has(['GuildMessages', 'MessageContent'])) {
+                        const missingIntents = (
+                            [
+                                'GuildMessages',
+                                'MessageContent'
+                            ] as const
+                        ).filter(intent => !client.options.intents.has(intent));
+
+                        logger.warn(
+                            colors.yellow().bold(`Message commands are enabled, but the following intents are not enabled:`) +
+                            `\n  ${missingIntents.map(s => `  • ${colors.redBright(s)}`).join('\n')}`
+                        );
+                    }
                 });
 
                 client.eventListeners.registerProcessExitEvents(async signal => RuntimeEnvironment.handleExitSignal(client, signal));

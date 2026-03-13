@@ -5,9 +5,7 @@ import { Client, CommandType, CooldownAdapter, CooldownCommandPrecondition, Mess
 export const client = new Client({
     token: process.env.TOKEN,
     intents: [
-        'Guilds',
-        'GuildMessages',
-        'MessageContent'
+        'Guilds'
     ],
     preconditions: [
         new CooldownCommandPrecondition({

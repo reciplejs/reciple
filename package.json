@@ -10,7 +10,7 @@
     "build:packages": "turbo run build --filter !@reciple/website --filter !example",
     "docs": "bun ./scripts/docs.ts",
     "check": "turbo run check",
-    "test": "bun run dev -w example",
+    "test": "bun run --cwd ./example dev",
     "bump": "bun ./scripts/bump.ts",
     "test-create": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template",
     "test-create:default": "bun run build && node --enable-source-maps ./packages/reciple/dist/bin/reciple.js create test-template -D"
