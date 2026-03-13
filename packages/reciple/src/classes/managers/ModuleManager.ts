@@ -13,10 +13,12 @@ export class ModuleManager {
 
     constructor(public readonly client: Client) {}
 
-    public async enableModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+    public async enableModules(
+        { modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = {}
+    ): Promise<AnyModule[]> {
         const enabledModules: AnyModule[] = [];
 
-        for (const module of modules ?? []) {
+        for (const module of modules ?? this.cache.values()) {
             this.emit('modulePreEnable', module);
 
             await module.onEnable({ client: this.client }).catch(e => {
@@ -33,12 +35,14 @@ export class ModuleManager {
         return enabledModules;
     }
 
-    public async readyModules({ modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+    public async readyModules(
+        { modules, removeFromCacheOnError }: ModuleManager.EventExecuteData & { removeFromCacheOnError?: boolean; } = {}
+    ): Promise<AnyModule[]> {
         const readyModules: AnyModule[] = [];
 
         if (!this.client.isReady()) throw new RecipleError(RecipleError.Code.ClientNotReady());
 
-        for (const module of modules ?? []) {
+        for (const module of modules ?? this.cache.values()) {
             this.emit('modulePreReady', module);
 
             await module.onReady({ client: this.client }).catch(e => {
@@ -55,10 +59,12 @@ export class ModuleManager {
         return readyModules;
     }
 
-    public async disableModules({ modules, removeFromCache }: ModuleManager.EventExecuteData & { removeFromCache?: boolean; } = { modules: Array.from(this.cache.values()) }): Promise<AnyModule[]> {
+    public async disableModules(
+        { modules, removeFromCache }: ModuleManager.EventExecuteData & { removeFromCache?: boolean; } = {}
+    ): Promise<AnyModule[]> {
         const disabledModules: AnyModule[] = [];
 
-        for (const module of modules ?? []) {
+        for (const module of modules ?? this.cache.values()) {
             this.emit('modulePreDisable', module);
 
             await module.onDisable({ client: this.client }).catch(e => {
