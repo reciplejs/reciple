@@ -78,7 +78,7 @@ export const config: Config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./modules/**"],
+        directories: ["./modules/**", "./modules"],
         ignore: ["_*"],
         filter: undefined
     }

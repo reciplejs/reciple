@@ -68,7 +68,7 @@ export const config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./modules/**"],
+        directories: ["./modules/**", "./modules"],
         ignore: ["_*"],
         filter: undefined
     }
@@ -80,7 +80,7 @@ export const config = {
 export const build = {
     entry: ['./src/**/*.{js,jsx,ts,tsx}'],
     tsconfig: './jsconfig.json',
-    outDir: './modules'
+    outDir: './modules',
 };
 
 /**

@@ -55,6 +55,14 @@ export type AnyCommandModuleData<T extends CommandType = CommandType> = T extend
 
 export type BuildConfig = Omit<UserConfig,
     |'watch'
+    |'css'
+    |'cwd'
+    |'env'
+    |'envFile'
+    |'envPrefix'
+    |'exe'
+    |'exports'
+    |'ignoreWatch'
     |'skipNodeModulesBundle'
     |'platform'
     |'format'
