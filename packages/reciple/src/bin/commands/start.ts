@@ -140,8 +140,8 @@ export default class StartSubcommand extends CLISubcommand {
                         ).filter(intent => !client.options.intents.has(intent));
 
                         logger.warn(
-                            colors.yellow().bold(`Message commands are enabled, but the following intents are not enabled:`) +
-                            `\n  ${missingIntents.map(s => `  • ${colors.redBright(s)}`).join('\n')}`
+                            colors.yellow().bold(`Message commands are enabled, but the following intents are not enabled:\n`) +
+                            `${missingIntents.map(s => `  • ${colors.redBright(s)}`).join('\n')}`
                         );
                     }
                 });
