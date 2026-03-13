@@ -118,7 +118,7 @@ export class Client<Ready extends boolean = boolean> extends DiscordJsClient<Rea
             }
         }
 
-        this._onBeforeLogin?.(this);
+        await this._onBeforeLogin?.(this);
 
         this.setMaxListeners(this.getMaxListeners() + 1);
 
