@@ -1,7 +1,7 @@
 import { isDebugging, PackageJsonBuilder } from '@reciple/utils';
 import { ConfigReader } from '../cli/ConfigReader.js';
 import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
-import { confirm, intro, isCancel, outro, select, text, log } from '@clack/prompts';
+import { confirm, intro, isCancel, outro, select, text, log, password } from '@clack/prompts';
 import micromatch from 'micromatch';
 import { CLI } from '../cli/CLI.js';
 import path from 'node:path';
@@ -155,13 +155,13 @@ export class TemplateBuilder {
             if (skip) return this;
         }
 
-        const token = await text({
+        const token = await password({
             message: 'Enter Discord Bot Token',
-            placeholder: 'Bot Token from Discord Developer Portal',
-            defaultValue: env[tokenKey] || ''
-        });
+            mask: '*'
+        }) || env[tokenKey] || '';
 
         if (isCancel(token)) throw new NotAnError('Operation cancelled');
+
         env[tokenKey] = token;
 
         await writeFile(envFile, `\n${tokenKey}="${token}"\n`, {
