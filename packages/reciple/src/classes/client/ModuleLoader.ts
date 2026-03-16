@@ -2,7 +2,7 @@ import { type Awaitable } from 'discord.js';
 import path from 'node:path';
 import { mkdir, readdir, stat } from 'node:fs/promises';
 import micromatch from 'micromatch';
-import { globby, isDynamicPattern } from 'globby';
+import { glob, isDynamicPattern } from 'tinyglobby';
 import { CommandType, RecipleError, type Client } from '@reciple/core';
 import type { AnyModule, AnyModuleData } from '../../helpers/types.js';
 import { recursiveDefaults } from '@reciple/utils';
@@ -70,12 +70,11 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
         let directories: string[] = [];
 
         for (const directory of config?.directories ?? []) {
-            if (isDynamicPattern(directory, { cwd })) {
-                const matches = await globby(directory, {
+            if (isDynamicPattern(directory)) {
+                const matches = await glob(directory, {
                     cwd,
                     ignore: config?.ignore,
                     onlyDirectories: true,
-                    baseNameMatch: true,
                     absolute: true
                 });
 
@@ -184,8 +183,6 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 }
 
 export namespace ModuleLoader {
-    let globby: typeof import('globby')|null = null;
-
     export const fileTypes = [
         'js',
         'mjs',
@@ -213,11 +210,5 @@ export namespace ModuleLoader {
         rootDir: string;
         outDir: string;
         cwd?: string;
-    }
-
-    export async function getGlobby(): Promise<typeof import('globby')> {
-        if (globby) return globby;
-
-        return globby = await import('globby');
     }
 }

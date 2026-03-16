@@ -70,8 +70,8 @@ export const config = {
         returnOnFailure: false
     },
     modules: {
-        directories: ["./modules/**"],
-        ignore: ["_*"],
+        directories: ["./modules/**", "./modules"],
+        ignore: ["_*", ".*", "+*"],
         filter: undefined
     },
     logger: await useLogger().clone({

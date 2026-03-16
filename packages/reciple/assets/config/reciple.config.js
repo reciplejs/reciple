@@ -69,7 +69,7 @@ export const config = {
     },
     modules: {
         directories: ["./modules/**", "./modules"],
-        ignore: ["_*"],
+        ignore: ["_*", ".*", "+*"],
         filter: undefined
     }
 };
@@ -87,5 +87,5 @@ export const build = {
  * @type {import('reciple').ShardingConfig}
  */
 export const sharding = {
-    mode: 'process',  
+    mode: 'process',
 };

@@ -79,7 +79,7 @@ export const config: Config = {
     },
     modules: {
         directories: ["./modules/**", "./modules"],
-        ignore: ["_*"],
+        ignore: ["_*", ".*", "+*"],
         filter: undefined
     }
 };
