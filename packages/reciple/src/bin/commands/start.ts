@@ -56,7 +56,7 @@ export default class StartSubcommand extends CLISubcommand {
                     : [buildConfig.plugins]
                 : [];
 
-            plugins.push(CLI.createTsdownLogger());
+            plugins.push(CLI.createRolldownLogger());
 
             await build({
                 ...buildConfig,

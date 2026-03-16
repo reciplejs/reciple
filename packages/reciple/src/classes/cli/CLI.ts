@@ -198,7 +198,7 @@ export namespace CLI {
         ];
     }
 
-    export function createTsdownLogger(_logger: Logger = logger): RolldownPlugin {
+    export function createRolldownLogger(_logger: Logger = logger): RolldownPlugin {
         let startedAt: number;
 
         return {

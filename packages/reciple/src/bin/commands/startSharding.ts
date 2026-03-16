@@ -11,9 +11,7 @@ import { ShardingManager } from 'discord.js';
 import { EventListeners } from '../../classes/client/EventListeners.js';
 
 export default class StartShardingSubcommand extends CLISubcommand {
-    public parent?: string = 'start';
-
-    public subcommand: Command = new Command('sharding')
+    public subcommand: Command = new Command('start-sharding')
         .description('Start the reciple client in sharding mode')
         .argument('[project]', 'The root directory of your project')
         .option('-t, --token <DiscordToken>', 'Set your Discord Bot token')
@@ -25,7 +23,7 @@ export default class StartShardingSubcommand extends CLISubcommand {
         process.env.RECIPLE_FIRST_SHARD = 'true';
 
         const recipleFlags = this.cli.getFlags();
-        const flags = this.subcommand.opts<ShardingSubcommand.Flags>();
+        const flags = this.subcommand.opts<StartShardingSubcommand.Flags>();
 
         await this.cli.setCurrentDirectory(this.subcommand.args[0]);
 
@@ -66,7 +64,7 @@ export default class StartShardingSubcommand extends CLISubcommand {
                     : [buildConfig.plugins]
                 : [];
 
-            plugins.push(CLI.createTsdownLogger());
+            plugins.push(CLI.createRolldownLogger());
 
             await build({
                 ...buildConfig,
@@ -151,6 +149,6 @@ export default class StartShardingSubcommand extends CLISubcommand {
     }
 }
 
-export namespace ShardingSubcommand {
+export namespace StartShardingSubcommand {
     export interface Flags extends StartSubcommand.Flags {}
 }
