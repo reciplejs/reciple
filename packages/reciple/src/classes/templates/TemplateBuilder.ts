@@ -344,18 +344,25 @@ export class TemplateBuilder {
                 new ModuleTemplateBuilder({
                         ...moduleOptions,
                         directory: 'src/commands',
-                        filename: `SlashCommand.${this.typescript ? 'ts' : 'js'}`,
+                        filename: `PingCommand.${this.typescript ? 'ts' : 'js'}`,
                         template: moduleTemplates.find(t => t.name === 'SlashCommand')
                     })
-                    .setupPlaceholders()
+                    .setupPlaceholders({
+                        CommandName: 'ping',
+                        CommandDescription: 'My ping command!',
+                        ModuleName: 'PingCommand'
+                    })
                     .then(m => m.build({ silent: true })),
                 new ModuleTemplateBuilder({
                         ...moduleOptions,
                         directory: 'src/events',
-                        filename: `ClientEvent.${this.typescript ? 'ts' : 'js'}`,
+                        filename: `ClientReady.${this.typescript ? 'ts' : 'js'}`,
                         template: moduleTemplates.find(t => t.name === 'ClientEvent')
                     })
-                    .setupPlaceholders()
+                    .setupPlaceholders({
+                        EventName: 'clientReady',
+                        ModuleName: 'ClientReadyEvent'
+                    })
                     .then(m => m.build({ silent: true }))
             ]),
             message: 'Creating module templates',

@@ -106,13 +106,13 @@ export class ModuleTemplateBuilder {
         return this;
     }
 
-    public async setupPlaceholders(): Promise<this> {
+    public async setupPlaceholders(defaultValues?: Partial<Record<keyof typeof ModuleTemplateBuilder.Placeholder, string>>): Promise<this> {
         const placeholders = Object.keys(ModuleTemplateBuilder.Placeholder).filter(k => !k.startsWith('$')) as (keyof typeof ModuleTemplateBuilder.Placeholder)[];
 
         for (const placeholderKey of placeholders) {
             if (!ModuleTemplateBuilder.hasPlaceholder(ModuleTemplateBuilder.Placeholder[placeholderKey], this.content)) continue;
             const placeholder = ModuleTemplateBuilder.Placeholder[placeholderKey];
-            const defaultValue = ModuleTemplateBuilder.PlaceholderDefaultValues[placeholder];
+            const defaultValue = defaultValues?.[placeholderKey] ?? ModuleTemplateBuilder.PlaceholderDefaultValues[placeholder];
 
             let value: string|symbol;
 
