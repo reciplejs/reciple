@@ -8,6 +8,8 @@ import { execSync } from 'node:child_process';
 const workspaces: WorkspaceData[] = await resolveWorkspaces();
 const dryRun = process.argv.includes('--dry-run') ? '--dry-run' : '';
 
+execSync('bun pm whoami', { stdio: 'ignore' });
+
 intro(colors.bold().black().bgCyan(` Found ${workspaces.length} packages `));
 
 const selected = await multiselect({
