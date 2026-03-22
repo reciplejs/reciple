@@ -71,7 +71,7 @@ export const config = {
     },
     modules: {
         directories: ["./modules/**", "./modules"],
-        ignore: ["_*", ".*", "+*"],
+        ignore: ["./**/{.,+,_}*"],
         filter: undefined
     },
     logger: await useLogger().clone({

@@ -5,7 +5,7 @@
   ],
   "include": [
     "./src/**/*"
-  ],
+, "src/.virtual"  ],
   "compilerOptions": {
     "baseUrl": "./",
     "rootDir": "./src",
