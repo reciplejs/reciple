@@ -7,6 +7,7 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelect
     if (props.id !== undefined) builder.setId(props.id);
     if (props.customId !== undefined) builder.setCustomId(props.customId);
     if (props.disabled !== undefined) builder.setDisabled(props.disabled);
+    if (props.required !== undefined) builder.setRequired(props.required);
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
@@ -21,7 +22,8 @@ export function ChannelSelectMenu(props: ChannelSelectMenu.Props): ChannelSelect
 }
 
 export namespace ChannelSelectMenu {
-    export interface Props extends Omit<ChannelSelectMenuComponentData, 'type'> {
+    export interface Props extends Omit<ChannelSelectMenuComponentData, 'type'|'required'> {
         children?: JSX.SingleOrArray<Exclude<ChannelSelectMenuComponentData['defaultValues'], undefined>[0]>;
+        required?: boolean;
     }
 }

@@ -7,6 +7,7 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuild
     if (props.id !== undefined) builder.setId(props.id);
     if (props.customId !== undefined) builder.setCustomId(props.customId);
     if (props.disabled !== undefined) builder.setDisabled(props.disabled);
+    if (props.required !== undefined) builder.setRequired(props.required);
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
@@ -20,7 +21,8 @@ export function RoleSelectMenu(props: RoleSelectMenu.Props): RoleSelectMenuBuild
 }
 
 export namespace RoleSelectMenu {
-    export interface Props extends Omit<RoleSelectMenuComponentData, 'type'> {
+    export interface Props extends Omit<RoleSelectMenuComponentData, 'type'|'required'> {
         children?: JSX.SingleOrArray<Exclude<RoleSelectMenuComponentData['defaultValues'], undefined>[0]>;
+        required?: boolean;
     }
 }

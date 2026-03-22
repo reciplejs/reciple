@@ -7,6 +7,7 @@ export function UserSelectMenu(props: UserSelectMenu.Props): UserSelectMenuBuild
     if (props.id !== undefined) builder.setId(props.id);
     if (props.customId !== undefined) builder.setCustomId(props.customId);
     if (props.disabled !== undefined) builder.setDisabled(props.disabled);
+    if (props.required !== undefined) builder.setRequired(props.required);
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
@@ -20,7 +21,8 @@ export function UserSelectMenu(props: UserSelectMenu.Props): UserSelectMenuBuild
 }
 
 export namespace UserSelectMenu {
-    export interface Props extends Omit<UserSelectMenuComponentData, 'type'> {
+    export interface Props extends Omit<UserSelectMenuComponentData, 'type'|'required'> {
         children?: JSX.SingleOrArray<Exclude<UserSelectMenuComponentData['defaultValues'], undefined>[0]>;
+        required?: boolean;
     }
 }

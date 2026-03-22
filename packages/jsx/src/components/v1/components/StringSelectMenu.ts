@@ -7,6 +7,7 @@ export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMen
     if (props.id !== undefined) builder.setId(props.id);
     if (props.customId !== undefined) builder.setCustomId(props.customId);
     if (props.disabled !== undefined) builder.setDisabled(props.disabled);
+    if (props.required !== undefined) builder.setRequired(props.required);
     if (props.maxValues !== undefined) builder.setMaxValues(props.maxValues);
     if (props.minValues !== undefined) builder.setMinValues(props.minValues);
     if (props.placeholder !== undefined) builder.setPlaceholder(props.placeholder);
@@ -19,10 +20,11 @@ export function StringSelectMenu(props: StringSelectMenu.Props): StringSelectMen
 }
 
 export namespace StringSelectMenu {
-    export interface Props extends Omit<StringSelectMenuComponentData, 'type'|'options'> {
+    export interface Props extends Omit<StringSelectMenuComponentData, 'type'|'options'|'required'> {
         children?: JSX.SingleOrArray<
             Exclude<StringSelectMenuComponentData['options'], undefined>[0]
             |JSONEncodable<APISelectMenuOption>
         >;
+        required?: boolean;
     }
 }
