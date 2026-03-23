@@ -1,5 +1,5 @@
 import inspector from 'node:inspector';
-import type { DateResolvable, RecursiveDefault } from './types.js';
+import type { DateResolvable, DeferredPromiseData, RecursiveDefault } from './types.js';
 
 /**
  * Checks if the process is being debugged
@@ -78,4 +78,24 @@ export function isDateResolvable(value: unknown): value is DateResolvable {
 export function resolveEnvProtocol(string: string, env: NodeJS.ProcessEnv = process.env): string|undefined {
     if (!string.toLocaleLowerCase().startsWith('env:')) return;
     return env?.[string.slice(4)];
+}
+
+/**
+ * Creates a deferred promise, which is a promise that can be resolved or rejected from outside the promise constructor
+ * @returns An object containing the promise, and its resolve and reject functions
+ */
+export function createDeferredPromise<T = void>(): DeferredPromiseData<T> {
+    let resolve: (value: T) => void = () => {};
+    let reject: (reason?: any) => void = () => {};
+
+    const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+
+    return {
+        promise,
+        resolve,
+        reject
+    };
 }

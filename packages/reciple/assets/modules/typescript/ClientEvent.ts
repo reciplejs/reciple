@@ -2,11 +2,11 @@ import { ClientEventModule } from "reciple";
 
 // @ts-expect-error
 export class $MODULE_NAME$ extends ClientEventModule<'$EVENT_NAME$'> {
-    event = '$EVENT_NAME$' as const;
+    public event = '$EVENT_NAME$' as const;
     // @ts-expect-error
-    once = $EVENT_ONCE$;
+    public once = $EVENT_ONCE$;
 
-    onEvent() {
+    public onEvent(): void {
         // Write your code here
     }
 }

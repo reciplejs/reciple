@@ -1,12 +1,12 @@
 import { SlashCommandBuilder, SlashCommandModule, type SlashCommand } from "reciple";
 
 export class $MODULE_NAME$ extends SlashCommandModule {
-    data = new SlashCommandBuilder()
+    public data = new SlashCommandBuilder()
         .setName('$COMMAND_NAME$')
         .setDescription('$COMMAND_DESCRIPTION$')
         .toJSON();
 
-    async execute({ interaction }: SlashCommand.ExecuteData) {
+    public async execute({ interaction }: SlashCommand.ExecuteData): Promise<void> {
         // Write your code here
     }
 }

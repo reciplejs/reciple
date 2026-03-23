@@ -1,15 +1,15 @@
 import { BaseModule } from 'reciple';
 
 export class $MODULE_NAME$ extends BaseModule {
-    async onEnable({ client }: BaseModule.EventData<false>) {
+    public async onEnable({ client }: BaseModule.EventData<false>): Promise<void> {
         // Write your code here
     }
 
-    async onReady({ client }: BaseModule.EventData<true>) {
+    public async onReady({ client }: BaseModule.EventData<true>): Promise<void> {
         // Write your code here
     }
 
-    async onDisable({ client }: BaseModule.EventData<true>) {
+    public async onDisable({ client }: BaseModule.EventData<true>): Promise<void> {
         // Write your code here
     }
 }

@@ -1,12 +1,12 @@
 import { MessageCommandBuilder, MessageCommandModule, type MessageCommand } from "reciple";
 
 export class $MODULE_NAME$ extends MessageCommandModule {
-    data = new MessageCommandBuilder()
+    public data = new MessageCommandBuilder()
         .setName('$COMMAND_NAME$')
         .setDescription('$COMMAND_DESCRIPTION$')
         .toJSON();
 
-    async execute({ message }: MessageCommand.ExecuteData) {
+    public async execute({ message }: MessageCommand.ExecuteData): Promise<void> {
         // Write your code here
     }
 }

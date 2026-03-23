@@ -2,13 +2,13 @@ import { EventModule } from "reciple";
 
 export class $MODULE_NAME$ extends EventModule {
     // @ts-expect-error
-    emitter = $EVENT_EMITTER$;
-    event = '$EVENT_NAME$';
+    public emitter = $EVENT_EMITTER$;
+    public event = '$EVENT_NAME$';
     // @ts-expect-error
-    once = $EVENT_ONCE$;
+    public once = $EVENT_ONCE$;
 
     // @ts-expect-error
-    onEvent(...args) {
+    public onEvent(...args): void {
         // Write your code here
     }
 }
