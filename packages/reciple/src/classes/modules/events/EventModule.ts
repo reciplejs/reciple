@@ -1,7 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { BaseModule } from '../BaseModule.js';
 import { ModuleType } from '../../../helpers/constants.js';
-import type { Awaitable } from 'discord.js';
 import { hasMixin } from 'ts-mixer';
 
 export abstract class EventModule<Events extends EventModule.EventMap = EventModule.EventMap, Event extends keyof Events = keyof Events> extends BaseModule implements EventModule.Data<Events, Event> {
@@ -11,7 +10,7 @@ export abstract class EventModule<Events extends EventModule.EventMap = EventMod
 
     public once?: boolean = false;
 
-    public abstract onEvent(...args: Events[Event]): Awaitable<void>;
+    public abstract onEvent(...args: Events[Event]): Promise<void>|void;
 
     public static from(data: EventModule.Resolvable): EventModule {
         if (hasMixin(data, EventModule)) return data;
@@ -37,6 +36,6 @@ export namespace EventModule {
         emitter: EventEmitter;
         event: Event;
         once?: boolean;
-        onEvent: (...args: Events[Event]) => Awaitable<void>;
+        onEvent: (...args: Events[Event]) => Promise<void>|void;
     }
 }
