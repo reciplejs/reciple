@@ -1,3 +1,4 @@
+export * from './classes/DeferredPromise.js';
 export * from './classes/PackageJsonBuilder.js';
 export * from './helpers/constants.js';
 export * from './helpers/functions.js';
