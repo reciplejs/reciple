@@ -35,8 +35,8 @@
       "@prtty/prtty": "^1.1.2",
       "@types/node": "^25.5.0",
       "discord.js": "^14.25.1",
-      "tsdown": "^0.21.4",
-      "typescript": "^5.9.3"
+      "tsdown": "^0.21.5",
+      "typescript": "^6.0.2"
     }
   }
 }
