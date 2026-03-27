@@ -1,6 +1,7 @@
 import inspector from 'node:inspector';
 import type { DateResolvable, DeferredPromiseData, RecursiveDefault } from './types.js';
 import { emitWarning } from 'node:process';
+import { DeferredPromise } from '../classes/DeferredPromise.js';
 
 /**
  * Checks if the process is being debugged
@@ -89,17 +90,11 @@ export function resolveEnvProtocol(string: string, env: NodeJS.ProcessEnv = proc
 export function createDeferredPromise<T = void>(): DeferredPromiseData<T> {
     emitWarning(new Error('createDeferredPromise is deprecated, use the DeferredPromise class instead'), 'DeprecationWarning', 'createDeferredPromise');
 
-    let resolve: (value: T) => void = () => {};
-    let reject: (reason?: any) => void = () => {};
-
-    const promise = new Promise<T>((res, rej) => {
-        resolve = res;
-        reject = rej;
-    });
+    const promise = new DeferredPromise<T>();
 
     return {
         promise,
-        resolve,
-        reject
+        resolve: promise.resolve,
+        reject: promise.reject
     };
 }

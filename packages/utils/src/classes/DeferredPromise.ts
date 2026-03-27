@@ -1,21 +1,18 @@
-export class DeferredPromise<T> {
-    public readonly promise: Promise<T>;
+export class DeferredPromise<T = void> extends Promise<T> {
+    public resolve!: (value: T|PromiseLike<T>) => void;
+    public reject!: (reason?: any) => void;
 
-    private _resolve!: (value: T|PromiseLike<T>) => void;
-    private _reject!: (reason?: any) => void;
+    constructor(resolver?: (resolve: (value: T|PromiseLike<T>) => void, reject: (reason?: any) => void) => void) {
+        const self = {};
 
-    constructor() {
-        this.promise = new Promise<T>((resolve, reject) => {
-            this._resolve = resolve;
-            this._reject = reject;
+        super((resolve, reject) => {
+            Object.assign(self, { resolve, reject });
         });
-    }
 
-    public resolve(value: T|PromiseLike<T>): void {
-        this._resolve(value);
-    }
+        Object.assign(this, self);
 
-    public reject(reason?: any): void {
-        this._reject(reason);
+        if (resolver) {
+            resolver(this.resolve, this.reject);
+        }
     }
 }
