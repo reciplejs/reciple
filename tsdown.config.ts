@@ -13,7 +13,7 @@ export function createTsdownConfig(options?: UserConfig) {
 		clean: true,
 		minify: false,
 		dts: true,
-		sourcemap: true,
+		sourcemap: false,
 		treeshake: true,
 		outDir: './dist',
         tsconfig: 'tsconfig.json',
