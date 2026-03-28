@@ -1,6 +1,6 @@
 {
   "name": "reciple",
-  "version": "10.0.43",
+  "version": "10.0.44",
   "license": "LGPL-3.0-only",
   "description": "The CLI for reciple",
   "module": "./dist/index.mjs",
