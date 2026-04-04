@@ -1,7 +1,7 @@
 <script lang="ts">
-    import '@fontsource-variable/inter';
-    import '@fontsource-variable/roboto-mono';
-    import '@fontsource/archivo-black';
+    import '@fontsource-variable/inter/index.css';
+    import '@fontsource-variable/roboto-mono/index.css';
+    import '@fontsource/archivo-black/index.css';
     import '$lib/styles/app.css';
 
     import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
