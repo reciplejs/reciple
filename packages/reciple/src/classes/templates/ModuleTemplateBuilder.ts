@@ -244,10 +244,22 @@ export class ModuleTemplateBuilder {
         return this;
     }
 
-    public async build({ overwrite, silent }: ModuleTemplateBuilder.BuildOptions = {}): Promise<this> {
+    public async build({ overwrite, silent, replacer }: ModuleTemplateBuilder.BuildOptions = {}): Promise<this> {
+        let content = this.content;
+
+        if (replacer) {
+            for (const [key, value] of Object.entries(replacer)) {
+                content = content.replaceAll(key, value);
+            }
+        }
+
         await mkdir(this.directory, { recursive: true });
-        await writeFile(this.filepath, this.content, { flag: overwrite === false ? 'wx' : undefined });
-        if (!silent) outro(`Module ${colors.green(this.template?.name!)} created in ${colors.cyan(path.relative(process.cwd(), this.filepath))}`);
+        await writeFile(this.filepath, content, { flag: overwrite === false ? 'wx' : undefined });
+
+        if (!silent) {
+            outro(`Module ${colors.green(this.template?.name!)} created in ${colors.cyan(path.relative(process.cwd(), this.filepath))}`);
+        }
+
         return this;
     }
 }
@@ -282,6 +294,7 @@ export namespace ModuleTemplateBuilder {
     export interface BuildOptions {
         overwrite?: boolean;
         silent?: boolean;
+        replacer?: Record<string, string>;
     }
 
     export enum Placeholder {

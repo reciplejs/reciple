@@ -352,7 +352,12 @@ export class TemplateBuilder {
                         CommandDescription: 'My ping command!',
                         ModuleName: 'PingCommand'
                     })
-                    .then(m => m.build({ silent: true })),
+                    .then(m => m.build({
+                        silent: true,
+                        replacer: {
+                            "// Write your code here": "await interaction.reply('Pong!');"
+                        }
+                    })),
                 new ModuleTemplateBuilder({
                         ...moduleOptions,
                         directory: 'src/events',
@@ -363,7 +368,12 @@ export class TemplateBuilder {
                         EventName: 'clientReady',
                         ModuleName: 'ClientReadyEvent'
                     })
-                    .then(m => m.build({ silent: true }))
+                    .then(m => m.build({
+                        silent: true,
+                        replacer: {
+                            "// Write your code here": "this.client.logger.info('Client is ready!');"
+                        }
+                    }))
             ]),
             message: 'Creating module templates',
             successMessage: 'Module templates created successfully',
