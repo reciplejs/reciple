@@ -3,7 +3,6 @@
     import { Links } from "$lib/helpers/constants";
     import { Button } from '$lib/components/ui/button';
     import SquareArrowOutUpRightIcon from '@lucide/svelte/icons/square-arrow-out-up-right';
-    import PackageManagerCommand from '$lib/components/shared/home/PackageManagerCommand.svelte';
 </script>
 
 <div class="size-full flex items-center-safe">
@@ -29,7 +28,9 @@
             </div>
         </div>
         <div class="flex items-center md:justify-center lg:justify-start justify-start lg:max-w-lg md:max-w-sm w-full">
-            <PackageManagerCommand class="md:max-w-xl lg:w-full w-full bg-secondary/50"/>
+            {#await import('$lib/components/shared/home/PackageManagerCommand.svelte') then { default: PackageManagerCommand }}
+                <PackageManagerCommand class="md:max-w-xl lg:w-full w-full bg-secondary/50"/>
+            {/await}
         </div>
     </div>
 </div>
