@@ -10,6 +10,7 @@
     "sourceMap": true,
     "strict": true,
     "newLine": "lf",
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "types": ["node"]
   }
 }

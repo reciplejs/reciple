@@ -23,6 +23,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "types": ["node"]
   }
 }
