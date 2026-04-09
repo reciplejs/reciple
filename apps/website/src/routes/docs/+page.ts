@@ -5,8 +5,8 @@ import { Documentation } from '$lib/helpers/classes/Documentation.svelte';
 export async function load(data) {
     if (!data.url.searchParams.has('first')) return;
 
-    const pkg = (await Documentation.fetchPackages()).at(0);
-    const tag = (await Documentation.fetchTags(pkg!)).at(0);
+    const pkg = (await Documentation.fetchPackages(data.fetch)).at(0);
+    const tag = (await Documentation.fetchTags(pkg!, data.fetch)).at(0);
 
     if (!pkg || !tag) throw error(404, 'Not found');
 

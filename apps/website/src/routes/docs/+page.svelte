@@ -22,7 +22,7 @@
 
 <h1 class="text-2xl sm:text-3xl font-bold text-center">Choose a package</h1>
 <div class="grid gap-2">
-    {#await Documentation.fetchPackages()}
+    {#await Documentation.fetchPackages(fetch)}
         {#each { length: 5 } as _}
             <Skeleton class="h-10"/>
         {/each}

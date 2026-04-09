@@ -19,6 +19,8 @@ export class Documentation {
     }
 
     public static get packages(): string[] {
+        console.log(Documentation.files);
+
         return Array.from(
             new Set(
                 Documentation.files?.files
@@ -143,7 +145,10 @@ export class Documentation {
 
         const content: Documentation.APIDocJSONResponse = await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/${filePath}`).then(res => res.json());
 
-        this.data = content.nodes;
+        this.data = Array.isArray(content.nodes)
+            ? content.nodes
+            : Object.values(content.nodes).flatMap((v: any) => Object.values(v.symbols));
+
         this.readme = content.readme || '';
 
         return this;
@@ -166,9 +171,16 @@ export class Documentation {
     }
 
     public static async fetchFiles(force: boolean = false, fetch: Documentation.FetchClient = Documentation.defaultFetch): Promise<Documentation.APIFilesResponse> {
-        return Documentation.files && !force
-            ? Documentation.files
-            : Documentation.files = await (await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/`)).json() as Documentation.APIFilesResponse;
+        if (Documentation.files && !force) {
+            return Documentation.files;
+        }
+
+        const files = await fetch(`https://ungh.cc/repos/${path.join(Documentation.repo)}/files/${Documentation.repository.branch}/`)
+            .then(async res => res.json())
+
+        Documentation.files = files;
+
+        return files;
     }
 }
 
@@ -203,7 +215,7 @@ export namespace Documentation {
     export interface APIDocJSONResponse {
         version: string;
         readme?: string;
-        nodes: DocNode[];
+        nodes: DocNode[]|Record<string, Record<'symbols', DocNode[]>>;
     }
 
     // WTF
