@@ -27,12 +27,14 @@ export async function load(data) {
         tag
     }).fetch(data.fetch).catch(() => null);
 
-    const nodes = documentation?.data.filter(n => n.kind === type && n.name === name);
+    const declarations = Object.entries(
+        documentation?.getDeclarations(type as DocNodeKind) ?? {}
+    ).find(([n]) => n === name)?.[1];
 
-    if (!documentation || !nodes?.length && type !== 'home') error(404, 'Not found');
+    if (!documentation || !declarations?.length && type !== 'home') error(404, 'Not found');
 
-    const title = nodes?.length ? `${pkg}@${tag} | (${nodes[0].kind.substring(0, 1).toUpperCase()}) ${nodes[0].name}` : `${pkg}@${tag}`;
-    const description = markdownToTxt((nodes?.length ? nodes[0].jsDoc?.doc : documentation?.readme) || '');
+    const title = declarations?.length ? `${pkg}@${tag} | ${declarations[0].declaration.kind} ${declarations[0].symbol.name}` : `${pkg}@${tag}`;
+    const description = markdownToTxt((declarations?.length ? declarations[0].declaration.jsDoc?.doc : documentation?.readme) || '');
 
     return {
         package: pkg,
@@ -40,7 +42,7 @@ export async function load(data) {
         type: type || null,
         name: name || null,
         documentation,
-        nodes,
+        declarations,
         ...definePageMetaTags({
             title,
             description,
@@ -54,7 +56,7 @@ export async function load(data) {
             }
         }),
         metadata: {
-            title: nodes?.length ? nodes[0].name : `${pkg}@${tag}`
+            title: declarations?.length ? declarations[0].symbol.name : `${pkg}@${tag}`
         },
         sidebarData: {
             header: {
@@ -106,59 +108,31 @@ export async function load(data) {
                             },
                             Classes: {
                                 icon: DocTypeIcons[DocType.Class],
-                                links: documentation.classes.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'class')
                             },
                             Namespaces: {
                                 icon: DocTypeIcons[DocType.Namespace],
-                                links: documentation.namespaces.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'namespace')
                             },
                             Functions: {
                                 icon: DocTypeIcons[DocType.Function],
-                                links: documentation.functions.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'function')
                             },
                             Variables: {
                                 icon: DocTypeIcons[DocType.Variable],
-                                links: documentation.variables.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'variable')
                             },
                             Enums: {
                                 icon: DocTypeIcons[DocType.Enum],
-                                links: documentation.enums.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'enum')
                             },
                             Interfaces: {
                                 icon: DocTypeIcons[DocType.Interface],
-                                links: documentation.interfaces.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'interface')
                             },
                             Types: {
                                 icon: DocTypeIcons[DocType.TypeAlias],
-                                links: documentation.types.map(n => ({
-                                    label: n.name,
-                                    deprecated: !!documentation.getJsdocTag(n, 'deprecated'),
-                                    href: documentation.resolveNodeLink(n)
-                                }))
+                                links: getDeclarationSidebarLinks(documentation, 'typeAlias')
                             }
                         }
                     }
@@ -166,4 +140,15 @@ export async function load(data) {
             }
         } satisfies SidebarData
     };
+}
+
+function getDeclarationSidebarLinks(documentation: Documentation, kind: DocNodeKind) {
+    return Object.entries(documentation.getDeclarations(kind))
+        .map(([name, data]) => data
+            .map(({ symbol, declaration }) => ({
+                label: symbol.name,
+                deprecated: !!documentation.getJsdocTag(declaration, 'deprecated'),
+                href: documentation.getDeclarationPath(name, declaration)
+            }))
+        ).flat();
 }

@@ -3,7 +3,7 @@ import { Documentation } from '$lib/helpers/classes/Documentation.svelte';
 import { error, redirect } from '@sveltejs/kit';
 
 export async function load(data) {
-    const pkg = (await Documentation.fetchPackages()).includes(data.params.package) ? data.params.package : null;
+    const pkg = (await Documentation.fetchPackages(data.fetch)).includes(data.params.package) ? data.params.package : null;
     if (!pkg) throw error(404, 'Not found');
 
     const tags = await Documentation.fetchTags(pkg);

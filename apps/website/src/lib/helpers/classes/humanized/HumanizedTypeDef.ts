@@ -7,47 +7,45 @@ export class HumanizedTypeDef extends BaseHumanized {
     public humanize(type: TsTypeDef): this {
         switch (type.kind) {
             case 'keyword':
-                this.addToken(type.keyword);
+                this.addToken(type.value);
                 break;
             case 'literal':
-                this.addToken(type.literal.kind === 'string' ? `"${type.literal.string}"` : type.repr);
+                this.addToken(type.value.kind === 'string' ? `"${type.value.string}"` : type.repr ?? '');
                 break;
             case 'typeRef':
-                const typeRefName = this.normalizeBracketedName(type.typeRef.typeName);
+                const typeRefName = this.normalizeBracketedName(type.value.typeName);
 
-                this.addToken({ value: typeRefName, href: this.documentation?.getTypeLink(typeRefName) });
+                this.addToken({ value: typeRefName, href: this.documentation?.getTypePath(typeRefName) });
 
-                if (type.typeRef.typeParams?.length) {
-                    this.addToken(new HumanizedTypeParams(this).humanize(type.typeRef.typeParams), true);
+                if (type.value.typeParams?.length) {
+                    this.addToken(new HumanizedTypeParams(this).humanize(type.value.typeParams), true);
                 }
                 break;
             case 'union':
             case 'intersection':
-                const nOru = type.kind === 'union' ? type.union : type.intersection;
-
-                for (const i in nOru) {
-                    const subType = nOru[Number(i)];
+                for (const i in type.value) {
+                    const subType = type.value[Number(i)];
 
                     this.addToken(new HumanizedTypeDef(this).humanize(subType), true);
 
-                    if (nOru.length > 1 && Number(i) < nOru.length - 1) {
+                    if (type.value.length > 1 && Number(i) < type.value.length - 1) {
                         this.addToken(type.kind === 'union' ? '|' : '&', true);
                     }
                 }
                 break;
             case 'array':
-                this.addToken(new HumanizedTypeDef(this).humanize(type.array));
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value));
                 this.addToken('[]', true);
                 break;
             case 'tuple':
                 this.addToken('[');
 
-                for (const i in type.tuple) {
-                    const subType = type.tuple[Number(i)];
+                for (const i in type.value) {
+                    const subType = type.value[Number(i)];
 
                     this.addToken(new HumanizedTypeDef(this).humanize(subType));
 
-                    if (type.tuple.length > 1 && Number(i) < type.tuple.length - 1) {
+                    if (type.value.length > 1 && Number(i) < type.value.length - 1) {
                         this.addToken([',', ' '], true);
                     }
                 }
@@ -55,17 +53,17 @@ export class HumanizedTypeDef extends BaseHumanized {
                 this.addToken(']');
                 break
             case 'conditional':
-                this.addToken(new HumanizedTypeDef(this).humanize(type.conditionalType.checkType));
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value.checkType));
                 this.addToken('?');
-                this.addToken(new HumanizedTypeDef(this).humanize(type.conditionalType.trueType));
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value.trueType));
                 this.addToken(':');
-                this.addToken(new HumanizedTypeDef(this).humanize(type.conditionalType.falseType));
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value.falseType));
                 break;
             case 'typeLiteral':
                 this.addToken('{');
 
-                for (const i in type.typeLiteral.properties) {
-                    const property = type.typeLiteral.properties[Number(i)];
+                for (const i in type.value.properties) {
+                    const property = type.value.properties[Number(i)];
 
                     this.addToken(property.name);
                     this.addToken(':', true);
@@ -85,62 +83,62 @@ export class HumanizedTypeDef extends BaseHumanized {
                 break;
             case 'parenthesized':
                 this.addToken('(');
-                this.addToken(new HumanizedTypeDef(this).humanize(type.parenthesized), true);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value), true);
                 this.addToken(')', true);
                 break;
             case 'typeOperator':
-                this.addToken(type.typeOperator.operator);
-                this.addToken(new HumanizedTypeDef(this).humanize(type.typeOperator.tsType));
+                this.addToken(type.value.operator);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value.tsType));
                 break;
             case 'rest':
                 this.addToken('...');
-                this.addToken(new HumanizedTypeDef(this).humanize(type.rest), true);
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value), true);
                 break;
             case 'optional':
-                this.addToken(new HumanizedTypeDef(this).humanize(type.optional));
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value));
                 this.addToken('?', true);
                 break;
             case 'this':
                 this.addToken('this');
                 break;
             case 'typeQuery':
-                this.addToken(type.typeQuery);
+                this.addToken(type.value);
                 break;
             case 'fnOrConstructor':
-                if (type.fnOrConstructor.constructor) {
+                if (type.value.constructor) {
                     this.addToken('new');
                 }
 
                 this.addToken([
                     ...(
-                        type.fnOrConstructor.typeParams.length
-                            ? new HumanizedTypeParams(this).humanize(type.fnOrConstructor.typeParams).tokens
+                        type.value.typeParams && type.value.typeParams.length
+                            ? new HumanizedTypeParams(this).humanize(type.value.typeParams).tokens
                             : []
                     ),
                     '(',
-                    ...new HumanizedParams(this).humanize(type.fnOrConstructor.params).tokens,
+                    ...new HumanizedParams(this).humanize(type.value.params).tokens,
                     ')'
                 ]);
 
-                if (type.fnOrConstructor.tsType) {
+                if (type.value.tsType) {
                     this.addToken('=>');
-                    this.addToken(new HumanizedTypeDef(this).humanize(type.fnOrConstructor.tsType));
+                    this.addToken(new HumanizedTypeDef(this).humanize(type.value.tsType));
                 }
                 break;
             case 'typePredicate':
-                if (type.typePredicate.asserts) {
+                if (type.value.asserts) {
                     this.addToken('asserts');
                 }
 
-                this.addToken(type.typePredicate.param.type === 'identifier' ? type.typePredicate.param.name ?? 'this' : 'this');
+                this.addToken(type.value.param.type === 'identifier' ? type.value.param.name ?? 'this' : 'this');
                 this.addToken('is');
-                this.addToken(type.typePredicate.type ? new HumanizedTypeDef(this).humanize(type.typePredicate.type) : 'unknown');
+                this.addToken(type.value.type ? new HumanizedTypeDef(this).humanize(type.value.type) : 'unknown');
                 break;
             case 'indexedAccess':
-                this.addToken(new HumanizedTypeDef(this).humanize(type.indexedAccess.objType));
+                this.addToken(new HumanizedTypeDef(this).humanize(type.value.objType));
                 this.addToken([
                         '[',
-                        new HumanizedTypeDef(this).humanize(type.indexedAccess.indexType),
+                        new HumanizedTypeDef(this).humanize(type.value.indexType),
                         ']'
                     ],
                     true
@@ -148,31 +146,31 @@ export class HumanizedTypeDef extends BaseHumanized {
                 break;
             case 'infer':
                 this.addToken('infer');
-                this.addToken(new HumanizedTypeParams(this).humanize([type.infer.typeParam], true));
+                this.addToken(new HumanizedTypeParams(this).humanize([type.value.typeParam], true));
                 break;
             case 'mapped':
-                if (type.mappedType.readonly) {
+                if (type.value.readonly) {
                     this.addToken(
-                        `${typeof type.mappedType.readonly === 'string' ? type.mappedType.readonly : ''}readonly`
+                        `${typeof type.value.readonly === 'string' ? type.value.readonly : ''}readonly`
                     );
                 }
 
                 this.addToken([
                     '[',
-                    new HumanizedTypeParams(this).humanize([type.mappedType.typeParam], true),
-                    ...(type.mappedType.nameType
+                    new HumanizedTypeParams(this).humanize([type.value.typeParam], true),
+                    ...(type.value.nameType
                         ? [
                             ' ', 'as', ' ',
-                            new HumanizedTypeDef(this).humanize(type.mappedType.nameType)
+                            new HumanizedTypeDef(this).humanize(type.value.nameType)
                         ]
                         : []
                     ),
                     ']'
                 ]);
 
-                if (type.mappedType.optional) {
+                if (type.value.optional) {
                     this.addToken(
-                        `${typeof type.mappedType.optional === 'string' ? type.mappedType.optional : ''}optional`
+                        `${typeof type.value.optional === 'string' ? type.value.optional : ''}optional`
                         , true
                     );
                 }

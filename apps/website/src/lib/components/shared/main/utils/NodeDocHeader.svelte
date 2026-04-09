@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { DocNode } from '@deno/doc';
+    import type { Declaration, Symbol } from '@deno/doc';
     import { DocTypeIcons, proseClasses } from '$lib/helpers/constants';
     import { DocType } from '$lib/helpers/types';
     import { HumanizedNode } from '$lib/helpers/classes/humanized/HumanizedNode';
@@ -11,39 +11,42 @@
     import SourceButton from './SourceButton.svelte';
 
     let {
-        node,
+        symbol,
+        declaration,
         removeIcon = false
     }: {
-        node: DocNode;
+        symbol: Symbol;
+        declaration: Declaration;
         removeIcon?: boolean;
     } = $props();
 
     const docState = documentationState.get();
-
-    let Icon = $derived(DocTypeIcons[node.kind as DocType]);
 </script>
 
 <section>
     <div class="grid mb-4">
-        <span class:ml-8={!removeIcon} class="text-sm font-normal text-muted-foreground">{node.kind}</span>
+        <span class:ml-8={!removeIcon} class="text-sm font-normal text-muted-foreground">
+            {declaration.kind}
+        </span>
         <div class="flex gap-2 items-center overflow-hidden">
             {#if !removeIcon}
+                {@const Icon = DocTypeIcons[declaration.kind as DocType]}
                 <Icon class="shrink-0"/>
             {/if}
             <h1 class="text-2xl font-bold truncate">
-                {node.name}
+                {symbol.name}
             </h1>
-            <SourceButton location={node.location}/>
+            <SourceButton location={declaration.location}/>
         </div>
     </div>
-    <TokensCodeBlock tokens={new HumanizedNode(docState).humanize(node).tokens}/>
+    <TokensCodeBlock tokens={new HumanizedNode(docState).humanize(symbol, declaration).tokens}/>
     <DocAccordion
         title="Summary"
         icon={TextAlignStartIcon}
         class="mt-4"
     >
         <div class={proseClasses}>
-            <Markdown content={node.jsDoc?.doc ?? 'No summary provided'}/>
+            <Markdown content={declaration.jsDoc?.doc ?? 'No summary provided'}/>
         </div>
     </DocAccordion>
 </section>

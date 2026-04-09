@@ -1,36 +1,33 @@
 <script lang="ts">
-    import type { DocNode, DocNodeNamespace } from '@deno/doc';
+    import type { DeclarationNamespace, Symbol } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
     import TableOfContents from '../utils/TableOfContents.svelte';
-    import { documentationState } from '../../../../helpers/contexts';
+    import ElementDoc from '../utils/NamespaceElementDoc.svelte';
     import { filterArrayDuplicate } from '../../../../helpers/utils';
-    import ElementDoc from '../utils/ElementDoc.svelte';
 
     let {
-        node,
+        symbol,
+        declaration,
         tiny = false
     }: {
-        node: DocNodeNamespace;
+        symbol: Symbol;
+        declaration: DeclarationNamespace;
         tiny?: boolean;
     } = $props();
 
-    const docState = documentationState.get();
-
-    let elements: DocNode[] = $derived(
-        filterArrayDuplicate(
-            node.namespaceDef.elements,
-            (data) => data.items.findIndex(item => item.name === data.item.name && item.kind === data.item.kind) === data.index
-        )
-    );
+    let symbols: Symbol[] = $derived(declaration.def.elements);
 </script>
 
 <section class="mt-2 flex flex-col gap-2">
-    <NodeDocHeader {node} removeIcon={tiny}/>
-    <TableOfContents {elements} open={!tiny}/>
+    <NodeDocHeader {symbol} {declaration} removeIcon={tiny}/>
+    <TableOfContents elements={symbols} open={!tiny}/>
 </section>
 
 <section class="mt-2 flex flex-col gap-2">
-    {#each elements as element}
-        <ElementDoc {element} namespace={node}/>
+    {#each symbols as symbol}
+        {@const declarations = filterArrayDuplicate(symbol.declarations, 'kind')}
+        {#each declarations as declaration}
+            <ElementDoc {symbol} {declaration}/>
+        {/each}
     {/each}
 </section>

@@ -11,7 +11,7 @@
     import VariablePage from '$lib/components/shared/main/docs/VariablePage.svelte';
     import { proseClasses } from '$lib/helpers/constants';
     import Markdown from '$lib/components/shared/main/utils/Markdown.svelte';
-    import SearchDialog, { fromSidebarGroups, type SearchData } from '../../../../../../lib/components/shared/main/SearchDialog.svelte';
+    import SearchDialog, { fromSidebarGroups, type SearchData } from '$lib/components/shared/main/SearchDialog.svelte';
     import Fuse from 'fuse.js';
 
     let { data } = $props();
@@ -59,22 +59,26 @@
         <Markdown content={data.documentation.readme}/>
     </article>
 {:else}
-    {@const node = data.nodes?.[0]}
-    <div class="size-full p-4">
-        {#if node?.kind === 'class'}
-            <ClassPage {node}/>
-        {:else if node?.kind === 'namespace'}
-            <NamespacePage {node}/>
-        {:else if node?.kind === 'enum'}
-            <EnumPage {node}/>
-        {:else if node?.kind === 'interface'}
-            <InterfacePage {node}/>
-        {:else if node?.kind === 'function'}
-            <FunctionPage nodes={data.nodes!.filter(n => n.kind === 'function')}/>
-        {:else if node?.kind === 'typeAlias'}
-            <TypeAliasPage {node}/>
-        {:else if node?.kind === 'variable'}
-            <VariablePage {node}/>
-        {/if}
-    </div>
+    {@const node = data.declarations?.[0]}
+    {#if node}
+        {@const symbol = node.symbol}
+        {@const declaration = node.declaration}
+        <div class="size-full p-4">
+            {#if declaration.kind === 'class'}
+                <ClassPage {symbol} {declaration}/>
+            {:else if declaration.kind === 'namespace'}
+                <NamespacePage {symbol} {declaration}/>
+            {:else if declaration.kind === 'enum'}
+                <EnumPage {symbol} {declaration}/>
+            {:else if declaration.kind === 'interface'}
+                <InterfacePage {symbol} {declaration}/>
+            {:else if declaration.kind === 'function'}
+                <FunctionPage {symbol} declarations={symbol.declarations.filter(d => d.kind === 'function')}/>
+            {:else if declaration.kind === 'typeAlias'}
+                <TypeAliasPage {symbol} {declaration}/>
+            {:else if declaration.kind === 'variable'}
+                <VariablePage {symbol} {declaration}/>
+            {/if}
+        </div>
+    {/if}
 {/if}

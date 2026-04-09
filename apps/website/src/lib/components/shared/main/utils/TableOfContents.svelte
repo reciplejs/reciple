@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ClassMethodDef, ClassPropertyDef, DocNode, EnumMemberDef, InterfaceMethodDef, InterfacePropertyDef } from '@deno/doc';
+    import type { ClassMethodDef, ClassPropertyDef, EnumMemberDef, InterfaceMethodDef, InterfacePropertyDef, Symbol } from '@deno/doc';
     import DocAccordion from './DocAccordion.svelte';
     import { BoxIcon, KeyIcon, Layers2Icon, LayoutListIcon, WrenchIcon } from '@lucide/svelte';
     import { Button } from '$lib/components/ui/button';
@@ -14,7 +14,7 @@
     }: {
         methods?: (ClassMethodDef|InterfaceMethodDef)[];
         properties?: (ClassPropertyDef|InterfacePropertyDef)[];
-        elements?: DocNode[];
+        elements?: Symbol[];
         members?: EnumMemberDef[];
         open?: boolean;
     } = $props();
@@ -41,28 +41,28 @@
             {#if methods.length}
                 <DocAccordion icon={BoxIcon} title="Methods" contentClass="border-b-0" triggerClass="bg-secondary/60">
                     {#each methods as method}
-                        {@render LinkButton(`${method.name}${method.optional ? '?' : ''}`, `#${docState.documentation.getElementSlug(method)}`)}
+                        {@render LinkButton(`${method.name}${method.optional ? '?' : ''}`, `#${docState.documentation.getElementSlug(method.name, method)}`)}
                     {/each}
                 </DocAccordion>
             {/if}
             {#if properties.length}
                 <DocAccordion icon={WrenchIcon} title="Properties" contentClass="border-b-0" triggerClass="bg-secondary/60">
                     {#each properties as property}
-                        {@render LinkButton(`${property.name}${property.optional ? '?' : ''}`, `#${docState.documentation.getElementSlug(property)}`)}
+                        {@render LinkButton(`${property.name}${property.optional ? '?' : ''}`, `#${docState.documentation.getElementSlug(property.name, property)}`)}
                     {/each}
                 </DocAccordion>
             {/if}
             {#if elements.length}
                 <DocAccordion icon={Layers2Icon} title="Elements" contentClass="border-b-0" triggerClass="bg-secondary/60">
-                    {#each elements as element}
-                        {@render LinkButton(element.name, `#${docState.documentation.getElementSlug(element)}`)}
+                    {#each elements as symbol}
+                        {@render LinkButton(symbol.name, `#${docState.documentation.getElementSlug(symbol.name, symbol)}`)}
                     {/each}
                 </DocAccordion>
             {/if}
             {#if members.length}
                 <DocAccordion icon={KeyIcon} title="Members" contentClass="border-b-0" triggerClass="bg-secondary/60">
                     {#each members as member}
-                        {@render LinkButton(member.name, `#${docState.documentation.getElementSlug(member)}`)}
+                        {@render LinkButton(member.name, `#${docState.documentation.getElementSlug(member.name, member)}`)}
                     {/each}
                 </DocAccordion>
             {/if}

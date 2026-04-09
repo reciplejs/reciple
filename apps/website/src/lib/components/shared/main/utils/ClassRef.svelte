@@ -11,11 +11,11 @@
 
     const docState = documentationState.get();
 
-    let classRef = $derived(docState.documentation.classes.find(node => node.name === name));
+    let classRef = $derived(docState.documentation.find(name, 'class'));
 </script>
 
 {#if classRef}
-    <HumanizedTokens tokens={new HumanizedNode(docState).humanize(classRef).tokens}/>
+    <HumanizedTokens tokens={new HumanizedNode(docState).humanize(classRef.symbol, classRef.declaration).tokens}/>
 {:else}
     <span>{name}</span>
 {/if}

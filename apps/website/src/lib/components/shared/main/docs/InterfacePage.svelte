@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { DocNodeInterface } from '@deno/doc';
+    import type { DeclarationInterface, Symbol } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
     import TableOfContents from '../utils/TableOfContents.svelte';
     import DocAccordion from '../utils/DocAccordion.svelte';
@@ -9,19 +9,21 @@
     import PropertyDoc from '../utils/PropertyDoc.svelte';
 
     let {
-        node,
+        symbol,
+        declaration,
         tiny = false
     }: {
-        node: DocNodeInterface;
+        symbol: Symbol;
+        declaration: DeclarationInterface;
         tiny?: boolean;
     } = $props();
 
-    let methods = $derived(filterArrayDuplicate(node.interfaceDef.methods, 'name'));
-    let properties = $derived(filterArrayDuplicate(node.interfaceDef.properties, 'name'));
+    let methods = $derived(filterArrayDuplicate(declaration.def.methods ?? [], 'name'));
+    let properties = $derived(filterArrayDuplicate(declaration.def.properties ?? [], 'name'));
 </script>
 
 <section class="mt-2 flex flex-col gap-2">
-    <NodeDocHeader {node} removeIcon={tiny}/>
+    <NodeDocHeader {symbol} {declaration} removeIcon={tiny}/>
     <TableOfContents {methods} {properties} open={!tiny}/>
 </section>
 {#if methods.length}
@@ -34,8 +36,10 @@
         >
             <div class="w-full flex flex-col gap-5">
                 {#each methods as method, index}
-                    {@const overloads = node.interfaceDef.methods.filter(m => m.name === method.name)}
-                    <MethodDoc {overloads} addSeparator={index !== methods.length - 1}/>
+                    {@const overloads = declaration.def.methods?.filter(m => m.name === method.name)}
+                    {#if overloads}
+                        <MethodDoc {overloads} addSeparator={index !== methods.length - 1}/>
+                    {/if}
                 {/each}
             </div>
         </DocAccordion>

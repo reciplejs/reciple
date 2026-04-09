@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { DocNodeFunction } from '@deno/doc';
+    import type { DeclarationFunction, Symbol } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
     import { proseClasses } from '$lib/helpers/constants';
     import ParamsTable from '../utils/ParamsTable.svelte';
@@ -11,35 +11,37 @@
     import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
 
     let {
-        nodes,
+        symbol,
+        declarations,
         tiny = false
     }: {
-        nodes: DocNodeFunction[];
+        symbol: Symbol;
+        declarations: DeclarationFunction[];
         tiny?: boolean;
     } = $props();
 
     const docState = documentationState.get();
 </script>
 
-<OverloadSwitcher data={nodes}>
+<OverloadSwitcher data={declarations}>
     {#snippet children({ item })}
-        <NodeDocHeader node={item} removeIcon={tiny}/>
+        <NodeDocHeader {symbol} declaration={item} removeIcon={tiny}/>
         <section class="mt-2 flex flex-col gap-2">
-            {#if item.functionDef.params.length}
+            {#if item.def.params.length}
                 <DocAccordion
                     open={!tiny}
                     icon={ParenthesesIcon}
                     title="Parameters"
                 >
                     <div class={proseClasses}>
-                        <ParamsTable jsDoc={item.jsDoc} params={item.functionDef.params} class="mt-5"/>
-                        {#if item.functionDef.returnType}
+                        <ParamsTable jsDoc={item.jsDoc} params={item.def.params} class="mt-5"/>
+                        {#if item.def.returnType}
                             <div>
                                 <p class="text-muted-foreground text-sm mt-2!">
                                     <b>Returns:</b>
                                     <TokensCodeBlock
                                         class="inline-block p-0 border-0"
-                                        tokens={new HumanizedTypeDef(docState).humanize(item.functionDef.returnType).tokens}
+                                        tokens={new HumanizedTypeDef(docState).humanize(item.def.returnType).tokens}
                                     />
                                 </p>
                             </div>

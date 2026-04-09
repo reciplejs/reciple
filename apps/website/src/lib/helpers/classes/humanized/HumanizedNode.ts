@@ -1,11 +1,11 @@
-import type { DocNode, DocNodeClass, DocNodeEnum, DocNodeFunction, DocNodeInterface, DocNodeNamespace, DocNodeTypeAlias, DocNodeVariable } from '@deno/doc';
+import type { Declaration, DeclarationClass, DeclarationEnum, DeclarationFunction, DeclarationInterface, DeclarationNamespace, DeclarationTypeAlias, DeclarationVariable, Symbol } from '@deno/doc';
 import { BaseHumanized } from './BaseHumanized';
 import { HumanizedTypeParams } from './HumanizedTypeParams';
 import { HumanizedTypeDef } from './HumanizedTypeDef';
 import { HumanizedParams } from './HumanizedParams';
 
 export class HumanizedNode extends BaseHumanized {
-    public humanize(type: DocNode): this {
+    public humanize(symbol: Symbol, type: Declaration): this {
         switch (type.declarationKind) {
             case 'private':
                 break;
@@ -17,129 +17,127 @@ export class HumanizedNode extends BaseHumanized {
 
         switch (type.kind) {
             case 'function':
-                this.humanizeFunction(type);
+                this.humanizeFunction(symbol, type);
                 break;
             case 'class':
-                this.humanizeClass(type);
+                this.humanizeClass(symbol, type);
                 break;
             case 'variable':
-                this.humanizeVariable(type);
+                this.humanizeVariable(symbol, type);
                 break;
             case 'enum':
-                this.humanizeEnum(type);
+                this.humanizeEnum(symbol, type);
                 break;
             case 'typeAlias':
-                this.humanizeTypeAlias(type);
+                this.humanizeTypeAlias(symbol, type);
                 break;
             case 'namespace':
-                this.humanizeNamespace(type);
+                this.humanizeNamespace(symbol, type);
                 break;
             case 'interface':
-                this.humanizeInterface(type);
+                this.humanizeInterface(symbol, type);
                 break;
-            case 'moduleDoc':
-            case 'import':
                 break;
         }
 
         return this;
     }
 
-    public humanizeFunction(type: DocNodeFunction): void {
-        if (type.functionDef.isAsync) this.addToken('async');
+    public humanizeFunction(symbol: Symbol, type: DeclarationFunction): void {
+        if (type.def.isAsync) this.addToken('async');
 
-        this.addToken(type.functionDef.isGenerator ? 'function*' : 'function');
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+        this.addToken(type.def.isGenerator ? 'function*' : 'function');
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
 
-        if (type.functionDef.typeParams.length) {
-            this.addToken(new HumanizedTypeParams(this).humanize(type.functionDef.typeParams), true);
+        if (type.def.typeParams?.length) {
+            this.addToken(new HumanizedTypeParams(this).humanize(type.def.typeParams), true);
         }
 
-        this.addToken(new HumanizedParams(this).humanize(type.functionDef.params), true);
+        this.addToken(new HumanizedParams(this).humanize(type.def.params), true);
 
-        if (type.functionDef.returnType) {
+        if (type.def.returnType) {
             this.addToken(':', true);
-            this.addToken(new HumanizedTypeDef(this).humanize(type.functionDef.returnType));
+            this.addToken(new HumanizedTypeDef(this).humanize(type.def.returnType));
         }
     }
 
-    public humanizeClass(type: DocNodeClass): void {
-        if (type.classDef.isAbstract) this.addToken('abstract');
+    public humanizeClass(symbol: Symbol, type: DeclarationClass): void {
+        if (type.def.isAbstract) this.addToken('abstract');
 
         this.addToken('class');
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
 
-        if (type.classDef.typeParams.length) {
-            this.addToken(new HumanizedTypeParams(this).humanize(type.classDef.typeParams), true);
+        if (type.def.typeParams?.length) {
+            this.addToken(new HumanizedTypeParams(this).humanize(type.def.typeParams), true);
         }
 
-        if (type.classDef.extends) {
+        if (type.def.extends) {
             this.addToken('extends');
-            this.addToken({ value: type.classDef.extends, href: this.documentation?.getTypeLink(type.classDef.extends) });
+            this.addToken({ value: type.def.extends, href: this.documentation?.getSymbolPath(symbol, type) });
         }
 
-        if (type.classDef.implements.length) {
+        if (type.def.implements?.length) {
             this.addToken('implements');
 
-            for (const i in type.classDef.implements) {
-                this.addToken(new HumanizedTypeDef(this).humanize(type.classDef.implements[Number(i)]), Number(i) > 0);
+            for (const i in type.def.implements) {
+                this.addToken(new HumanizedTypeDef(this).humanize(type.def.implements[Number(i)]), Number(i) > 0);
 
-                if (Number(i) < type.classDef.implements.length - 1) {
+                if (Number(i) < type.def.implements.length - 1) {
                     this.addToken([',', ' '], true);
                 }
             }
         }
     }
 
-    public humanizeVariable(type: DocNodeVariable): void {
-        this.addToken(type.variableDef.kind);
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+    public humanizeVariable(symbol: Symbol, type: DeclarationVariable): void {
+        this.addToken(type.def.kind);
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
 
-        if (type.variableDef.tsType) {
+        if (type.def.tsType) {
             this.addToken(':', true);
-            this.addToken(new HumanizedTypeDef(this).humanize(type.variableDef.tsType));
+            this.addToken(new HumanizedTypeDef(this).humanize(type.def.tsType));
         }
     }
 
-    public humanizeEnum(type: DocNodeEnum): void {
+    public humanizeEnum(symbol: Symbol, type: DeclarationEnum): void {
         this.addToken('enum');
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
         // Doesn't support multi line
     }
 
-    public humanizeTypeAlias(type: DocNodeTypeAlias): void {
+    public humanizeTypeAlias(symbol: Symbol, type: DeclarationTypeAlias): void {
         this.addToken('type');
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
 
-        if (type.typeAliasDef.typeParams.length) {
-            this.addToken(new HumanizedTypeParams(this).humanize(type.typeAliasDef.typeParams), true);
+        if (type.def.typeParams?.length) {
+            this.addToken(new HumanizedTypeParams(this).humanize(type.def.typeParams), true);
         }
 
         this.addToken('=');
-        this.addToken(new HumanizedTypeDef(this).humanize(type.typeAliasDef.tsType));
+        this.addToken(new HumanizedTypeDef(this).humanize(type.def.tsType));
     }
 
-    public humanizeNamespace(type: DocNodeNamespace): void {
+    public humanizeNamespace(symbol: Symbol, type: DeclarationNamespace): void {
         this.addToken('namespace');
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
         // Doesn't support multi line
     }
 
-    public humanizeInterface(type: DocNodeInterface): void {
+    public humanizeInterface(symbol: Symbol, type: DeclarationInterface): void {
         this.addToken('interface');
-        this.addToken({ value: type.name, href: this.documentation?.getTypeLink(type) });
+        this.addToken({ value: symbol.name, href: this.documentation?.getSymbolPath(symbol, type) });
 
-        if (type.interfaceDef.typeParams.length) {
-            this.addToken(new HumanizedTypeParams(this).humanize(type.interfaceDef.typeParams), true);
+        if (type.def.typeParams?.length) {
+            this.addToken(new HumanizedTypeParams(this).humanize(type.def.typeParams), true);
         }
 
-        if (type.interfaceDef.extends.length) {
+        if (type.def.extends?.length) {
             this.addToken('extends');
 
-            for (const i in type.interfaceDef.extends) {
-                this.addToken(new HumanizedTypeDef(this).humanize(type.interfaceDef.extends[Number(i)]), Number(i) > 0);
+            for (const i in type.def.extends) {
+                this.addToken(new HumanizedTypeDef(this).humanize(type.def.extends[Number(i)]), Number(i) > 0);
 
-                if (Number(i) < type.interfaceDef.extends.length - 1) {
+                if (Number(i) < type.def.extends.length - 1) {
                     this.addToken([',', ' '], true);
                 }
             }

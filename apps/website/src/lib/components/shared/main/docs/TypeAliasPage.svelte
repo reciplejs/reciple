@@ -1,16 +1,18 @@
 <script lang="ts">
-    import type { DocNodeTypeAlias } from '@deno/doc';
+    import type { DeclarationTypeAlias, Symbol } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
 
     let {
-        node,
+        symbol,
+        declaration,
         tiny = false
     }: {
-        node: DocNodeTypeAlias;
+        symbol: Symbol;
+        declaration: DeclarationTypeAlias;
         tiny?: boolean;
     } = $props();
 </script>
 
 <section class="mt-2">
-    <NodeDocHeader {node} removeIcon={tiny}/>
+    <NodeDocHeader {symbol} {declaration} removeIcon={tiny}/>
 </section>

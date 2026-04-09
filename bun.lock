@@ -16,7 +16,7 @@
     "apps/website": {
       "name": "@reciple/website",
       "dependencies": {
-        "@deno/doc": "npm:@jsr/deno__doc",
+        "@deno/doc": "npm:@jsr/deno__doc@0.197.0",
         "@skyra/discord-components-core": "^4.0.2",
         "fuse.js": "^7.3.0",
         "github-slugger": "^2.0.0",
@@ -193,7 +193,7 @@
 
     "@clack/prompts": ["@clack/prompts@1.2.0", "", { "dependencies": { "@clack/core": "1.2.0", "fast-string-width": "^1.1.0", "fast-wrap-ansi": "^0.1.3", "sisteransi": "^1.0.5" } }, "sha512-4jmztR9fMqPMjz6H/UZXj0zEmE43ha1euENwkckKKel4XpSfokExPo5AiVStdHSAlHekz4d0CA/r45Ok1E4D3w=="],
 
-    "@deno/doc": ["@jsr/deno__doc@0.194.0", "https://npm.jsr.io/~/11/@jsr/deno__doc/0.194.0.tgz", { "dependencies": { "@jsr/deno__cache-dir": "^0.25.0", "@jsr/deno__graph": "^0.100" } }, "sha512-9wANsKB25s0esDVqBgcpwlUvOaANwPxU2UIkUwmfbNUJd+/sL6Lt4cnKBMwp+BnB5RnJEWHCQ0H7zkLgPbsiHQ=="],
+    "@deno/doc": ["@jsr/deno__doc@0.197.0", "https://npm.jsr.io/~/11/@jsr/deno__doc/0.197.0.tgz", { "dependencies": { "@jsr/deno__cache-dir": "^0.25.0", "@jsr/deno__graph": "^0.100" } }, "sha512-MmfLq1sLQ1oansmzun1koQX8pZ3kQM8E9kfJ1jzj8I8E05SaHq8t7zO6+cdFsrAITjBSSyZi4oEQ0kMDSz0w1w=="],
 
     "@discordjs/builders": ["@discordjs/builders@1.14.1", "", { "dependencies": { "@discordjs/formatters": "^0.6.2", "@discordjs/util": "^1.2.0", "@sapphire/shapeshift": "^4.0.0", "discord-api-types": "^0.38.40", "fast-deep-equal": "^3.1.3", "ts-mixer": "^6.0.4", "tslib": "^2.6.3" } }, "sha512-gSKkhXLqs96TCzk66VZuHHl8z2bQMJFGwrXC0f33ngK+FLNau4hU1PYny3DNJfNdSH+gVMzE85/d5FQ2BpcNwQ=="],
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { DocNodeEnum } from '@deno/doc';
+    import type { DeclarationEnum, EnumMemberDef, Symbol } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
     import TableOfContents from '../utils/TableOfContents.svelte';
     import DocAccordion from '../utils/DocAccordion.svelte';
@@ -13,20 +13,29 @@
     import { Separator } from '../../../ui/separator';
 
     let {
-        node,
+        symbol,
+        declaration,
         tiny = false
     }: {
-        node: DocNodeEnum;
+        symbol: Symbol;
+        declaration: DeclarationEnum;
         tiny?: boolean;
     } = $props();
 
     const docState = documentationState.get();
 
-    let members = $derived(node.enumDef.members);
+    let members = $derived(getEnumMembers(declaration));
+</script>
+
+<script module>
+    export function getEnumMembers(declaration: DeclarationEnum): EnumMemberDef[] {
+        // @ts-expect-error
+        return declaration.def.members ?? declaration.enumDef.members ?? [];
+    }
 </script>
 
 <section class="mt-2 flex flex-col gap-2">
-    <NodeDocHeader {node} removeIcon={tiny}/>
+    <NodeDocHeader {symbol} {declaration} removeIcon={tiny}/>
     <TableOfContents {members} open={!tiny}/>
 </section>
 {#if members.length}
@@ -39,7 +48,7 @@
         >
             <div class="w-full flex flex-col gap-5">
                 {#each members as member, index}
-                    {@const slugId = docState.documentation.getElementSlug(member)}
+                    {@const slugId = docState.documentation.getElementSlug(member.name, member)}
                     <div>
                         <div class="grid mb-2" id={slugId}>
                             <div class="flex flex-wrap gap-1">

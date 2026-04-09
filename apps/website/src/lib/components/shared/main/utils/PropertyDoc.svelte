@@ -21,7 +21,7 @@
 
     const docState = documentationState.get();
 
-    let slugId = $derived(docState.documentation.getElementSlug(item));
+    let slugId = $derived(docState.documentation.getElementSlug(item.name, item));
 </script>
 
 <script lang="ts" module>

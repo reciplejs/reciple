@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { ClassMethodDef, InterfaceMethodDef } from '@deno/doc';
+    import type { ClassMethodDef, FunctionDef, InterfaceMethodDef } from '@deno/doc';
     import type { HTMLAttributes } from 'svelte/elements';
     import OverloadSwitcher from './OverloadSwitcher.svelte';
     import { documentationState } from '$lib/helpers/contexts';
@@ -32,16 +32,21 @@
     export function isClassMethodDef(method: unknown): method is ClassMethodDef {
         return 'functionDef' in (method as ClassMethodDef);
     }
+
+    export function getMethodFunctionDef(method: ClassMethodDef): FunctionDef {
+        // @ts-expect-error
+        return method.def ?? method.functionDef!;
+    }
 </script>
 
 <div {...props}>
     <OverloadSwitcher data={overloads}>
         {#snippet children({ item, selectMenu })}
-            {@const slugId = docState.documentation.getElementSlug(item)}
-            {@const params = isClassMethodDef(item) ? item.functionDef.params : item.params}
-            {@const typeParams = isClassMethodDef(item) ? item.functionDef.typeParams : item.typeParams}
-            {@const returnType = isClassMethodDef(item) ? item.functionDef.returnType : item.returnType}
-            {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(typeParams)}
+            {@const slugId = docState.documentation.getElementSlug(item.name, item)}
+            {@const params = isClassMethodDef(item) ? getMethodFunctionDef(item).params : item.params}
+            {@const typeParams = isClassMethodDef(item) ? getMethodFunctionDef(item).typeParams : item.typeParams}
+            {@const returnType = isClassMethodDef(item) ? getMethodFunctionDef(item).returnType : item.returnType}
+            {@const humanizedTypeParams = new HumanizedTypeParams(docState).humanize(typeParams ?? [])}
             {@const humanizedParams = new HumanizedParams(docState).humanize(params)}
             <div class="grid mb-2" id={slugId}>
                 <div class="flex flex-wrap gap-1">
@@ -57,7 +62,7 @@
                     {#if isClassMethodDef(item) && item.kind !== 'method'}
                         <Badge>{item.kind.substring(0, 3)}</Badge>
                     {/if}
-                    {#if isClassMethodDef(item) && item.functionDef.isAsync}
+                    {#if isClassMethodDef(item) && getMethodFunctionDef(item).isAsync}
                         <Badge>async</Badge>
                     {/if}
                     <SourceButton location={item.location}/>
@@ -71,7 +76,7 @@
                 <TokensCodeBlock
                     tokens={[
                         item.name,
-                        ...(typeParams.length ? humanizedTypeParams.tokens : []
+                        ...(typeParams?.length ? humanizedTypeParams.tokens : []
                         ),
                         ...humanizedParams.tokens,
                         ...(returnType

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { DocNodeClass } from '@deno/doc';
+    import type { DeclarationClass, Symbol } from '@deno/doc';
     import NodeDocHeader from '../utils/NodeDocHeader.svelte';
     import DocAccordion from '../utils/DocAccordion.svelte';
     import { BoxIcon, WrenchIcon } from '@lucide/svelte';
@@ -11,34 +11,36 @@
     import { documentationState } from '$lib/helpers/contexts';
     import OverloadSwitcher from '../utils/OverloadSwitcher.svelte';
     import TableOfContents from '../utils/TableOfContents.svelte';
-    import { filterArrayDuplicate } from '$lib/helpers/utils';
     import MethodDoc from '../utils/MethodDoc.svelte';
     import PropertyDoc from '../utils/PropertyDoc.svelte';
+    import { filterArrayDuplicate } from '../../../../helpers/utils';
 
     let {
-        node,
+        symbol,
+        declaration,
         tiny = false
     }: {
-        node: DocNodeClass;
+        symbol: Symbol;
+        declaration: DeclarationClass;
         tiny?: boolean;
     } = $props();
 
     const docState = documentationState.get();
 
-    let methods = $derived(filterArrayDuplicate(node.classDef.methods, 'name'));
-    let properties  = $derived(filterArrayDuplicate(node.classDef.properties, 'name'));
+    let methods = $derived(filterArrayDuplicate(declaration.def.methods ?? [], 'name'));
+    let properties  = $derived(filterArrayDuplicate(declaration.def.properties ?? [], 'name'));
 </script>
 
-<NodeDocHeader {node} removeIcon={tiny}/>
+<NodeDocHeader {symbol} {declaration} removeIcon={tiny}/>
 
 <section class="mt-2 flex flex-col gap-2">
-    {#if node.classDef.constructors.length}
+    {#if declaration.def.constructors}
         <DocAccordion
             open={!tiny}
             icon={BoxIcon}
             title="Constructor"
         >
-            <OverloadSwitcher data={node.classDef.constructors}>
+            <OverloadSwitcher data={declaration.def.constructors}>
                 {#snippet children({ item })}
                     <div class={proseClasses}>
                         <Markdown content={item.jsDoc?.doc?.trim() ?? 'No summary provided'}/>
@@ -64,8 +66,10 @@
         >
             <div class="w-full flex flex-col gap-5">
                 {#each methods as method, index}
-                    {@const overloads = node.classDef.methods.filter(m => m.name === method.name)}
-                    <MethodDoc {overloads} addSeparator={index !== methods.length - 1}/>
+                    {@const overloads = declaration.def.methods?.filter(m => m.name === method.name)}
+                    {#if overloads?.length}
+                        <MethodDoc {overloads} addSeparator={index !== methods.length - 1}/>
+                    {/if}
                 {/each}
             </div>
         </DocAccordion>
