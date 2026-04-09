@@ -277,6 +277,14 @@ export class TemplateBuilder {
             private: true,
             type: 'module',
             scripts: {
+                ...(
+                    this.typescript
+                        ? {
+                            check: 'tsc --noEmit',
+                            'check:watch': 'tsc --noEmit --watch'
+                        }
+                        : {}
+                ),
                 build: `reciple build`,
                 start: 'reciple start',
                 dev: 'nodemon',
