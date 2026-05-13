@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@prtty/prtty": "catalog:",
-    "pkg-types": "^2.3.0",
+    "pkg-types": "catalog:",
     "radash": "^12.1.1"
   },
   "publishConfig": {
