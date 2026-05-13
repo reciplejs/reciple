@@ -195,6 +195,7 @@ export namespace ConfigReader {
             platform: 'node',
             format: 'esm',
             unbundle: true,
+            workspace: false,
             deps: {
                 neverBundle: ['reciple', /^@reciple\//],
                 skipNodeModulesBundle: true
