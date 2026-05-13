@@ -27,7 +27,7 @@
     let members = $derived(getEnumMembers(declaration));
 </script>
 
-<script module>
+<script lang="ts" module>
     export function getEnumMembers(declaration: DeclarationEnum): EnumMemberDef[] {
         // @ts-expect-error
         return declaration.def.members ?? declaration.enumDef.members ?? [];
