@@ -74,6 +74,7 @@ export type BuildConfig = Omit<UserConfig,
     |'workspace'
     |'customLogger'
     |'logLevel'
-    |'deps'>;
+    |'deps'
+    |'workspace'>;
 
 export type ShardingConfig = Omit<ShardingManagerOptions, 'shardArgs'|'token'|'execArgv'>;

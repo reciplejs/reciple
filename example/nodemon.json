@@ -8,5 +8,5 @@
     "reciple.config.js",
     ".env"
   ],
-  "exec": "reciple --env ../.env start --build"
+  "exec": "../packages/reciple/dist/bin/reciple.mjs --env ../.env start --build"
 }
