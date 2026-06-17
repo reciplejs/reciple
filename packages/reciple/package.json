@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.5.1",
-    "@dotenvx/dotenvx": "^1.71.0",
+    "@dotenvx/dotenvx": "^1.73.1",
     "@prtty/print": "catalog:",
     "@prtty/prtty": "catalog:",
     "@reciple/utils": "workspace:^",
@@ -46,7 +46,7 @@
     "github-slugger": "^2.0.0",
     "jiti": "^2.7.0",
     "micromatch": "^4.0.8",
-    "nypm": "^0.6.6",
+    "nypm": "^0.6.7",
     "pkg-types": "catalog:",
     "tinyglobby": "^0.2.17",
     "ts-mixer": "^6.0.4",
@@ -57,7 +57,7 @@
     "@types/micromatch": "^4.0.10",
     "@types/node": "catalog:",
     "nodemon": "^3.1.14",
-    "rolldown": "^1.1.0",
+    "rolldown": "^1.1.1",
     "typescript": "catalog:"
   },
   "peerDependencies": {
