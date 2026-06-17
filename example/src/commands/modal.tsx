@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandModule, type SlashCommand } from "reciple";
-import { CheckboxGroup, CheckboxGroupOption, File, FileUpload, Label, Modal, RadioGroup, RadioGroupOption, Separator, TextDisplay, TextInput } from '@reciple/jsx';
+import { Checkbox, CheckboxGroup, CheckboxGroupOption, File, FileUpload, Label, Modal, RadioGroup, RadioGroupOption, Separator, TextDisplay, TextInput } from '@reciple/jsx';
 import { AttachmentBuilder, TextInputStyle } from 'discord.js';
 import { InteractionListenerBuilder, InteractionListenerType } from '@reciple/modules';
 
@@ -38,9 +38,6 @@ export class MessagePollCommand extends SlashCommandModule {
     async execute(data: SlashCommand.ExecuteData) {
         await data.interaction.showModal(
             <Modal customId='my-modal' title='This is a modal rawr'>
-                <Label label='My Input' description='This is an example input'>
-                    <TextInput customId='my-input' style={TextInputStyle.Short}/>
-                </Label>
                 <Label label='My Paragraph' description='This is an example paragraph input'>
                     <TextInput customId='my-paragraph' style={TextInputStyle.Paragraph}/>
                 </Label>
@@ -60,6 +57,9 @@ export class MessagePollCommand extends SlashCommandModule {
                         <RadioGroupOption label='Option 2' value='option2'/>
                         <RadioGroupOption label='Option 3' value='option3'/>
                     </RadioGroup>
+                </Label>
+                <Label label='Checkbox' description='This is an example checkbox'>
+                    <Checkbox customId='my-checkbox'/>
                 </Label>
             </Modal>
         );
