@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandModule, type SlashCommand } from "reciple";
-import { File, FileUpload, Label, Modal, Separator, TextDisplay, TextInput } from '@reciple/jsx';
+import { CheckboxGroup, CheckboxGroupOption, File, FileUpload, Label, Modal, RadioGroup, RadioGroupOption, Separator, TextDisplay, TextInput } from '@reciple/jsx';
 import { AttachmentBuilder, TextInputStyle } from 'discord.js';
 import { InteractionListenerBuilder, InteractionListenerType } from '@reciple/modules';
 
@@ -46,6 +46,20 @@ export class MessagePollCommand extends SlashCommandModule {
                 </Label>
                 <Label label='My File' description='This is an example file upload'>
                     <FileUpload customId='my-file-upload' maxValues={3} required={false}/>
+                </Label>
+                <Label label='Checkbox Group' description='This is an example checkbox group'>
+                    <CheckboxGroup customId='checkbox-group'>
+                        <CheckboxGroupOption label='Option 1' value='option1'/>
+                        <CheckboxGroupOption label='Option 2' value='option2'/>
+                        <CheckboxGroupOption label='Option 3' value='option3'/>
+                    </CheckboxGroup>
+                </Label>
+                <Label label='Radio Group' description='This is an example radio group'>
+                    <RadioGroup customId='radio-group'>
+                        <RadioGroupOption label='Option 1' value='option1'/>
+                        <RadioGroupOption label='Option 2' value='option2'/>
+                        <RadioGroupOption label='Option 3' value='option3'/>
+                    </RadioGroup>
                 </Label>
             </Modal>
         );

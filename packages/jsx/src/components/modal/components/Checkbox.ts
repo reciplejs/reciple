@@ -10,5 +10,5 @@ export function Checkbox(props: Checkbox.Props): CheckboxBuilder {
 }
 
 export namespace Checkbox {
-    export interface Props extends CheckboxComponentData {}
+    export interface Props extends Omit<CheckboxComponentData, 'type'> {}
 }

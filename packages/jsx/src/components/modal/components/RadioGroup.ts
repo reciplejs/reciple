@@ -7,11 +7,14 @@ export function RadioGroup(props: RadioGroup.Props): RadioGroupBuilder {
 
     builder.addOptions(children.map(c => isJSONEncodable(c) ? c.toJSON() : c));
 
+    if (props.id !== undefined) builder.setId(props.id);
+    if (props.customId !== undefined) builder.setCustomId(props.customId);
+
     return builder;
 }
 
 export namespace RadioGroup {
-    export interface Props extends Omit<RadioGroupComponentData, 'options'> {
+    export interface Props extends Omit<RadioGroupComponentData, 'options'|'type'> {
         children?: JSX.SingleOrArray<JSONEncodable<APIRadioGroupOption>|APIRadioGroupOption>;
     }
 }

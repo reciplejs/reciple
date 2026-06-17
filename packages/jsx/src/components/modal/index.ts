@@ -1,4 +1,5 @@
 export * from './components/Checkbox.js';
+export * from './components/CheckboxGroup.js';
 export * from './components/CheckboxGroupOption.js';
 export * from './components/RadioGroupOption.js';
 export * from './components/FileUpload.js';
