@@ -35,8 +35,8 @@
     "directory": "packages/reciple"
   },
   "dependencies": {
-    "@clack/prompts": "^1.5.1",
-    "@dotenvx/dotenvx": "^1.73.1",
+    "@clack/prompts": "^1.6.0",
+    "@dotenvx/dotenvx": "^1.75.1",
     "@prtty/print": "catalog:",
     "@prtty/prtty": "catalog:",
     "@reciple/utils": "workspace:^",
@@ -46,7 +46,7 @@
     "github-slugger": "^2.0.0",
     "jiti": "^2.7.0",
     "micromatch": "^4.0.8",
-    "nypm": "^0.6.7",
+    "nypm": "^0.6.8",
     "pkg-types": "catalog:",
     "tinyglobby": "^0.2.17",
     "ts-mixer": "^6.0.4",
@@ -57,7 +57,7 @@
     "@types/micromatch": "^4.0.10",
     "@types/node": "catalog:",
     "nodemon": "^3.1.14",
-    "rolldown": "^1.1.1",
+    "rolldown": "^1.1.3",
     "typescript": "catalog:"
   },
   "peerDependencies": {
