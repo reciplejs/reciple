@@ -100,8 +100,7 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
     public static async scanForModulePaths(config?: ModuleLoader.Config & { cwd?: string; createDirectories?: boolean; }): Promise<string[]> {
         const directories = await ModuleLoader.scanForDirectories(config);
-
-        let modules: string[] = [];
+        const modules: Set<string> = new Set();
 
         for (const directory of directories) {
             let files = await readdir(directory);
@@ -118,13 +117,11 @@ export class ModuleLoader extends EventEmitter<ModuleLoader.Events> {
 
             for (const file of files) {
                 if (config?.filter ? !(await config?.filter(file)) : ModuleLoader.fileTypes.every(type => !file.endsWith(`.${type}`))) continue;
-                modules.push(file);
+                modules.add(file);
             }
         }
 
-        if (config?.sort) modules.sort(config.sort);
-
-        return modules;
+        return config?.sort ? Array.from(modules).sort(config.sort) : Array.from(modules);
     }
 
     public static async resolveModuleFromPath(filepath: string, options?: { cwd?: string; }): Promise<AnyModule> {
